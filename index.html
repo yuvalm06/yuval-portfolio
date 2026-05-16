@@ -92,10 +92,32 @@
       padding: 18px 22px;
     }
 
-    /* Sunburst logo — SVG inline */
-    .logo {
-      width: 42px; height: 42px;
+    .logo-ym {
+      display: flex;
+      align-items: baseline;
+      font-family: var(--font);
+      font-size: 38px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      cursor: default;
+      user-select: none;
+      white-space: nowrap;
       flex-shrink: 0;
+    }
+
+    .logo-expand {
+      display: inline-block;
+      overflow: hidden;
+      max-width: 0;
+      opacity: 0;
+      transition: max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
+      white-space: pre;
+    }
+
+    .logo-ym:hover .logo-expand {
+      max-width: 100px;
+      opacity: 1;
     }
 
     .nav-right {
@@ -531,6 +553,518 @@
     }
 
     /* ─────────────────────────────────────────
+       CONTACT PAGE
+    ───────────────────────────────────────── */
+    .contact-page {
+      position: absolute;
+      inset: 0;
+      z-index: 40;
+      border-radius: 14px;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 28px 24px;
+      transform: translateY(100%);
+      transition: transform 0.48s cubic-bezier(0.76, 0, 0.24, 1);
+      pointer-events: none;
+    }
+
+    .contact-page.open {
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    /* Grain + vignette reused on the contact page */
+    .contact-page::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.035;
+      pointer-events: none;
+      border-radius: 14px;
+    }
+
+    .contact-back {
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      background: rgba(220,218,213,0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 36px; height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s;
+      color: var(--ink);
+      font-size: 17px;
+      font-weight: 300;
+    }
+
+    .contact-back:hover { background: rgba(200,198,194,0.9); }
+
+    .contact-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      margin-bottom: 18px;
+    }
+
+    .contact-status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #5c9e6b;
+    }
+
+    .contact-heading {
+      font-size: clamp(38px, 6vw, 80px);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: var(--ink);
+      line-height: 1;
+      margin-bottom: 24px;
+    }
+
+    .contact-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 32px;
+    }
+
+    .contact-link {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: rgba(220,218,213,0.8);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 14px;
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--ink-mid);
+      text-decoration: none;
+      letter-spacing: 0.01em;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .contact-link:hover {
+      background: rgba(46,45,43,0.9);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .contact-link svg {
+      width: 13px; height: 13px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      flex-shrink: 0;
+    }
+
+    .contact-divider {
+      width: 100%;
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 20px;
+    }
+
+    .contact-sub {
+      font-size: 11.5px;
+      color: var(--ink-light);
+      line-height: 1.55;
+      max-width: 320px;
+    }
+
+    /* ─────────────────────────────────────────
+       SHARED PAGE OVERLAY BASE
+       (about + skills inherit this pattern)
+    ───────────────────────────────────────── */
+    .page-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 40;
+      border-radius: 14px;
+      background: var(--bg);
+      transform: translateY(100%);
+      transition: transform 0.48s cubic-bezier(0.76, 0, 0.24, 1);
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .page-overlay.open {
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .page-overlay::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.035;
+      pointer-events: none;
+      border-radius: 14px;
+      z-index: 0;
+    }
+
+    .page-overlay-inner {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .page-close-btn {
+      position: absolute;
+      top: 18px;
+      right: 22px;
+      background: rgba(220,218,213,0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 36px; height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s;
+      color: var(--ink);
+      font-size: 17px;
+      font-weight: 300;
+      z-index: 2;
+    }
+
+    .page-close-btn:hover { background: rgba(200,198,194,0.9); }
+
+    .page-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+    }
+
+    .page-heading {
+      font-size: clamp(34px, 5.5vw, 72px);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      color: var(--ink);
+      line-height: 1;
+      margin-bottom: 0;
+    }
+
+    /* ─────────────────────────────────────────
+       ABOUT PAGE
+    ───────────────────────────────────────── */
+    .about-layout {
+      display: flex;
+      height: 100%;
+    }
+
+    .about-text {
+      flex: 0 0 56%;
+      min-width: 0;
+      overflow-y: auto;
+      padding: 28px 32px 36px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      scrollbar-width: none;
+    }
+
+    .about-text::-webkit-scrollbar { display: none; }
+
+    .about-header { display: flex; flex-direction: column; gap: 6px; }
+
+    .about-bio {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--ink-mid);
+      line-height: 1.7;
+      max-width: 380px;
+    }
+
+    /* placeholder hint styling — remove the class once real content is in */
+    .placeholder-text {
+      color: var(--ink-light);
+      font-style: italic;
+    }
+
+    /* Experience sections */
+    .about-section { display: flex; flex-direction: column; gap: 0; }
+
+    .about-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      padding-bottom: 7px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+    }
+
+    .exp-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr auto;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(26,25,22,0.06);
+    }
+
+    .exp-row:last-child { border-bottom: none; }
+
+    /* Logo slot — only include this span when you have a real img to show */
+    .exp-logo-slot {
+      width: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .exp-logo-slot img {
+      max-height: 20px;
+      max-width: 44px;
+      width: auto;
+      object-fit: contain;
+      opacity: 0.75;
+    }
+
+    .exp-org {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .exp-role {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--ink-mid);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .exp-date {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--ink-light);
+      white-space: nowrap;
+      text-align: right;
+    }
+
+    .about-image-slot {
+      flex: 1;
+      position: relative;
+      background: rgba(220,218,213,0.4);
+      border-left: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    /* Drop an <img> inside .about-image-slot to fill this area */
+    .about-image-slot img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .about-image-hint {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--ink-light);
+      font-size: 11.5px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .about-image-hint svg {
+      width: 28px; height: 28px;
+      stroke: var(--ink-light);
+      fill: none;
+      stroke-width: 1.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      opacity: 0.5;
+    }
+
+    /* Hide hint once a real img is present */
+    .about-image-slot img ~ .about-image-hint { display: none; }
+
+    /* ─────────────────────────────────────────
+       SKILLS PAGE
+    ───────────────────────────────────────── */
+    .skills-layout {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 28px 24px;
+      height: 100%;
+    }
+
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      width: 100%;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+      margin-top: 20px;
+    }
+
+    .skills-col {
+      background: var(--bg);
+      padding: 20px 18px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .skills-col-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .skills-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .skill-tag {
+      background: rgba(220,218,213,0.7);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 4px 9px;
+      font-size: 11.5px;
+      font-weight: 500;
+      color: var(--ink-mid);
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .skill-tag:hover {
+      background: var(--ink);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .cert-section {
+      margin-top: 14px;
+    }
+
+    .cert-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 8px;
+    }
+
+    .cert-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      background: rgba(220,218,213,0.45);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 11px 14px;
+    }
+
+    .cert-info {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    .cert-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .cert-meta {
+      font-size: 11px;
+      color: var(--ink-light);
+      white-space: nowrap;
+    }
+
+    .cert-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .cert-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(255,255,255,0.55);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 4px 10px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--ink-mid);
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+      white-space: nowrap;
+    }
+
+    .cert-link:hover {
+      background: var(--ink);
+      color: #fff;
+      border-color: transparent;
+    }
+
+    .cert-logo-slot img {
+      max-height: 20px;
+      max-width: 80px;
+      width: auto;
+      object-fit: contain;
+      opacity: 0.75;
+    }
+
+    /* ─────────────────────────────────────────
        RESPONSIVE
     ───────────────────────────────────────── */
     @media (max-width: 640px) {
@@ -561,27 +1095,7 @@
   <!-- ───────── NAV ───────── -->
   <nav class="nav">
 
-    <!-- Sunburst / personal mark -->
-    <svg class="logo" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="21" cy="21" r="3.5" fill="#1A1916"/>
-      <!-- 16 rays -->
-      <line x1="21" y1="3"  x2="21" y2="10" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
-      <line x1="21" y1="32" x2="21" y2="39" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
-      <line x1="3"  y1="21" x2="10" y2="21" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
-      <line x1="32" y1="21" x2="39" y2="21" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
-      <line x1="7.5"  y1="7.5"  x2="12.4" y2="12.4" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
-      <line x1="29.6" y1="29.6" x2="34.5" y2="34.5" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
-      <line x1="34.5" y1="7.5"  x2="29.6" y2="12.4" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
-      <line x1="12.4" y1="29.6" x2="7.5"  y2="34.5" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
-      <line x1="21" y1="3"  x2="21" y2="8"  stroke="#1A1916" stroke-width="1" stroke-linecap="round" transform="rotate(22.5 21 21)"/>
-      <line x1="21" y1="3"  x2="21" y2="8"  stroke="#1A1916" stroke-width="1" stroke-linecap="round" transform="rotate(67.5 21 21)"/>
-      <line x1="21" y1="3"  x2="21" y2="8"  stroke="#1A1916" stroke-width="1" stroke-linecap="round" transform="rotate(112.5 21 21)"/>
-      <line x1="21" y1="3"  x2="21" y2="8"  stroke="#1A1916" stroke-width="1" stroke-linecap="round" transform="rotate(157.5 21 21)"/>
-      <line x1="21" y1="3"  x2="21" y2="8"  stroke="#1A1916" stroke-width="1" stroke-linecap="round" transform="rotate(202.5 21 21)"/>
-      <line x1="21" y1="3"  x2="21" y2="8"  stroke="#1A1916" stroke-width="1" stroke-linecap="round" transform="rotate(247.5 21 21)"/>
-      <line x1="21" y1="3"  x2="21" y2="8"  stroke="#1A1916" stroke-width="1" stroke-linecap="round" transform="rotate(292.5 21 21)"/>
-      <line x1="21" y1="3"  x2="21" y2="8"  stroke="#1A1916" stroke-width="1" stroke-linecap="round" transform="rotate(337.5 21 21)"/>
-    </svg>
+    <div class="logo-ym"><span>Y</span><span class="logo-expand">uval  </span><span>M</span><span class="logo-expand">unz</span></div>
 
     <div class="nav-right">
       <div class="nav-brand">YG<sup>*</sup></div>
@@ -608,6 +1122,208 @@
       <a href="#">GitHub</a>
       <a href="#">LinkedIn</a>
       <a href="#">Resume</a>
+    </div>
+  </div>
+
+  <!-- ───────── CONTACT PAGE ───────── -->
+  <div class="contact-page" id="contactPage">
+    <button class="contact-back" id="contactBack">&#x2715;</button>
+
+    <div class="contact-status">
+      <div class="contact-status-dot"></div>
+      Available for work
+    </div>
+
+    <h1 class="contact-heading">Say hello.</h1>
+
+    <div class="contact-links">
+      <a class="contact-link" href="mailto:yuvalmunz@gmail.com">
+        <svg viewBox="0 0 14 14"><rect x="1" y="2.5" width="12" height="9" rx="1.5"/><polyline points="1 3.5 7 8 13 3.5"/></svg>
+        yuvalmunz@gmail.com
+      </a>
+      <a class="contact-link" href="https://linkedin.com/in/yuval-munz" target="_blank" rel="noopener">
+        <svg viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12" rx="2"/><line x1="4" y1="5.5" x2="4" y2="10"/><line x1="4" y1="3" x2="4" y2="3.5"/><path d="M7 10V7.5A1.5 1.5 0 0 1 10 7.5V10"/><line x1="7" y1="5.5" x2="7" y2="6"/></svg>
+        LinkedIn
+      </a>
+      <a class="contact-link" href="https://github.com/yuvalm06" target="_blank" rel="noopener">
+        <svg viewBox="0 0 14 14"><path d="M7 1a6 6 0 0 0-1.9 11.7c.3.05.41-.13.41-.29v-1.1c-1.67.36-2.02-.8-2.02-.8-.27-.7-.67-.88-.67-.88-.55-.37.04-.36.04-.36.6.04.92.62.92.62.54.92 1.41.65 1.76.5.05-.39.21-.65.38-.8-1.33-.15-2.73-.67-2.73-2.97 0-.66.23-1.19.62-1.61-.06-.15-.27-.76.06-1.59 0 0 .5-.16 1.65.62a5.74 5.74 0 0 1 3 0C10.59 4 11.1 4.16 11.1 4.16c.33.83.12 1.44.06 1.59.39.42.62.95.62 1.61 0 2.31-1.4 2.82-2.74 2.97.22.19.41.56.41 1.13v1.68c0 .16.11.35.41.29A6 6 0 0 0 7 1z"/></svg>
+        GitHub
+      </a>
+    </div>
+
+    <div class="contact-divider"></div>
+    <p class="contact-sub">
+      Currently building mechatronic systems and generative tools.<br>
+      Open to roles at the intersection of hardware and software.
+    </p>
+  </div>
+
+  <!-- ───────── ABOUT PAGE ───────── -->
+  <div class="page-overlay" id="aboutPage">
+    <button class="page-close-btn" id="aboutBack">&#x2715;</button>
+    <div class="page-overlay-inner">
+      <div class="about-layout">
+
+        <!-- Left: scrollable content -->
+        <div class="about-text">
+
+          <div class="about-header">
+            <div class="page-label">About</div>
+            <h1 class="page-heading">Yuval Munz.</h1>
+            <p class="about-bio">I build across hardware, performance systems, and automation infrastructure. My work spans drivetrain optimization, structural analysis, thermal concepts, and building full-stack systems from scratch. I'm interested in engineering that connects physical design, modeling, and scalable execution.</p>
+          </div>
+
+          <!-- Education -->
+          <div class="about-section">
+            <div class="about-section-label">Education</div>
+            <div class="exp-row">
+              <span class="exp-org">Queen's University</span>
+              <span class="exp-role">BASc Mechanical Engineering</span>
+              <span class="exp-date">2024–Present</span>
+            </div>
+          </div>
+
+          <!-- Current Roles -->
+          <div class="about-section">
+            <div class="about-section-label">Current Roles</div>
+            <div class="exp-row">
+              <span class="exp-org">Workato</span>
+              <span class="exp-role">Product Intern</span>
+              <span class="exp-date">Mar 2026–Present</span>
+            </div>
+            <div class="exp-row">
+              <span class="exp-org">Pursr</span>
+              <span class="exp-role">Founding Engineer</span>
+              <span class="exp-date">Apr 2026–Present</span>
+            </div>
+            <div class="exp-row">
+              <span class="exp-org">Queen's Formula SAE Racing</span>
+              <span class="exp-role">Powertrain Engineer &amp; Sprockets Lead</span>
+              <span class="exp-date">Sep 2025–Present</span>
+            </div>
+            <div class="exp-row">
+              <span class="exp-org">Queen's Additive Manufacturing Club</span>
+              <span class="exp-role">Mechanical Lead</span>
+              <span class="exp-date">Dec 2025–Present</span>
+            </div>
+            <div class="exp-row">
+              <span class="exp-org">Campus Cravings</span>
+              <span class="exp-role">Founder &amp; Operator</span>
+              <span class="exp-date">Sep 2025–Present</span>
+            </div>
+          </div>
+
+          <!-- Previous Roles -->
+          <div class="about-section">
+            <div class="about-section-label">Previous Roles</div>
+            <div class="exp-row">
+              <span class="exp-org">Queen's Formula SAE Racing</span>
+              <span class="exp-role">Powertrain Engineer</span>
+              <span class="exp-date">Sep 2024–Jan 2026</span>
+            </div>
+            <div class="exp-row">
+              <span class="exp-org">Green Air LTD</span>
+              <span class="exp-role">Mechanical Project Assistant Intern</span>
+              <span class="exp-date">May–Aug 2025</span>
+            </div>
+            <div class="exp-row">
+              <span class="exp-org">CMiC</span>
+              <span class="exp-role">IT Support Intern</span>
+              <span class="exp-date">May–Sep 2024</span>
+            </div>
+            <div class="exp-row">
+              <span class="exp-org">3D Factory</span>
+              <span class="exp-role">3D Printing &amp; Fabrication Intern</span>
+              <span class="exp-date">Nov 2023–May 2024</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Right: image slot — drop an <img src="..."> inside to fill it -->
+        <div class="about-image-slot">
+          <!-- <img src="your-photo.jpg" alt="Yuval Munz" /> -->
+          <div class="about-image-hint">
+            <svg viewBox="0 0 28 28"><rect x="2" y="4" width="24" height="20" rx="2"/><circle cx="10" cy="12" r="3"/><polyline points="2 22 9 15 13 19 18 13 26 22"/></svg>
+            Photo goes here
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ───────── SKILLS PAGE ───────── -->
+  <div class="page-overlay" id="skillsPage">
+    <button class="page-close-btn" id="skillsBack">&#x2715;</button>
+    <div class="page-overlay-inner">
+      <div class="skills-layout">
+        <div class="page-label">Skills</div>
+        <h1 class="page-heading">What I work with.</h1>
+
+        <!-- 3-column skills grid — add / remove columns and tags freely -->
+        <div class="skills-grid">
+
+          <div class="skills-col">
+            <div class="skills-col-label">
+              <!-- Column heading, e.g. "Design", "Hardware", "Software" -->
+              <span class="placeholder-text">Category one</span>
+            </div>
+            <div class="skills-tags">
+              <!-- Replace each .skill-tag with your actual skills -->
+              <span class="skill-tag placeholder-text">Skill</span>
+              <span class="skill-tag placeholder-text">Skill</span>
+              <span class="skill-tag placeholder-text">Skill</span>
+              <span class="skill-tag placeholder-text">Skill</span>
+            </div>
+          </div>
+
+          <div class="skills-col">
+            <div class="skills-col-label">
+              <span class="placeholder-text">Category two</span>
+            </div>
+            <div class="skills-tags">
+              <span class="skill-tag placeholder-text">Skill</span>
+              <span class="skill-tag placeholder-text">Skill</span>
+              <span class="skill-tag placeholder-text">Skill</span>
+              <span class="skill-tag placeholder-text">Skill</span>
+            </div>
+          </div>
+
+          <div class="skills-col">
+            <div class="skills-col-label">
+              <span class="placeholder-text">Category three</span>
+            </div>
+            <div class="skills-tags">
+              <span class="skill-tag placeholder-text">Skill</span>
+              <span class="skill-tag placeholder-text">Skill</span>
+              <span class="skill-tag placeholder-text">Skill</span>
+              <span class="skill-tag placeholder-text">Skill</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Certificates — duplicate .cert-row to add more -->
+        <div class="cert-section">
+          <div class="cert-section-label">Certificates</div>
+          <div class="cert-row">
+            <div class="cert-info">
+              <span class="cert-name">Certified SOLIDWORKS Associate (CSWA)</span>
+              <span class="cert-meta">Dassault Systèmes · Oct 2025 · C-4FZLM267EN</span>
+            </div>
+            <div class="cert-right">
+              <a class="cert-link" href="#" target="_blank" rel="noopener">
+                See Certificate
+                <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8L8 2M4 2h4v4"/></svg>
+              </a>
+              <div class="cert-logo-slot">
+                <!-- <img src="logos/solidworks.png" alt="SOLIDWORKS"> -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -663,12 +1379,44 @@
   const closeBtn   = document.getElementById('closeBtn');
   const navOverlay = document.getElementById('navOverlay');
 
+  // Page overlays
+  const pages = {
+    'Contact': document.getElementById('contactPage'),
+    'About':   document.getElementById('aboutPage'),
+    'Skills':  document.getElementById('skillsPage'),
+  };
+
+  function closeAllPages() {
+    Object.values(pages).forEach(p => p.classList.remove('open'));
+  }
+
   menuBtn.addEventListener('click', () => navOverlay.classList.add('open'));
   closeBtn.addEventListener('click', () => navOverlay.classList.remove('open'));
 
+  // Wire nav links to their pages
+  navOverlay.querySelectorAll('.nav-links a').forEach(a => {
+    const label = a.firstChild.textContent.trim();
+    if (pages[label]) {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        navOverlay.classList.remove('open');
+        closeAllPages();
+        pages[label].classList.add('open');
+      });
+    }
+  });
+
+  // Wire each page's close button
+  document.getElementById('contactBack').addEventListener('click', closeAllPages);
+  document.getElementById('aboutBack').addEventListener('click', closeAllPages);
+  document.getElementById('skillsBack').addEventListener('click', closeAllPages);
+
   // Close on Escape
   document.addEventListener('keydown', e => {
-    if (e.key === 'Escape') navOverlay.classList.remove('open');
+    if (e.key === 'Escape') {
+      navOverlay.classList.remove('open');
+      closeAllPages();
+    }
   });
 
   // ── Page dots ──
@@ -726,17 +1474,13 @@
       pts = [];
       CX = W * 0.50;
       CY = H * 0.55;
-      const reach = Math.ceil(Math.max(W, H) / GS) + 8;
+      const reach = Math.ceil(Math.max(W, H) / GS) + 16;
       for (let gx = -reach; gx <= reach; gx++) {
         for (let gz = -reach; gz <= reach; gz++) {
           const A = gx - gz;
           const D = gx + gz;
           const denom = 1 - PERSP * D;
           if (denom < 0.12) continue;
-          const sx = CX + GS * A / denom;
-          const sy = CY + GS * 0.5 * D / denom;
-          if (sx < -MOUSE_R - 5 || sx > W + MOUSE_R + 5) continue;
-          if (sy < -MOUSE_R - 5 || sy > H + MOUSE_R + 5) continue;
           pts.push({ A, D, pScale: 1 / denom });
         }
       }
@@ -771,16 +1515,45 @@
       vShift += (normY *  32 - vShift) * 0.05;   // ±16px at cursor edges
       tilt   += ((1.0 + normY * 0.22) - tilt)   * 0.05;
 
-      const drawCY = CY + vShift;   // effective horizon line
+      const drawCY = CY + vShift;
+
+      // Zoom blend factor from Three.js (0 = isometric, 1 = side-view)
+      const ze = (window._dotCam && window._dotCam.zoomEase) || 0;
+
+      // Side-view projection — derived to exactly match Three.js camera at
+      // ZOOM_AZ=0, ZOOM_EL=0.10, ZOOM_DIST=8, FOV=28°, lookAt.y=0.5
+      const SV_GS    = 70.3;          // pixel scale (constant across H)
+      const SV_PERSP = 35.1 / H;      // K / (ZOOM_DIST * cos(ZOOM_EL))
+      const SV_TILT  = 0.10;          // nearly horizontal → ground appears flat
+      const SV_CY    = H * 0.6255;    // where gz=0 (world origin) maps under this camera
 
       ctx.fillStyle = BG;
       ctx.fillRect(0, 0, W, H);
 
       for (let i = 0, n = pts.length; i < n; i++) {
         const { A, D, pScale } = pts[i];
-        const denom = 1 - PERSP * D;
-        const sx = CX + GS * (A + hSkew * D) / denom;
-        const sy = drawCY + GS * 0.5 * tilt * D / denom;
+
+        // ── Isometric projection ──
+        const denom_i = 1 - PERSP * D;
+        if (denom_i < 0.10) continue;
+        const sx_i = CX + GS * (A + hSkew * D) / denom_i;
+        const sy_i = drawCY + GS * 0.5 * tilt * D / denom_i;
+
+        // ── Side-view projection ──
+        const gz     = (D - A) * 0.5;   // world z (depth from side camera)
+        const gx     = (D + A) * 0.5;   // world x (horizontal in side view)
+        const denom_s = 1 - SV_PERSP * gz;
+        let sx_s, sy_s;
+        if (denom_s < 0.10) { sx_s = 99999; sy_s = 99999; }
+        else {
+          sx_s = CX + SV_GS * gx / denom_s;
+          sy_s = SV_CY + SV_GS * SV_TILT * gz / denom_s;
+        }
+
+        // ── Blend ──
+        const sx = sx_i + (sx_s - sx_i) * ze;
+        const sy = sy_i + (sy_s - sy_i) * ze;
+        if (sx < -60 || sx > W + 60 || sy < -60 || sy > H + 60) continue;
 
         // gx = (A + D) / 2 — lines of constant gx run upper-right→lower-left in screen space.
         // Driving by gx makes the wave travel perpendicular: upper-left → lower-right.
@@ -847,7 +1620,11 @@
 </script>
 <script type="module">
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { GLTFLoader }     from 'three/addons/loaders/GLTFLoader.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass }     from 'three/addons/postprocessing/RenderPass.js';
+import { OutlinePass }    from 'three/addons/postprocessing/OutlinePass.js';
+import { OutputPass }     from 'three/addons/postprocessing/OutputPass.js';
 
 console.log('[3D] Three.js r' + THREE.REVISION + ' loaded');
 
@@ -866,25 +1643,13 @@ card.appendChild(cv);
 // ── Scene ──
 const threeScene = new THREE.Scene();
 
-// ── Camera — OrthographicCamera to match the dot grid's near-flat projection.
-//
-//   The dot grid projects: sx ∝ A = gx-gz  (horizontal, weight 1)
-//                          sy ∝ 0.5 * D    (vertical, weight 0.5, tilt=1)
-//
-//   For an orthographic camera at azimuth 45°, elevation φ:
-//     screen_x per unit A ∝ 1/√2
-//     screen_y per unit D ∝ sin(φ)/√2
-//   Ratio must equal 0.5  →  sin(φ) = 0.5  →  φ = 30° (π/6 rad).
-//
-//   ORTHO_SIZE controls how many world units fill the half-height of the card.
-//   Increase to shrink the model, decrease to grow it.
-const ORTHO_SIZE = 4.5;
+// ── Camera — PerspectiveCamera with long focal length (FOV=28°) to approximate
+//   the dot grid's near-orthographic projection at rest, while enabling a true
+//   perspective dolly-in during the zoom animation.
+//   FOV=28° at CAM_DIST=18 matches the visual scale of the previous ORTHO_SIZE=4.5.
+const ORTHO_SIZE = 4.5;  // kept for resize math
 let aspect = 1;
-const camera = new THREE.OrthographicCamera(
-  -ORTHO_SIZE * aspect, ORTHO_SIZE * aspect,
-   ORTHO_SIZE,         -ORTHO_SIZE,
-  0.1, 100
-);
+const camera = new THREE.PerspectiveCamera(28, aspect, 0.1, 200);
 
 // ── Lighting ──
 threeScene.add(new THREE.AmbientLight(0xEEECEA, 1.6));
@@ -912,13 +1677,14 @@ ground.rotation.x = -Math.PI / 2;
 ground.receiveShadow = true;
 threeScene.add(ground);
 
-// ── Raycaster for hover glow ──
-const raycaster  = new THREE.Raycaster();
-const mousePt    = new THREE.Vector2();
-let   modelMeshes = [];
-let   isHovered  = false;
-
-cv.style.transition = 'filter 0.25s ease';
+// ── Raycaster + OutlinePass hover glow ──
+const raycaster   = new THREE.Raycaster();
+const mousePt     = new THREE.Vector2();
+let   modelMeshes    = [];
+let   sprocketMeshes = [];
+let   isHovered      = false;
+let   sprocketHovered = false;
+let   carOpacity     = 1.0;
 
 // ── Load GLB ──
 console.log('[3D] Starting GLB load...');
@@ -945,68 +1711,203 @@ new GLTFLoader().load('renders/Meshy_AI_Open_Wheel_Prototype__0515194205_generat
   const ctr  = box2.getCenter(new THREE.Vector3());
   model.position.set(-ctr.x, -box2.min.y, -ctr.z);
 
-  // Collect meshes for raycasting
-  model.traverse(child => { if (child.isMesh) modelMeshes.push(child); });
+  // Collect meshes; clone materials so opacity changes are per-instance
+  model.traverse(child => {
+    if (!child.isMesh) return;
+    child.material = child.material.clone();
+    child.material.transparent = true;
+    child.material.depthWrite  = false;
+    modelMeshes.push(child);
+  });
 
   threeScene.add(model);
   console.log('[3D] Model added to scene');
 }, undefined, err => console.error('[3D] GLB load error:', err));
 
+// ── Load Sprocket ──
+new GLTFLoader().load('renders/Sprocket.glb', gltf => {
+  const sprocket = gltf.scene;
+
+  sprocket.traverse(child => {
+    if (!child.isMesh) return;
+    child.material        = child.material.clone();
+    child.material.color.set(0xFFB800);
+    child.material.side   = THREE.DoubleSide;
+    child.castShadow      = true;
+  });
+
+  // Normalise — test large scale first to confirm it renders
+  const box = new THREE.Box3().setFromObject(sprocket);
+  const sz  = box.getSize(new THREE.Vector3());
+  sprocket.scale.setScalar(0.9 / Math.max(sz.x, sz.y, sz.z));
+
+  sprocket.position.set(-0.92, 0.36, 0.18);
+
+  sprocket.traverse(child => { if (child.isMesh) sprocketMeshes.push(child); });
+  threeScene.add(sprocket);
+}, undefined, err => console.error('[3D] Sprocket load error:', err));
+
+// ── Post-processing composer ──
+const composer   = new EffectComposer(renderer);
+const renderPass = new RenderPass(threeScene, camera);
+composer.addPass(renderPass);
+
+const { width: w0, height: h0 } = card.getBoundingClientRect();
+// Grey outer border — slightly thicker, renders first (behind)
+const outlineGrey = new OutlinePass(new THREE.Vector2(w0, h0), threeScene, camera);
+outlineGrey.edgeStrength   = 3.5;
+outlineGrey.edgeGlow       = 0.0;
+outlineGrey.edgeThickness  = 2.0;
+outlineGrey.visibleEdgeColor.set('#4a4844');
+outlineGrey.hiddenEdgeColor.set('#4a4844');
+composer.addPass(outlineGrey);
+
+// White inner outline — thinner, renders on top
+const outlinePass = new OutlinePass(new THREE.Vector2(w0, h0), threeScene, camera);
+outlinePass.edgeStrength   = 2.0;
+outlinePass.edgeGlow       = 0.0;
+outlinePass.edgeThickness  = 0.4;
+outlinePass.visibleEdgeColor.set('#ffffff');
+outlinePass.hiddenEdgeColor.set('#ffffff');
+composer.addPass(outlinePass);
+
+// Yellow outline — sprocket hover only
+const outlineYellow = new OutlinePass(new THREE.Vector2(w0, h0), threeScene, camera);
+outlineYellow.edgeStrength  = 5.0;
+outlineYellow.edgeThickness = 1.5;
+outlineYellow.edgeGlow      = 0.2;
+outlineYellow.visibleEdgeColor.set('#FFB800');
+outlineYellow.hiddenEdgeColor.set('#FFB800');
+composer.addPass(outlineYellow);
+
+composer.addPass(new OutputPass());
+
 // ── Resize ──
 function onResize() {
   const { width, height } = card.getBoundingClientRect();
   renderer.setSize(width, height);
+  composer.setSize(width, height);
+  outlineGrey.resolution.set(width, height);
+  outlinePass.resolution.set(width, height);
+  outlineYellow.resolution.set(width, height);
   aspect = width / height;
-  camera.left   = -ORTHO_SIZE * aspect;
-  camera.right  =  ORTHO_SIZE * aspect;
-  camera.top    =  ORTHO_SIZE;
-  camera.bottom = -ORTHO_SIZE;
+  camera.aspect = aspect;
   camera.updateProjectionMatrix();
 }
 new ResizeObserver(onResize).observe(card);
 onResize();
 
-// ── Camera update — driven by dot-grid state each frame ──
-//   BASE_AZ 45°  : camera northeast → screen maps (gx-gz) horizontal, (gx+gz) vertical ✓
-//   BASE_EL 30°  : matches sin(30°)=0.5 vertical compression of dot grid ✓
-//   hSkew ±0.09 → ±azimuth: when mouse goes right, scene appears to yaw right
-//   tilt  0.78–1.22 → ±elevation: mouse down = camera drops = tilt > 1
-const BASE_AZ  = Math.PI / 4;        // 45°
-const BASE_EL  = Math.PI / 6;        // 30° — exact geometric match to dot grid
-const CAM_DIST = 18;
+// ── Camera constants ──
+const BASE_AZ   = Math.PI / 4;
+const BASE_EL   = Math.PI / 6;
+const BASE_DIST = 18;   // resting distance
+
+// Zoom target: dolly in close to side-profile view
+const ZOOM_AZ   = 0;     // side view
+const ZOOM_EL   = 0.10;  // nearly horizontal
+const ZOOM_DIST = 8.0;   // close distance — perspective kicks in here
+
+let zoomT   = 0;     // 0 = isometric, 1 = zoomed side view
+let zoomDir = 0;     // +1 = zooming in, -1 = zooming out
+let prevTime = performance.now();
+
+// Click: zoom in when hitting the model, zoom out when already zoomed
+card.addEventListener('click', e => {
+  if (!modelMeshes.length) return;
+  const r = card.getBoundingClientRect();
+  mousePt.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  raycaster.setFromCamera(mousePt, camera);
+  const hit = raycaster.intersectObjects(modelMeshes, false).length > 0;
+  if (hit && zoomT < 0.5) {
+    zoomDir = 1;
+  } else if (zoomT > 0.5) {
+    zoomDir = -1;
+    if (sprocketHovered) { sprocketHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
+  }
+});
 
 function loop() {
   requestAnimationFrame(loop);
+  const now = performance.now();
+  const dt  = Math.min((now - prevTime) / 1000, 0.1);
+  prevTime  = now;
+
+  // Advance zoom animation (0.7s in/out)
+  zoomT = Math.max(0, Math.min(1, zoomT + zoomDir * dt * 1.4));
+  const ease = zoomT * zoomT * (3 - 2 * zoomT);   // smoothstep
+
+  // Share zoom progress with the dot grid so it can reproject its own camera.
   const c = window._dotCam || { hSkew: -0.09, tilt: 1, vShift: 0 };
 
-  const az = BASE_AZ - c.hSkew * 0.30;
-  const el = BASE_EL - (1.0 - c.tilt) * 0.11;
+  // Blend between mouse-driven isometric and locked side-view
+  const baseAz = BASE_AZ - c.hSkew * 0.30 * (1 - ease);
+  const baseEl = BASE_EL - (1.0 - c.tilt) * 0.11 * (1 - ease);
+  const az   = baseAz + (ZOOM_AZ - BASE_AZ) * ease;
+  const el   = baseEl + (ZOOM_EL - BASE_EL) * ease;
+  const dist = BASE_DIST + (ZOOM_DIST - BASE_DIST) * ease;
 
-  camera.position.set(
-    Math.cos(el) * Math.sin(az) * CAM_DIST,
-    Math.sin(el) * CAM_DIST,
-    Math.cos(el) * Math.cos(az) * CAM_DIST
-  );
-  camera.lookAt(0, c.vShift * 0.01, 0);
-
-  // Hover detection via raycaster
-  if (modelMeshes.length && c.mx > -999) {
-    const { width, height } = card.getBoundingClientRect();
-    mousePt.set((c.mx / width) * 2 - 1, -(c.my / height) * 2 + 1);
-    raycaster.setFromCamera(mousePt, camera);
-    const hit = raycaster.intersectObjects(modelMeshes, false).length > 0;
-    if (hit !== isHovered) {
-      isHovered = hit;
-      cv.style.filter = isHovered
-        ? 'drop-shadow(0 0 7px rgba(100,98,95,0.95))'
-        : 'none';
-    }
-  } else if (isHovered) {
-    isHovered = false;
-    cv.style.filter = 'none';
+  if (window._dotCam) {
+    window._dotCam.zoomEase  = ease;
+    window._dotCam.zoomScale = BASE_DIST / dist;  // 1.0 at rest, ~2.25 at full zoom
   }
 
-  renderer.render(threeScene, camera);
+  camera.position.set(
+    Math.cos(el) * Math.sin(az) * dist,
+    Math.sin(el) * dist,
+    Math.cos(el) * Math.cos(az) * dist
+  );
+  // Look target rises to center the car vertically as we get close
+  camera.lookAt(0, c.vShift * 0.01 * (1 - ease) + 0.5 * ease, 0);
+
+  // During zoom transition only: skip outline composer for full 60fps
+  if (ease > 0.05 && ease < 0.99) {
+    if (isHovered) {
+      isHovered = false;
+      outlinePass.selectedObjects = [];
+      outlineGrey.selectedObjects = [];
+    }
+    renderer.render(threeScene, camera);
+    return;
+  }
+
+  // Hover detection (only at rest — raycaster is expensive on complex mesh)
+  if (c.mx > -999) {
+    const rect = card.getBoundingClientRect();
+    mousePt.set((c.mx / rect.width) * 2 - 1, -(c.my / rect.height) * 2 + 1);
+    raycaster.setFromCamera(mousePt, camera);
+
+    // Sprocket hover — only active in zoomed mode
+    const sprocketHit = (ease > 0.9 && sprocketMeshes.length)
+      ? raycaster.intersectObjects(sprocketMeshes, true).length > 0
+      : false;
+    if (sprocketHit !== sprocketHovered) {
+      sprocketHovered = sprocketHit;
+      outlineYellow.selectedObjects = sprocketHovered ? sprocketMeshes : [];
+      card.style.cursor = sprocketHovered ? 'pointer' : '';
+    }
+
+    // Car body hover (only when not over sprocket)
+    const carHit = (!sprocketHit && modelMeshes.length)
+      ? raycaster.intersectObjects(modelMeshes, false).length > 0
+      : false;
+    if (carHit !== isHovered) {
+      isHovered = carHit;
+      outlinePass.selectedObjects = isHovered ? modelMeshes : [];
+      outlineGrey.selectedObjects = isHovered ? modelMeshes : [];
+    }
+  } else {
+    if (isHovered)      { isHovered = false; outlinePass.selectedObjects = []; outlineGrey.selectedObjects = []; }
+    if (sprocketHovered) { sprocketHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
+  }
+
+  // Fade car opacity when hovering sprocket in zoomed mode
+  const carOpacityTarget = sprocketHovered ? 0.30 : 1.0;
+  carOpacity += (carOpacityTarget - carOpacity) * (1 - Math.exp(-7 * dt));
+  if (modelMeshes.length && Math.abs(carOpacity - carOpacityTarget) > 0.001) {
+    for (const m of modelMeshes) m.material.opacity = carOpacity;
+  }
+
+  composer.render();
 }
 loop();
 </script>
