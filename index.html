@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Yuval Golan — Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─────────────────────────────────────────
+       RESET & BASE
+    ───────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:         #EEECEA;
+      --bg-card:    #E8E6E2;
+      --ink:        #1A1916;
+      --ink-mid:    #4A4844;
+      --ink-light:  #8A8784;
+      --pill-bg:    #2E2D2B;
+      --pill-icon:  #FFFFFF;
+      --accent:     #2E2D2B;
+      --border:     rgba(26,25,22,0.12);
+      --radius:     6px;
+      --font:       'Instrument Sans', sans-serif;
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      overflow: hidden;
+      background: #1A1916;
+    }
+
+    body {
+      font-family: var(--font);
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ─────────────────────────────────────────
+       CARD / VIEWPORT FRAME  (like Hut8's rounded inset)
+    ───────────────────────────────────────── */
+    .card {
+      position: relative;
+      width: calc(100vw - 60px);
+      height: calc(100vh - 48px);
+      max-width: 1340px;
+      max-height: 780px;
+      background: var(--bg);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    /* Grain texture overlay */
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.035;
+      pointer-events: none;
+      z-index: 10;
+      border-radius: 14px;
+    }
+
+    /* Subtle radial gradient vignette — makes 3D feel embedded */
+    .card::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 85% 85% at 55% 45%, transparent 40%, rgba(26,25,22,0.06) 100%);
+      pointer-events: none;
+      z-index: 2;
+      border-radius: 14px;
+    }
+
+    /* ─────────────────────────────────────────
+       NAV
+    ───────────────────────────────────────── */
+    .nav {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 22px;
+    }
+
+    /* Sunburst logo — SVG inline */
+    .logo {
+      width: 42px; height: 42px;
+      flex-shrink: 0;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-brand {
+      background: rgba(220,218,213,0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 6px 12px;
+      font-size: 12.5px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      color: var(--ink-mid);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }
+
+    .nav-brand sup {
+      font-size: 9px;
+      color: var(--ink-light);
+      top: 0;
+    }
+
+    .nav-menu-btn {
+      background: rgba(220,218,213,0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      width: 36px; height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .nav-menu-btn:hover { background: rgba(205,203,198,0.9); }
+
+    .hamburger {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .hamburger span {
+      display: block;
+      width: 16px;
+      height: 1.5px;
+      background: var(--ink);
+      border-radius: 1px;
+      transition: all 0.25s;
+    }
+
+    /* full-screen nav overlay */
+    .nav-overlay {
+      position: absolute;
+      inset: 0;
+      background: var(--ink);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+      padding: 24px;
+      transform: translateY(-100%);
+      transition: transform 0.45s cubic-bezier(0.76, 0, 0.24, 1);
+      border-radius: 14px;
+    }
+
+    .nav-overlay.open { transform: translateY(0); }
+
+    .nav-overlay-top {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .nav-close-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      width: 36px; height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: white;
+      font-size: 18px;
+      font-weight: 300;
+    }
+
+    .nav-links {
+      list-style: none;
+      margin-top: 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-links li a {
+      display: block;
+      font-size: clamp(28px, 4vw, 52px);
+      font-weight: 600;
+      color: rgba(255,255,255,0.15);
+      text-decoration: none;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      transition: color 0.2s;
+      padding: 4px 0;
+    }
+
+    .nav-links li a:hover { color: rgba(255,255,255,0.9); }
+
+    .nav-links li a span {
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.05em;
+      color: rgba(255,255,255,0.3);
+      text-transform: uppercase;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+
+    .nav-footer {
+      margin-top: auto;
+      display: flex;
+      gap: 24px;
+    }
+
+    .nav-footer a {
+      font-size: 11.5px;
+      color: rgba(255,255,255,0.3);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    .nav-footer a:hover { color: rgba(255,255,255,0.6); }
+
+    /* ─────────────────────────────────────────
+       SCENE (3D render area)
+    ───────────────────────────────────────── */
+    .scene {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+    }
+
+    /* The actual render image — swap this src with your Blender output */
+    .scene-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 30%;
+      display: block;
+    }
+
+    /* Placeholder shown when there's no real render yet */
+    .scene-placeholder {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;   /* let canvas dot-grid show through */
+    }
+
+    .scene-placeholder svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ─────────────────────────────────────────
+       HOTSPOT PILLS
+    ───────────────────────────────────────── */
+    /* Distance fog — atmospheric haze that fades dots into bg toward the top */
+    .distance-fog {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      pointer-events: none;
+      border-radius: 14px;
+      background: linear-gradient(
+        to bottom,
+        rgba(238,236,234,0.62) 0%,
+        rgba(238,236,234,0.28) 22%,
+        rgba(238,236,234,0.06) 42%,
+        rgba(238,236,234,0.00) 58%
+      );
+    }
+
+    .hotspot {
+      position: absolute;
+      z-index: 8;
+      transform: translate(-50%, -50%);
+      cursor: pointer;
+    }
+
+    .hotspot-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--pill-bg);
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+      position: relative;
+    }
+
+    .hotspot-btn::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 1px solid rgba(46,45,43,0.25);
+      animation: pulse-ring 2.4s ease-out infinite;
+    }
+
+    .hotspot-btn::after {
+      content: '';
+      position: absolute;
+      inset: -10px;
+      border-radius: 50%;
+      border: 1px solid rgba(46,45,43,0.1);
+      animation: pulse-ring 2.4s ease-out infinite 0.4s;
+    }
+
+    @keyframes pulse-ring {
+      0%   { transform: scale(0.88); opacity: 0; }
+      20%  { opacity: 1; }
+      100% { transform: scale(1.4);  opacity: 0; }
+    }
+
+    .hotspot-btn:hover { background: #1a1916; transform: scale(1.1); }
+
+    .hotspot-btn svg {
+      width: 16px; height: 16px;
+      fill: none;
+      stroke: var(--pill-icon);
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* Tooltip */
+    .hotspot-tip {
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 12px);
+      transform: translateX(-50%);
+      background: var(--ink);
+      color: #fff;
+      font-size: 11.5px;
+      font-weight: 500;
+      white-space: nowrap;
+      padding: 6px 10px;
+      border-radius: 5px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.15s, bottom 0.15s;
+      letter-spacing: 0.02em;
+    }
+
+    .hotspot-tip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: var(--ink);
+    }
+
+    .hotspot:hover .hotspot-tip {
+      opacity: 1;
+      bottom: calc(100% + 14px);
+    }
+
+    /* ─────────────────────────────────────────
+       BOTTOM-LEFT IDENTITY BAR
+    ───────────────────────────────────────── */
+    .identity {
+      position: absolute;
+      bottom: 28px;
+      left: 24px;
+      z-index: 20;
+      max-width: 260px;
+    }
+
+    .identity-headline {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .identity-icon {
+      width: 36px; height: 36px;
+      background: rgba(220,218,213,0.8);
+      backdrop-filter: blur(6px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .identity-icon svg {
+      width: 18px; height: 18px;
+    }
+
+    .identity-title {
+      font-size: clamp(28px, 3.5vw, 42px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      line-height: 1;
+    }
+
+    .divider {
+      width: 1px;
+      height: 26px;
+      background: var(--border);
+      align-self: center;
+    }
+
+    .identity-meta {
+      margin-top: 0;
+    }
+
+    .identity-layer {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      margin-bottom: 4px;
+    }
+
+    .identity-desc {
+      font-size: 11.5px;
+      font-weight: 400;
+      color: var(--ink-light);
+      line-height: 1.55;
+    }
+
+    /* ─────────────────────────────────────────
+       PAGE INDICATOR dots (right edge)
+    ───────────────────────────────────────── */
+    .page-dots {
+      position: absolute;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--border);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .dot.active {
+      background: var(--ink-mid);
+      transform: scale(1.3);
+    }
+
+    /* ─────────────────────────────────────────
+       SECTION NAV (bottom-right corner tiny text)
+    ───────────────────────────────────────── */
+    .section-nav {
+      position: absolute;
+      bottom: 28px;
+      right: 22px;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-btn {
+      width: 28px; height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      background: rgba(220,218,213,0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .section-btn:hover { background: rgba(200,198,194,0.9); }
+
+    .section-btn svg {
+      width: 10px; height: 10px;
+      stroke: var(--ink-mid);
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      fill: none;
+    }
+
+    /* ─────────────────────────────────────────
+       DOT GRID CANVAS
+    ───────────────────────────────────────── */
+    #dot-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;            /* behind scene content, above card bg */
+      border-radius: 14px;
+      pointer-events: none;  /* mouse events pass through to card */
+      display: block;
+    }
+
+    /* ─────────────────────────────────────────
+       RESPONSIVE
+    ───────────────────────────────────────── */
+    @media (max-width: 640px) {
+      .card {
+        width: 100vw;
+        height: 100vh;
+        max-width: none;
+        max-height: none;
+        border-radius: 0;
+      }
+      body { overflow: auto; }
+      html, body { overflow: auto; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="card" id="card">
+
+  <!-- ── ANIMATED DOT GRID ── -->
+  <canvas id="dot-canvas" aria-hidden="true"></canvas>
+
+  <!-- ── DISTANCE FOG ── -->
+  <div class="distance-fog" aria-hidden="true"></div>
+
+  <!-- ── GRAIN OVERLAY & VIGNETTE via ::before & ::after ── -->
+
+  <!-- ───────── NAV ───────── -->
+  <nav class="nav">
+
+    <!-- Sunburst / personal mark -->
+    <svg class="logo" viewBox="0 0 42 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="21" cy="21" r="3.5" fill="#1A1916"/>
+      <!-- 16 rays -->
+      <line x1="21" y1="3"  x2="21" y2="10" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="21" y1="32" x2="21" y2="39" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="3"  y1="21" x2="10" y2="21" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="32" y1="21" x2="39" y2="21" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="7.5"  y1="7.5"  x2="12.4" y2="12.4" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="29.6" y1="29.6" x2="34.5" y2="34.5" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="34.5" y1="7.5"  x2="29.6" y2="12.4" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="12.4" y1="29.6" x2="7.5"  y2="34.5" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
+      <line x1="21" y1="3"  x2="21" y2="8"  stroke="#1A1916" stroke-width="1" stroke-linecap="round" transform="rotate(22.5 21 21)"/>
+      <line x1="21" y1="3"  x2="21" y2="8"  stroke="#1A1916" stroke-width="1" stroke-linecap="round" transform="rotate(67.5 21 21)"/>
+      <line x1="21" y1="3"  x2="21" y2="8"  stroke="#1A1916" stroke-width="1" stroke-linecap="round" transform="rotate(112.5 21 21)"/>
+      <line x1="21" y1="3"  x2="21" y2="8"  stroke="#1A1916" stroke-width="1" stroke-linecap="round" transform="rotate(157.5 21 21)"/>
+      <line x1="21" y1="3"  x2="21" y2="8"  stroke="#1A1916" stroke-width="1" stroke-linecap="round" transform="rotate(202.5 21 21)"/>
+      <line x1="21" y1="3"  x2="21" y2="8"  stroke="#1A1916" stroke-width="1" stroke-linecap="round" transform="rotate(247.5 21 21)"/>
+      <line x1="21" y1="3"  x2="21" y2="8"  stroke="#1A1916" stroke-width="1" stroke-linecap="round" transform="rotate(292.5 21 21)"/>
+      <line x1="21" y1="3"  x2="21" y2="8"  stroke="#1A1916" stroke-width="1" stroke-linecap="round" transform="rotate(337.5 21 21)"/>
+    </svg>
+
+    <div class="nav-right">
+      <div class="nav-brand">YG<sup>*</sup></div>
+      <button class="nav-menu-btn" id="menuBtn" aria-label="Open menu">
+        <div class="hamburger">
+          <span></span><span></span>
+        </div>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ───────── FULL-SCREEN NAV OVERLAY ───────── -->
+  <div class="nav-overlay" id="navOverlay">
+    <div class="nav-overlay-top">
+      <button class="nav-close-btn" id="closeBtn">&#x2715;</button>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#">Projects <span>Work</span></a></li>
+      <li><a href="#">About <span>Me</span></a></li>
+      <li><a href="#">Skills <span>Stack</span></a></li>
+      <li><a href="#">Contact <span>Reach out</span></a></li>
+    </ul>
+    <div class="nav-footer">
+      <a href="#">GitHub</a>
+      <a href="#">LinkedIn</a>
+      <a href="#">Resume</a>
+    </div>
+  </div>
+
+  <!-- ───────── 3D SCENE (WebGL canvas injected by JS) ───────── -->
+
+  <!-- ───────── IDENTITY (bottom-left) ───────── -->
+  <div class="identity">
+    <div class="identity-headline">
+      <div class="identity-icon">
+        <!-- asterisk / star mark -->
+        <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="9" y1="1" x2="9" y2="17" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
+          <line x1="1" y1="9" x2="17" y2="9" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
+          <line x1="2.93" y1="2.93" x2="15.07" y2="15.07" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
+          <line x1="15.07" y1="2.93" x2="2.93" y2="15.07" stroke="#1A1916" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="divider"></div>
+      <span class="identity-title">Projects</span>
+    </div>
+    <div class="identity-meta">
+      <div class="identity-layer">Build 1.0</div>
+      <p class="identity-desc">
+        Physical products designed, machined,<br>
+        and assembled from first principles —<br>
+        mechatronics, fabrication, and motion.
+      </p>
+    </div>
+  </div>
+
+  <!-- ───────── PAGE DOTS ───────── -->
+  <div class="page-dots">
+    <div class="dot active"></div>
+    <div class="dot"></div>
+    <div class="dot"></div>
+  </div>
+
+  <!-- ───────── SECTION PREV / NEXT ───────── -->
+  <div class="section-nav">
+    <button class="section-btn" aria-label="Previous section">
+      <svg viewBox="0 0 10 10"><polyline points="6 2 4 5 6 8"/></svg>
+    </button>
+    <button class="section-btn" aria-label="Next section">
+      <svg viewBox="0 0 10 10"><polyline points="4 2 6 5 4 8"/></svg>
+    </button>
+  </div>
+
+</div><!-- /.card -->
+
+<script>
+  // ── Menu toggle ──
+  const menuBtn    = document.getElementById('menuBtn');
+  const closeBtn   = document.getElementById('closeBtn');
+  const navOverlay = document.getElementById('navOverlay');
+
+  menuBtn.addEventListener('click', () => navOverlay.classList.add('open'));
+  closeBtn.addEventListener('click', () => navOverlay.classList.remove('open'));
+
+  // Close on Escape
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') navOverlay.classList.remove('open');
+  });
+
+  // ── Page dots ──
+  const dots = document.querySelectorAll('.dot');
+  dots.forEach((dot, i) => {
+    dot.addEventListener('click', () => {
+      dots.forEach(d => d.classList.remove('active'));
+      dot.classList.add('active');
+    });
+  });
+
+  // ── Section nav buttons (cycle dots) ──
+  const [prevBtn, nextBtn] = document.querySelectorAll('.section-btn');
+  function getActiveDot() { return [...dots].findIndex(d => d.classList.contains('active')); }
+
+  prevBtn.addEventListener('click', () => {
+    let i = getActiveDot();
+    dots.forEach(d => d.classList.remove('active'));
+    dots[Math.max(0, i - 1)].classList.add('active');
+  });
+
+  nextBtn.addEventListener('click', () => {
+    let i = getActiveDot();
+    dots.forEach(d => d.classList.remove('active'));
+    dots[Math.min(dots.length - 1, i + 1)].classList.add('active');
+  });
+
+  // ── Perspective Ground Plane Dot Grid ────────────────────────────────────
+  (function () {
+    const canvas  = document.getElementById('dot-canvas');
+    const ctx     = canvas.getContext('2d');
+
+    const GS      = 22;
+    const PERSP   = 0.011;
+    const DOT_R   = 1.5;
+    const DOT_RGB = '108,90,135';
+    const BG      = '#EEECEA';
+    const A_MIN   = 0.12;
+    const A_MAX   = 0.52;
+    const A_MOUSE = 0.80;
+    const MOUSE_R = 105;
+    const SPEED   = 1.1;
+    const FREQ_D  = 0.18;   // spatial frequency along depth — controls wave spacing
+
+
+    let mx    = -9999, my = -9999;
+    let tilt  = 1.0;       // vertical angle — camera elevation look direction
+    let hSkew = 0.0;       // horizontal yaw — camera look direction (position fixed)
+    let vShift = 0.0;      // vertical position — camera physically moves up/down
+    let dpr = 1, W, H, CX, CY;
+    let t   = 0, last = null, raf;
+    let pts = [];
+
+    function build () {
+      pts = [];
+      CX = W * 0.50;
+      CY = H * 0.55;
+      const reach = Math.ceil(Math.max(W, H) / GS) + 8;
+      for (let gx = -reach; gx <= reach; gx++) {
+        for (let gz = -reach; gz <= reach; gz++) {
+          const A = gx - gz;
+          const D = gx + gz;
+          const denom = 1 - PERSP * D;
+          if (denom < 0.12) continue;
+          const sx = CX + GS * A / denom;
+          const sy = CY + GS * 0.5 * D / denom;
+          if (sx < -MOUSE_R - 5 || sx > W + MOUSE_R + 5) continue;
+          if (sy < -MOUSE_R - 5 || sy > H + MOUSE_R + 5) continue;
+          pts.push({ A, D, pScale: 1 / denom });
+        }
+      }
+    }
+
+    function resize () {
+      const r = document.getElementById('card').getBoundingClientRect();
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = r.width; H = r.height;
+      canvas.width  = Math.round(W * dpr);
+      canvas.height = Math.round(H * dpr);
+      canvas.style.width  = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      build();
+    }
+
+    function draw (ts) {
+      if (last !== null) t += (ts - last) / 1000 * SPEED;
+      last = ts;
+
+      // Horizontal — yaw only, camera position stays fixed (no CX shift).
+      const normX = mx > -999 ? (mx / W - 0.5) : -0.5;
+      hSkew += (normX * 0.18 - hSkew) * 0.05;
+
+      // Vertical — TWO simultaneous effects:
+      //   1. vShift: camera physically moves up/down (shifts the horizon line)
+      //   2. tilt:   camera angle adjusts to compensate (look direction)
+      // Cursor UP   → camera rises (vShift < 0, CY up) + looks down (tilt < 1)
+      // Cursor DOWN → camera lowers (vShift > 0, CY down) + looks less steep (tilt > 1)
+      const normY = mx > -999 ? (my / H - 0.5) : 0;
+      vShift += (normY *  32 - vShift) * 0.05;   // ±16px at cursor edges
+      tilt   += ((1.0 + normY * 0.22) - tilt)   * 0.05;
+
+      const drawCY = CY + vShift;   // effective horizon line
+
+      ctx.fillStyle = BG;
+      ctx.fillRect(0, 0, W, H);
+
+      for (let i = 0, n = pts.length; i < n; i++) {
+        const { A, D, pScale } = pts[i];
+        const denom = 1 - PERSP * D;
+        const sx = CX + GS * (A + hSkew * D) / denom;
+        const sy = drawCY + GS * 0.5 * tilt * D / denom;
+
+        // gx = (A + D) / 2 — lines of constant gx run upper-right→lower-left in screen space.
+        // Driving by gx makes the wave travel perpendicular: upper-left → lower-right.
+        const wave = Math.sin((A + D) * FREQ_D * 0.5 - t) * 0.5 + 0.5;
+
+        const sc     = Math.min(Math.max(pScale, 0.35), 1.55);
+        let radius   = Math.min(DOT_R * sc, 2.2);
+        let alpha    = Math.min((A_MIN + wave * (A_MAX - A_MIN)) * sc, A_MAX * 1.25);
+
+        const dx = sx - mx, dy = sy - my;
+        const d2 = dx * dx + dy * dy;
+        if (d2 < MOUSE_R * MOUSE_R) {
+          const d  = Math.sqrt(d2);
+          const f  = 1 - d / MOUSE_R;
+          const sm = f * f * (3 - 2 * f);
+          alpha  += sm * (A_MOUSE - alpha) * Math.min(sc, 1.0);
+          if (d < MOUSE_R * 0.42) {
+            const g = 1 - d / (MOUSE_R * 0.42);
+            radius = Math.min(radius + g * g * 0.55, 2.8);
+          }
+        }
+
+        ctx.beginPath();
+        ctx.arc(sx, sy, Math.max(radius, 0.2), 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(${DOT_RGB},${alpha.toFixed(3)})`;
+        ctx.fill();
+      }
+
+      raf = requestAnimationFrame(draw);
+
+      // Expose live camera state for the Three.js scene to consume each frame.
+      window._dotCam.hSkew  = hSkew;
+      window._dotCam.tilt   = tilt;
+      window._dotCam.vShift = vShift;
+      window._dotCam.mx     = mx;
+      window._dotCam.my     = my;
+    }
+
+    window._dotCam = { hSkew: -0.09, tilt: 1, vShift: 0 };
+
+    const card = document.getElementById('card');
+    card.addEventListener('mousemove', e => {
+      const r = card.getBoundingClientRect();
+      mx = e.clientX - r.left;
+      my = e.clientY - r.top;
+    });
+    card.addEventListener('mouseleave', () => { mx = -9999; my = -9999; });
+    new ResizeObserver(resize).observe(card);
+    resize();
+    raf = requestAnimationFrame(draw);
+  })();
+  // ── End Dot Grid ─────────────────────────────────────────────────────────
+
+</script>
+
+<!-- ── Three.js WebGL scene ── -->
+<script type="importmap">
+{
+  "imports": {
+    "three":          "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+    "three/addons/":  "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+  }
+}
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+console.log('[3D] Three.js r' + THREE.REVISION + ' loaded');
+
+const card = document.getElementById('card');
+
+// ── Renderer ──
+const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+const cv = renderer.domElement;
+cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;border-radius:14px;display:block;';
+card.appendChild(cv);
+
+// ── Scene ──
+const threeScene = new THREE.Scene();
+
+// ── Camera — OrthographicCamera to match the dot grid's near-flat projection.
+//
+//   The dot grid projects: sx ∝ A = gx-gz  (horizontal, weight 1)
+//                          sy ∝ 0.5 * D    (vertical, weight 0.5, tilt=1)
+//
+//   For an orthographic camera at azimuth 45°, elevation φ:
+//     screen_x per unit A ∝ 1/√2
+//     screen_y per unit D ∝ sin(φ)/√2
+//   Ratio must equal 0.5  →  sin(φ) = 0.5  →  φ = 30° (π/6 rad).
+//
+//   ORTHO_SIZE controls how many world units fill the half-height of the card.
+//   Increase to shrink the model, decrease to grow it.
+const ORTHO_SIZE = 4.5;
+let aspect = 1;
+const camera = new THREE.OrthographicCamera(
+  -ORTHO_SIZE * aspect, ORTHO_SIZE * aspect,
+   ORTHO_SIZE,         -ORTHO_SIZE,
+  0.1, 100
+);
+
+// ── Lighting ──
+threeScene.add(new THREE.AmbientLight(0xEEECEA, 1.6));
+
+const sun = new THREE.DirectionalLight(0xffffff, 0.65);
+sun.position.set(-4, 10, 5);
+sun.castShadow = true;
+sun.shadow.mapSize.set(1024, 1024);
+sun.shadow.camera.left = sun.shadow.camera.bottom = -6;
+sun.shadow.camera.right = sun.shadow.camera.top = 6;
+sun.shadow.camera.near = 1;
+sun.shadow.camera.far  = 30;
+threeScene.add(sun);
+
+const fill = new THREE.DirectionalLight(0xD8D6D0, 0.22);
+fill.position.set(5, 3, -2);
+threeScene.add(fill);
+
+// ── Shadow ground ──
+const ground = new THREE.Mesh(
+  new THREE.PlaneGeometry(30, 30),
+  new THREE.ShadowMaterial({ opacity: 0.18 })
+);
+ground.rotation.x = -Math.PI / 2;
+ground.receiveShadow = true;
+threeScene.add(ground);
+
+// ── Raycaster for hover glow ──
+const raycaster  = new THREE.Raycaster();
+const mousePt    = new THREE.Vector2();
+let   modelMeshes = [];
+let   isHovered  = false;
+
+cv.style.transition = 'filter 0.25s ease';
+
+// ── Load GLB ──
+console.log('[3D] Starting GLB load...');
+new GLTFLoader().load('renders/Meshy_AI_Open_Wheel_Prototype__0515194205_generate.glb', gltf => {
+  console.log('[3D] GLB loaded:', gltf);
+  const model = gltf.scene;
+
+  model.traverse(child => {
+    if (!child.isMesh) return;
+    child.castShadow    = true;
+    child.receiveShadow = true;
+  });
+
+  // Face toward the viewer (camera looks from southeast)
+  model.rotation.y = Math.PI;
+
+  // Normalise: longest axis = 3 world units
+  const box = new THREE.Box3().setFromObject(model);
+  const sz  = box.getSize(new THREE.Vector3());
+  model.scale.setScalar(3.0 / Math.max(sz.x, sz.y, sz.z));
+
+  // Sit on ground
+  const box2 = new THREE.Box3().setFromObject(model);
+  const ctr  = box2.getCenter(new THREE.Vector3());
+  model.position.set(-ctr.x, -box2.min.y, -ctr.z);
+
+  // Collect meshes for raycasting
+  model.traverse(child => { if (child.isMesh) modelMeshes.push(child); });
+
+  threeScene.add(model);
+  console.log('[3D] Model added to scene');
+}, undefined, err => console.error('[3D] GLB load error:', err));
+
+// ── Resize ──
+function onResize() {
+  const { width, height } = card.getBoundingClientRect();
+  renderer.setSize(width, height);
+  aspect = width / height;
+  camera.left   = -ORTHO_SIZE * aspect;
+  camera.right  =  ORTHO_SIZE * aspect;
+  camera.top    =  ORTHO_SIZE;
+  camera.bottom = -ORTHO_SIZE;
+  camera.updateProjectionMatrix();
+}
+new ResizeObserver(onResize).observe(card);
+onResize();
+
+// ── Camera update — driven by dot-grid state each frame ──
+//   BASE_AZ 45°  : camera northeast → screen maps (gx-gz) horizontal, (gx+gz) vertical ✓
+//   BASE_EL 30°  : matches sin(30°)=0.5 vertical compression of dot grid ✓
+//   hSkew ±0.09 → ±azimuth: when mouse goes right, scene appears to yaw right
+//   tilt  0.78–1.22 → ±elevation: mouse down = camera drops = tilt > 1
+const BASE_AZ  = Math.PI / 4;        // 45°
+const BASE_EL  = Math.PI / 6;        // 30° — exact geometric match to dot grid
+const CAM_DIST = 18;
+
+function loop() {
+  requestAnimationFrame(loop);
+  const c = window._dotCam || { hSkew: -0.09, tilt: 1, vShift: 0 };
+
+  const az = BASE_AZ - c.hSkew * 0.30;
+  const el = BASE_EL - (1.0 - c.tilt) * 0.11;
+
+  camera.position.set(
+    Math.cos(el) * Math.sin(az) * CAM_DIST,
+    Math.sin(el) * CAM_DIST,
+    Math.cos(el) * Math.cos(az) * CAM_DIST
+  );
+  camera.lookAt(0, c.vShift * 0.01, 0);
+
+  // Hover detection via raycaster
+  if (modelMeshes.length && c.mx > -999) {
+    const { width, height } = card.getBoundingClientRect();
+    mousePt.set((c.mx / width) * 2 - 1, -(c.my / height) * 2 + 1);
+    raycaster.setFromCamera(mousePt, camera);
+    const hit = raycaster.intersectObjects(modelMeshes, false).length > 0;
+    if (hit !== isHovered) {
+      isHovered = hit;
+      cv.style.filter = isHovered
+        ? 'drop-shadow(0 0 7px rgba(100,98,95,0.95))'
+        : 'none';
+    }
+  } else if (isHovered) {
+    isHovered = false;
+    cv.style.filter = 'none';
+  }
+
+  renderer.render(threeScene, camera);
+}
+loop();
+</script>
+</body>
+</html>
