@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Yuval Golan — Portfolio</title>
+  <title>Yuval Munz — Portfolio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
@@ -801,6 +801,20 @@
       max-width: 380px;
     }
 
+    .scene-hint {
+      position: absolute;
+      top: 64px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font);
+      font-size: 11px;
+      color: var(--ink-light);
+      letter-spacing: 0.03em;
+      pointer-events: none;
+      z-index: 20;
+      white-space: nowrap;
+    }
+
     /* placeholder hint styling — remove the class once real content is in */
     .placeholder-text {
       color: var(--ink-light);
@@ -1082,20 +1096,18 @@
     /* ── Sprocket detail panel ── */
     .sprocket-panel {
       position: absolute;
-      right: 36px;
+      right: 60px;
       top: 50%;
       transform: translateY(-50%) translateX(24px);
-      width: 260px;
-      background: rgba(238,236,234,0.90);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      width: 620px;
+      background: rgba(238,236,234,0.97);
       border: 1px solid rgba(26,25,22,0.10);
       border-radius: 14px;
-      padding: 22px 20px 18px;
+      padding: 26px 24px 22px;
       z-index: 15;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.35s ease 0.25s, transform 0.35s cubic-bezier(0.22,1,0.36,1) 0.25s;
+      will-change: transform, opacity;
     }
     .sprocket-panel.open {
       opacity: 1;
@@ -1137,7 +1149,7 @@
     }
     .sp-img-slot {
       width: 100%;
-      height: 72px;
+      height: 90px;
       background: rgba(26,25,22,0.06);
       border-radius: 8px;
       border: 1px solid rgba(26,25,22,0.08);
@@ -1170,6 +1182,8 @@
       </button>
     </div>
   </nav>
+
+  <div class="scene-hint">Click on a project to view more</div>
 
   <!-- ───────── FULL-SCREEN NAV OVERLAY ───────── -->
   <div class="nav-overlay" id="navOverlay">
@@ -1673,6 +1687,36 @@
 
     window._dotCam = { hSkew: -0.09, tilt: 1, vShift: 0 };
 
+    // ── Ground-anchor helpers for the 3D scene ──
+    // projectGround: screen px of lattice point (A, D) using the SAME formula
+    // and live state as the dots — including the zoom blend — so a 3D object
+    // pinned to this point moves in exact lockstep with the ground.
+    // `st` optionally overrides {hSkew, tilt, vShift} (e.g. to isolate the
+    // horizontal response from the vertical one).
+    window._dotCam.projectGround = (A, D, st) => {
+      const h = st && st.hSkew  !== undefined ? st.hSkew  : hSkew;
+      const t = st && st.tilt   !== undefined ? st.tilt   : tilt;
+      const v = st && st.vShift !== undefined ? st.vShift : vShift;
+      const denom  = 1 - PERSP * D;
+      const sx_i   = CX + GS * (A + h * D) / denom;
+      const sy_i   = (CY + v) + GS * 0.5 * t * D / denom;
+      const ze     = window._dotCam.zoomEase || 0;
+      if (!ze) return { x: sx_i, y: sy_i };
+      const gz = (D - A) * 0.5, gx = (D + A) * 0.5;
+      const denom_s = 1 - (35.1 / H) * gz;      // SV_PERSP — keep in sync with draw()
+      const sx_s = CX + 70.3 * gx / denom_s;    // SV_GS
+      const sy_s = H * 0.6255 + 70.3 * 0.10 * gz / denom_s;  // SV_CY, SV_TILT
+      return { x: sx_i + (sx_s - sx_i) * ze, y: sy_i + (sy_s - sy_i) * ze };
+    };
+    // invertGroundRest: screen px → lattice (A, D) at the exact rest pose
+    // (hSkew −0.09, tilt 1, vShift 0). Used once to calibrate an anchor.
+    window._dotCam.invertGroundRest = (x, y) => {
+      const u = (y - CY) / (GS * 0.5);   // u = D / denom
+      const D = u / (1 + PERSP * u);
+      const A = (x - CX) * (1 - PERSP * D) / GS - (-0.09) * D;
+      return { A, D };
+    };
+
     const card = document.getElementById('card');
     card.addEventListener('mousemove', e => {
       const r = card.getBoundingClientRect();
@@ -1761,8 +1805,19 @@ const raycaster   = new THREE.Raycaster();
 const mousePt     = new THREE.Vector2();
 let   modelMeshes    = [];
 let   sprocketMeshes = [];
+let   rivianMeshes      = [];
+let   rivianGroup       = null;   // pivot group at the ground point under the SUV's centre
+let   rivianWheelProbes = null;   // per-wheel lattice anchors: fit targets + drift probe
+let   rivianRestCam     = null;   // frozen rest-pose camera — yaw is solved through it
+const rivianGroundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+let   scooterMeshes  = [];
+let   scooterGroup   = null;
+let   scooterBaseX   = 0;
+let   scooterBaseZ   = 0;
 let   isHovered       = false;
 let   sprocketHovered = false;
+let   rivianHovered   = false;
+let   scooterHovered  = false;
 let   carOpacity      = 1.0;
 let   sprocketOpen      = false;
 let   sprocketOpenT     = 0.0;
@@ -1833,6 +1888,111 @@ new GLTFLoader().load('renders/Sprocket.glb', gltf => {
   sprocketGroup = sprocket;
 }, undefined, err => console.error('[3D] Sprocket load error:', err));
 
+// ── Load Rivian ──
+new GLTFLoader().load('renders/rivian-r1s.glb', gltf => {
+  const rivian = gltf.scene;
+
+  rivian.traverse(child => {
+    if (!child.isMesh) return;
+    child.material = child.material.clone();
+    child.material.transparent = true;
+    child.castShadow    = true;
+    child.receiveShadow = true;
+    rivianMeshes.push(child);
+  });
+
+  // Normalize: longest axis = 3 world units
+  const box = new THREE.Box3().setFromObject(rivian);
+  const sz  = box.getSize(new THREE.Vector3());
+  rivian.scale.setScalar(4.5 / Math.max(sz.x, sz.y, sz.z));
+
+  // Trunk toward camera: flip 180° from initial attempt
+  rivian.rotation.y = Math.PI * 1.5;
+
+  // Pivot group at the ground point under the SUV's visual centre; the model
+  // is recentred inside it, so rotating the pivot turns the SUV about its own
+  // centre line instead of the GLB's arbitrary origin.
+  const box2  = new THREE.Box3().setFromObject(rivian);
+  const ctr   = box2.getCenter(new THREE.Vector3());
+  const pivot = new THREE.Group();
+  pivot.position.set(1.2, 0, -4.4);
+  rivian.position.set(-ctr.x, -box2.min.y, -ctr.z);
+  pivot.add(rivian);
+
+  // Calibrate a ground anchor under each wheel at the exact rest pose
+  // (hSkew −0.09 → az +0.027, tilt 1, vShift 0): the wheel's world ground
+  // point is projected through the rest camera to px, then inverted through
+  // the dot-grid projection (also at rest) to lattice coords. The camera
+  // faces the +z side of the car, so those two wheels — the only visible
+  // contact points — get a heavier weight in the per-frame fit.
+  {
+    const restAz = BASE_AZ + 0.09 * 0.30;
+    const rc = camera.clone();
+    rc.position.set(
+      Math.cos(BASE_EL) * Math.sin(restAz) * BASE_DIST,
+      Math.sin(BASE_EL) * BASE_DIST,
+      Math.cos(BASE_EL) * Math.cos(restAz) * BASE_DIST
+    );
+    rc.lookAt(0, 0, 0);
+    rc.updateMatrixWorld(true);
+    const rect = card.getBoundingClientRect();
+    const toAnchor = (wx, wz) => {
+      const v = new THREE.Vector3(wx, 0, wz).project(rc);
+      return window._dotCam.invertGroundRest(
+        (v.x + 1) / 2 * rect.width,
+        (1 - v.y) / 2 * rect.height
+      );
+    };
+    const hx = (box2.max.x - ctr.x) * 0.7;   // wheels inset from bbox extents
+    const hz = (box2.max.z - ctr.z) * 0.6;
+    rivianWheelProbes = [
+      { ox: -hx, oz:  hz, wt: 1 },   // visible pair (+z, faces camera): 2 points fully
+      { ox:  hx, oz:  hz, wt: 1 },   //   determine the similarity -> glued EXACTLY
+      { ox: -hx, oz: -hz, wt: 0 },   // hidden pair: excluded from the fit (occluded),
+      { ox:  hx, oz: -hz, wt: 0 }    //   they absorb the field's non-rigidity
+    ].map(({ ox, oz, wt }) => ({
+      anchor: toAnchor(1.2 + ox, -4.4 + oz),
+      local:  new THREE.Vector3(ox, 0, oz),
+      wt
+    }));
+    rivianRestCam = rc;
+  }
+
+  rivianGroup = pivot;
+  threeScene.add(pivot);
+}, undefined, err => console.error('[3D] Rivian load error:', err));
+
+// ── Load Scooter ──
+new GLTFLoader().load('renders/scooter.glb', gltf => {
+  const scooter = gltf.scene;
+
+  scooter.traverse(child => {
+    if (!child.isMesh) return;
+    child.material = child.material.clone();
+    child.material.transparent = true;
+    child.castShadow    = true;
+    child.receiveShadow = true;
+    scooterMeshes.push(child);
+  });
+
+  // Normalize: longest axis = 2 world units
+  const box = new THREE.Box3().setFromObject(scooter);
+  const sz  = box.getSize(new THREE.Vector3());
+  scooter.scale.setScalar(2.0 / Math.max(sz.x, sz.y, sz.z));
+
+  scooter.rotation.y = Math.PI / 3;
+
+  // Sit on ground, place to the left of center
+  const box2 = new THREE.Box3().setFromObject(scooter);
+  const ctr  = box2.getCenter(new THREE.Vector3());
+  scooter.position.set(-2.25 - ctr.x, -box2.min.y, 3.0 - ctr.z);
+  scooterBaseX = scooter.position.x;
+  scooterBaseZ = scooter.position.z;
+
+  scooterGroup = scooter;
+  threeScene.add(scooter);
+}, undefined, err => console.error('[3D] Scooter load error:', err));
+
 // ── Post-processing composer ──
 const composer   = new EffectComposer(renderer);
 const renderPass = new RenderPass(threeScene, camera);
@@ -1896,6 +2056,7 @@ const ZOOM_DIST = 8.0;   // close distance — perspective kicks in here
 let zoomT   = 0;     // 0 = isometric, 1 = zoomed side view
 let zoomDir = 0;     // +1 = zooming in, -1 = zooming out
 let prevTime = performance.now();
+const sprocketPanel = document.getElementById('sprocketPanel');
 
 // Click: zoom in on model, open sprocket, or zoom out
 card.addEventListener('click', e => {
@@ -1904,12 +2065,9 @@ card.addEventListener('click', e => {
   mousePt.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
   raycaster.setFromCamera(mousePt, camera);
 
-  const sprocketPanel = document.getElementById('sprocketPanel');
-
   // While sprocket view is open, any click closes it
   if (sprocketOpen) {
     sprocketOpen = false;
-    sprocketPanel.classList.remove('open');
     return;
   }
 
@@ -1918,7 +2076,6 @@ card.addEventListener('click', e => {
     const sprocketHit = raycaster.intersectObjects(sprocketMeshes, true).length > 0;
     if (sprocketHit) {
       sprocketOpen = true;
-      sprocketPanel.classList.add('open');
       return;
     }
   }
@@ -1954,8 +2111,13 @@ function loop() {
   const dist = BASE_DIST + (ZOOM_DIST - BASE_DIST) * ease;
 
   // Sprocket open: lerp toward 1, close: lerp toward 0
-  sprocketOpenT += ((sprocketOpen ? 1 : 0) - sprocketOpenT) * (1 - Math.exp(-6 * dt));
+  sprocketOpenT += ((sprocketOpen ? 1 : 0) - sprocketOpenT) * (1 - Math.exp(-5 * dt));
   const openEase = sprocketOpenT * sprocketOpenT * (3 - 2 * sprocketOpenT);
+
+  // Drive panel entirely from JS so it stays in sync with the WebGL frame
+  sprocketPanel.style.opacity = openEase;
+  sprocketPanel.style.transform = `translateY(-50%) translateX(${(1 - openEase) * 24}px)`;
+  sprocketPanel.style.pointerEvents = sprocketOpen || openEase > 0.5 ? 'auto' : 'none';
 
   if (window._dotCam) {
     window._dotCam.zoomEase  = ease;
@@ -1971,6 +2133,92 @@ function loop() {
   );
   camera.lookAt(0, lookY, 0);
 
+  // Scooter: rotate in sync with camera azimuth so it shows different faces
+  // as cursor moves (like the car does), and cancel the lateral translation
+  // caused by the camera rotating around origin instead of the scooter.
+  if (scooterGroup) {
+    const Cx = scooterBaseX * Math.cos(BASE_AZ) - scooterBaseZ * Math.sin(BASE_AZ);
+    const D  = scooterBaseX * Math.sin(BASE_AZ) + scooterBaseZ * Math.cos(BASE_AZ);
+    scooterGroup.position.x =  Cx * Math.cos(az) + D * Math.sin(az);
+    scooterGroup.position.z = -Cx * Math.sin(az) + D * Math.cos(az);
+    scooterGroup.rotation.y = Math.PI / 3 + (az - BASE_AZ);
+  }
+
+  // Rivian: glued to the dot lattice at its four wheel contact points. Each
+  // frame the dot grid says where each wheel's anchor dot is; those points
+  // are raycast back to world and a weighted least-squares similarity fit
+  // (translation + yaw + uniform scale) places the SUV over them. The dot
+  // field shears non-rigidly, so a perfect 4-wheel match is impossible — the
+  // camera-facing wheels carry 3× weight since they are the visible contact
+  // points. No tuning constants: everything derives from the ground itself.
+  // Gated during zoom — the near-horizontal zoom camera makes the plane
+  // intersection unstable, and the SUV is faded out past ease 0.4 anyway.
+  if (rivianGroup && rivianWheelProbes && ease < 0.4) {
+    const rect = card.getBoundingClientRect();
+    camera.updateMatrixWorld();
+    let SW = 0, tcx = 0, tcz = 0, lcx = 0, lcz = 0;
+    const fit = [];
+    for (const w of rivianWheelProbes) {
+      const p = window._dotCam.projectGround(w.anchor.A, w.anchor.D);
+      mousePt.set((p.x / rect.width) * 2 - 1, -(p.y / rect.height) * 2 + 1);
+      raycaster.setFromCamera(mousePt, camera);
+      const t = new THREE.Vector3();
+      if (!raycaster.ray.intersectPlane(rivianGroundPlane, t)) { fit.length = 0; break; }
+      fit.push({ t, l: w.local, wt: w.wt });
+      SW += w.wt;
+      tcx += w.wt * t.x;       tcz += w.wt * t.z;
+      lcx += w.wt * w.local.x; lcz += w.wt * w.local.z;
+    }
+    if (fit.length === rivianWheelProbes.length) {
+      tcx /= SW; tcz /= SW; lcx /= SW; lcz /= SW;
+      // Weighted Procrustes in the XZ plane, points as complex x + iz.
+      // Yaw about +Y acts as multiplication by e^(-i*theta); the optimal
+      // similarity q = s*e^(-i*theta) is sum(wt*T*conj(L)) / sum(wt*|L|^2).
+      let qr = 0, qi = 0, LL = 0;
+      for (const { t, l, wt } of fit) {
+        const Tx = t.x - tcx, Tz = t.z - tcz;
+        const Lx = l.x - lcx, Lz = l.z - lcz;
+        qr += wt * (Tx * Lx + Tz * Lz);
+        qi += wt * (Tz * Lx - Tx * Lz);
+        LL += wt * (Lx * Lx + Lz * Lz);
+      }
+      // Damp the fitted scale toward 1: full scale glues the wheels exactly
+      // but breathes ±14% at cursor extremes, which reads as the SUV growing.
+      // Damping trades a few px of wheel drift at the extremes for size
+      // stability (0 = rigid size, 1 = exact glue).
+      const RIVIAN_SCALE_DAMP = 0.2;
+      const s = 1 + (Math.hypot(qr, qi) / LL - 1) * RIVIAN_SCALE_DAMP;
+
+      // Yaw is solved separately with the VERTICAL state pinned to rest
+      // (tilt 1, vShift 0) and through the frozen rest camera, so the SUV
+      // turns with the ground on horizontal cursor movement but does NOT
+      // rotate when the cursor moves up/down (user request — the full fit's
+      // yaw picks up the field's vertical squash otherwise).
+      const yawState = { hSkew: c.hSkew, tilt: 1, vShift: 0 };
+      const yawPoint = w => {
+        const p = window._dotCam.projectGround(w.anchor.A, w.anchor.D, yawState);
+        mousePt.set((p.x / rect.width) * 2 - 1, -(p.y / rect.height) * 2 + 1);
+        raycaster.setFromCamera(mousePt, rivianRestCam);
+        const t = new THREE.Vector3();
+        return raycaster.ray.intersectPlane(rivianGroundPlane, t) ? t : null;
+      };
+      const RIVIAN_YAW_DAMP = 0.18;  // scales the ground-derived yaw (1 = full)
+      const y1 = yawPoint(rivianWheelProbes[0]);   // visible pair: local -hx -> +hx,
+      const y2 = yawPoint(rivianWheelProbes[1]);   // rest heading is +X (pi/2)
+      const yaw = ((y1 && y2)
+        ? Math.atan2(y2.x - y1.x, y2.z - y1.z) - Math.PI / 2
+        : -Math.atan2(qi, qr)) * RIVIAN_YAW_DAMP;
+      // position = target centroid − (similarity applied to local centroid)
+      const cy = Math.cos(yaw), sy = Math.sin(yaw);
+      rivianGroup.position.set(
+        tcx - s * (lcx * cy + lcz * sy), 0,
+        tcz - s * (lcz * cy - lcx * sy)
+      );
+      rivianGroup.rotation.y = yaw;
+      rivianGroup.scale.setScalar(s);
+    }
+  }
+
   // Sprocket scales up, moves left and up as it opens
   if (sprocketGroup) {
     sprocketGroup.scale.setScalar(sprocketBaseScale * (1 + openEase * 2.2));
@@ -1978,19 +2226,18 @@ function loop() {
     sprocketGroup.position.y = 0.36 + openEase * 0.45;
   }
 
-  // During zoom transition only: skip outline composer for full 60fps
-  if (ease > 0.05 && ease < 0.99) {
-    if (isHovered) {
-      isHovered = false;
-      outlinePass.selectedObjects = [];
-      outlineGrey.selectedObjects = [];
-    }
-    renderer.render(threeScene, camera);
-    return;
+  const transitioning = (ease > 0.001 && ease < 0.999) || (openEase > 0.001 && openEase < 0.999);
+
+  // Skip raycasting during transitions — it's expensive and not needed while moving
+  if (transitioning) {
+    if (isHovered)       { isHovered = false; outlinePass.selectedObjects = []; outlineGrey.selectedObjects = []; }
+    if (sprocketHovered) { sprocketHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
+    if (rivianHovered)   { rivianHovered = false; card.style.cursor = ''; }
+    if (scooterHovered)  { scooterHovered = false; card.style.cursor = ''; }
   }
 
   // Hover detection (only at rest — raycaster is expensive on complex mesh)
-  if (c.mx > -999) {
+  if (!transitioning && c.mx > -999) {
     const rect = card.getBoundingClientRect();
     mousePt.set((c.mx / rect.width) * 2 - 1, -(c.my / rect.height) * 2 + 1);
     raycaster.setFromCamera(mousePt, camera);
@@ -2014,24 +2261,79 @@ function loop() {
       outlinePass.selectedObjects = isHovered ? modelMeshes : [];
       outlineGrey.selectedObjects = isHovered ? modelMeshes : [];
     }
+
+    // Rivian hover
+    const rivianHit = (!sprocketHit && !carHit && rivianMeshes.length)
+      ? raycaster.intersectObjects(rivianMeshes, false).length > 0
+      : false;
+    if (rivianHit !== rivianHovered) {
+      rivianHovered = rivianHit;
+      card.style.cursor = rivianHovered ? 'pointer' : '';
+    }
+
+    // Scooter hover
+    const scooterHit = (!sprocketHit && !carHit && !rivianHit && scooterMeshes.length)
+      ? raycaster.intersectObjects(scooterMeshes, false).length > 0
+      : false;
+    if (scooterHit !== scooterHovered) {
+      scooterHovered = scooterHit;
+      card.style.cursor = scooterHovered ? 'pointer' : '';
+    }
   } else {
     if (isHovered)      { isHovered = false; outlinePass.selectedObjects = []; outlineGrey.selectedObjects = []; }
     if (sprocketHovered) { sprocketHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
+    if (rivianHovered)   { rivianHovered = false; card.style.cursor = ''; }
+    if (scooterHovered)  { scooterHovered = false; card.style.cursor = ''; }
   }
 
-  // Hide car instantly when sprocket opens; restore + fade on close
-  const carOpacityTarget = sprocketHovered ? 0.30 : 1.0;
+  // Car fades out as sprocket opens, fades back in on close
+  const carOpacityTarget = (sprocketHovered ? 0.30 : 1.0) * (1 - openEase);
   carOpacity += (carOpacityTarget - carOpacity) * (1 - Math.exp(-7 * dt));
   if (modelMeshes.length) {
     for (const m of modelMeshes) {
-      m.visible = !sprocketOpen;
-      if (!sprocketOpen) m.material.opacity = carOpacity;
+      m.visible = carOpacity > 0.01;
+      if (m.visible) m.material.opacity = carOpacity;
     }
+  }
+
+  // Side objects fade out during zoom — the zoomed side view features the car only
+  const sideOpacity = Math.max(0, 1 - ease * 2.5);
+  for (const m of rivianMeshes) {
+    m.visible = sideOpacity > 0.01;
+    if (m.visible) m.material.opacity = sideOpacity;
+  }
+  for (const m of scooterMeshes) {
+    m.visible = sideOpacity > 0.01;
+    if (m.visible) m.material.opacity = sideOpacity;
   }
 
   composer.render();
 }
 loop();
+
+// Regression probe: per wheel, compare the dot grid's screen position of the
+// lattice point calibrated under that wheel against the wheel's actual
+// projected position. Drift ~0 on every wheel = the SUV is glued to the dots.
+window._rivianCheck = () => {
+  if (!rivianGroup || !rivianWheelProbes) return null;
+  const rect = card.getBoundingClientRect();
+  const up   = new THREE.Vector3(0, 1, 0);
+  camera.updateMatrixWorld();
+  window._rivianCheck.scale  = rivianGroup.scale.x;                  // side-channels
+  window._rivianCheck.yawDeg = rivianGroup.rotation.y * 180 / Math.PI;  //   for tests
+  return rivianWheelProbes.map(w => {
+    const dot = window._dotCam.projectGround(w.anchor.A, w.anchor.D);
+    const wp  = w.local.clone()
+      .multiplyScalar(rivianGroup.scale.x)
+      .applyAxisAngle(up, rivianGroup.rotation.y)
+      .add(rivianGroup.position)
+      .project(camera);
+    return {
+      dot,
+      wheel: { x: (wp.x + 1) / 2 * rect.width, y: (1 - wp.y) / 2 * rect.height }
+    };
+  });
+};
 </script>
 </body>
 </html>
