@@ -300,8 +300,11 @@ origin side-view, dot-grid reprojection) then runs for any of them.
   scooter `{scale: 1.10, yaw: PI}` (scale multiplies its base normalisation;
   watch the y-position compensation `scooterBaseY * k` that keeps wheels on
   the ground when scaling about the group origin).
-- **Fades:** non-featured models fade with `1 - ease*2.5`; the sprocket gear
-  fades with the car (its materials needed `transparent = true`).
+- **Fades:** non-featured side models fade with `1 - ease*2.5`. The car fades
+  FASTER (`1 - ease*4`, applied directly — NOT through its smoothed hover-dim
+  opacity, whose lag made the car linger while the camera dollied toward its
+  own side view, reading as the car transitioning behind the fade). The
+  sprocket gear fades on the car's curve (materials need `transparent = true`).
 - **Gates:** sprocket click/hover only when `featured === 'car'`; rivian /
   scooter hover-cursor only at rest (`ease < 0.05`); car hover outline only
   when `carOpacity > 0.05` (raycaster hits invisible meshes otherwise).
