@@ -1955,8 +1955,9 @@ const FEATURE_POSE = {
   // yaw orients the featured view: rivian rear-on (looking into the open
   // trunk — its rear faces +z at pivot yaw 0), scooter side profile
   // nose-right like the race car's zoom view.
-  rivian:  { scale: 0.90, yaw: 0 },            // pivot-relative extra scale
-  scooter: { scale: 1.10, yaw: Math.PI }       // scale is × its base normalisation
+  // z pushes the model toward the zoom camera — it sits lower in the frame
+  rivian:  { scale: 0.80, yaw: 0, z: 1.2 },    // pivot-relative extra scale
+  scooter: { scale: 1.10, yaw: Math.PI, z: 0 } // scale is × its base normalisation
 };
 let   isHovered       = false;
 let   sprocketHovered = false;
@@ -2405,7 +2406,7 @@ function loop() {
   if (rivianGroup && rivianGlue) {
     const t  = featured === 'rivian' ? ease : 0;
     const fp = FEATURE_POSE.rivian;
-    rivianGroup.position.set(rivianGlue.x * (1 - t), 0, rivianGlue.z * (1 - t));
+    rivianGroup.position.set(rivianGlue.x * (1 - t), 0, rivianGlue.z * (1 - t) + fp.z * t);
     rivianGroup.rotation.y = rivianGlue.yaw + (fp.yaw - rivianGlue.yaw) * t;
     rivianGroup.scale.setScalar(rivianGlue.s + (fp.scale - rivianGlue.s) * t);
   }
