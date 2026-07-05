@@ -6,7 +6,7 @@
   <title>Yuval Munz — Portfolio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
   <style>
     /* ─────────────────────────────────────────
@@ -26,6 +26,7 @@
       --border:     rgba(26,25,22,0.12);
       --radius:     6px;
       --font:       'Instrument Sans', sans-serif;
+      --mono:       'IBM Plex Mono', ui-monospace, monospace;
     }
 
     html, body {
@@ -459,12 +460,13 @@
     }
 
     .identity-layer {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.07em;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.13em;
       text-transform: uppercase;
       color: var(--ink-mid);
-      margin-bottom: 4px;
+      margin-bottom: 5px;
     }
 
     .identity-desc {
@@ -806,14 +808,17 @@
       top: 64px;
       left: 50%;
       transform: translateX(-50%);
-      font-family: var(--font);
-      font-size: 11px;
+      font-family: var(--mono);
+      font-size: 9.5px;
       color: var(--ink-light);
-      letter-spacing: 0.03em;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
       pointer-events: none;
       z-index: 20;
       white-space: nowrap;
     }
+    .scene-hint::before { content: '\2014\00a0\00a0'; color: rgba(26,25,22,0.25); }
+    .scene-hint::after  { content: '\00a0\00a0\2014'; color: rgba(26,25,22,0.25); }
 
     /* placeholder hint styling — remove the class once real content is in */
     .placeholder-text {
@@ -1101,8 +1106,8 @@
       transform: translateY(-50%) translateX(24px);
       width: 620px;
       background: rgba(238,236,234,0.97);
-      border: 1px solid rgba(26,25,22,0.10);
-      border-radius: 14px;
+      border: 1px solid rgba(26,25,22,0.14);
+      border-radius: 3px;
       padding: 26px 24px 22px;
       z-index: 15;
       opacity: 0;
@@ -1155,65 +1160,226 @@
       border: 1px solid rgba(26,25,22,0.08);
     }
 
-    /* ── Project info panel (featured zoom view) ── */
+    /* ── Project info panel — spec-sheet card (featured zoom view) ── */
     .project-panel {
       position: absolute;
       right: 60px;
       top: 50%;
       transform: translateY(-50%) translateX(24px);
-      width: 300px;
+      width: 302px;
       background: rgba(238,236,234,0.97);
-      border: 1px solid rgba(26,25,22,0.10);
-      border-radius: 14px;
-      padding: 24px 22px 20px;
+      border: 1px solid rgba(26,25,22,0.14);
+      border-radius: 3px;
+      padding: 22px 20px 14px;
       z-index: 15;
       opacity: 0;
       pointer-events: none;   /* clicks pass through — anywhere zooms back out */
       will-change: transform, opacity;
     }
+    /* drawing-frame corner ticks */
+    .tick {
+      position: absolute;
+      width: 9px; height: 9px;
+      pointer-events: none;
+    }
+    .tick.tl { top: 4px;    left: 4px;   border-top: 1px solid var(--ink-mid); border-left: 1px solid var(--ink-mid); }
+    .tick.tr { top: 4px;    right: 4px;  border-top: 1px solid var(--ink-mid); border-right: 1px solid var(--ink-mid); }
+    .tick.bl { bottom: 4px; left: 4px;   border-bottom: 1px solid var(--ink-mid); border-left: 1px solid var(--ink-mid); }
+    .tick.br { bottom: 4px; right: 4px;  border-bottom: 1px solid var(--ink-mid); border-right: 1px solid var(--ink-mid); }
+    .pp-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
     .pp-tag {
-      font-family: var(--font);
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.12em;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--ink-light);
-      margin-bottom: 6px;
+      padding-top: 3px;
+    }
+    .pp-index {
+      font-family: var(--mono);
+      font-size: 26px;
+      font-weight: 400;
+      line-height: 1;
+      color: rgba(26,25,22,0.14);
     }
     .pp-title {
       font-family: var(--font);
-      font-size: 16px;
+      font-size: 17px;
       font-weight: 600;
       letter-spacing: -0.01em;
       color: var(--ink);
-      margin-bottom: 12px;
+      padding-bottom: 10px;
+      margin-bottom: 10px;
+      border-bottom: 1px solid var(--border);
     }
     .pp-points {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 6px;
-      margin-bottom: 16px;
+      gap: 7px;
+      margin-bottom: 14px;
     }
     .pp-points li {
       font-size: 12px;
       color: var(--ink-mid);
       line-height: 1.5;
-      padding-left: 12px;
+      padding-left: 16px;
       position: relative;
     }
     .pp-points li::before {
-      content: '–';
+      content: counter(pp-row, decimal-leading-zero);
+      counter-increment: pp-row;
       position: absolute;
       left: 0;
+      top: 1.5px;
+      font-family: var(--mono);
+      font-size: 9px;
       color: var(--ink-light);
     }
+    .pp-points { counter-reset: pp-row; }
+    /* staggered row reveal — .in is toggled from the RAF loop */
+    .pp-head, .pp-title, .pp-points li, .pp-img-slot, .pp-meta {
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.35s ease, transform 0.35s ease;
+    }
+    .project-panel.in .pp-head                    { transition-delay: 0.00s; }
+    .project-panel.in .pp-title                   { transition-delay: 0.05s; }
+    .project-panel.in .pp-points li:nth-child(1)  { transition-delay: 0.10s; }
+    .project-panel.in .pp-points li:nth-child(2)  { transition-delay: 0.16s; }
+    .project-panel.in .pp-points li:nth-child(3)  { transition-delay: 0.22s; }
+    .project-panel.in .pp-img-slot                { transition-delay: 0.30s; }
+    .project-panel.in .pp-meta                    { transition-delay: 0.38s; }
+    .project-panel.in .pp-head, .project-panel.in .pp-title,
+    .project-panel.in .pp-points li, .project-panel.in .pp-img-slot,
+    .project-panel.in .pp-meta {
+      opacity: 1;
+      transform: translateY(0);
+    }
     .pp-img-slot {
+      position: relative;
       width: 100%;
-      height: 110px;
-      background: rgba(26,25,22,0.06);
-      border-radius: 8px;
-      border: 1px solid rgba(26,25,22,0.08);
+      height: 118px;
+      border-radius: 2px;
+      border: 1px solid rgba(26,25,22,0.10);
+      background:
+        repeating-linear-gradient(-45deg,
+          rgba(26,25,22,0.045) 0px, rgba(26,25,22,0.045) 1px,
+          transparent 1px, transparent 7px);
+      overflow: hidden;
+    }
+    .pp-fig {
+      position: absolute;
+      left: 6px; bottom: 5px;
+      font-family: var(--mono);
+      font-size: 8.5px;
+      letter-spacing: 0.12em;
+      color: var(--ink-light);
+      background: rgba(238,236,234,0.9);
+      padding: 1px 5px;
+      border-radius: 2px;
+    }
+    .pp-meta {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+      padding-top: 9px;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 8.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+
+    /* ── Hover callout tag (rest view) ── */
+    .hover-tag {
+      position: absolute;
+      z-index: 22;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--ink);
+      background: rgba(238,236,234,0.92);
+      border: 1px solid rgba(26,25,22,0.18);
+      border-radius: 2px;
+      padding: 5px 9px 4px;
+      pointer-events: none;
+      opacity: 0;
+      white-space: nowrap;
+      will-change: transform, opacity;
+    }
+    .hover-tag::after {          /* leader line down toward the model */
+      content: '';
+      position: absolute;
+      left: 14px;
+      top: 100%;
+      width: 1px;
+      height: 14px;
+      background: rgba(26,25,22,0.35);
+    }
+
+    /* ── Dimension line under the featured model ── */
+    .dim-line {
+      position: absolute;
+      z-index: 14;
+      height: 1px;
+      background: rgba(26,25,22,0.35);
+      opacity: 0;
+      pointer-events: none;
+      will-change: opacity;
+    }
+    .dim-line::before, .dim-line::after {
+      content: '';
+      position: absolute;
+      top: -4px;
+      width: 1px;
+      height: 9px;
+      background: rgba(26,25,22,0.35);
+    }
+    .dim-line::before { left: 0; }
+    .dim-line::after  { right: 0; }
+    .dim-label {
+      position: absolute;
+      left: 50%;
+      top: -6px;
+      transform: translate(-50%, -50%);
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 0.14em;
+      color: var(--ink-mid);
+      background: var(--bg);
+      padding: 0 8px;
+      white-space: nowrap;
+    }
+
+    /* ── Drawing-frame corner marks on the card ── */
+    .frame-marks { position: absolute; inset: 14px; z-index: 20; pointer-events: none; }
+    .frame-marks .tick { width: 12px; height: 12px; }
+    .frame-marks .tick.tl, .frame-marks .tick.tr { top: 0; }
+    .frame-marks .tick.bl, .frame-marks .tick.br { bottom: 0; }
+    .frame-marks .tick.tl, .frame-marks .tick.bl { left: 0; }
+    .frame-marks .tick.tr, .frame-marks .tick.br { right: 0; }
+    .frame-marks .tick { border-color: rgba(26,25,22,0.28); }
+    .sheet-note {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--mono);
+      font-size: 8.5px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: rgba(26,25,22,0.32);
+      white-space: nowrap;
     }
   </style>
 </head>
@@ -1470,6 +1636,7 @@
 
   <!-- ───────── SPROCKET DETAIL PANEL ───────── -->
   <div class="sprocket-panel" id="sprocketPanel">
+    <i class="tick tl"></i><i class="tick tr"></i><i class="tick bl"></i><i class="tick br"></i>
     <div class="sp-title">Sprocket Assembly</div>
     <ul class="sp-points">
       <li>Here is where project details will go</li>
@@ -1485,14 +1652,31 @@
 
   <!-- ───────── PROJECT INFO PANEL (featured zoom view) ───────── -->
   <div class="project-panel" id="projectPanel">
-    <div class="pp-tag" id="ppTag">Project 01</div>
+    <i class="tick tl"></i><i class="tick tr"></i><i class="tick bl"></i><i class="tick br"></i>
+    <div class="pp-head">
+      <div class="pp-tag" id="ppTag">Project 01</div>
+      <div class="pp-index" id="ppIndex">01</div>
+    </div>
     <div class="pp-title" id="ppTitle">Project title</div>
     <ul class="pp-points" id="ppPoints">
       <li>Filler point one</li>
       <li>Filler point two</li>
       <li>Filler point three</li>
     </ul>
-    <div class="pp-img-slot"></div>
+    <div class="pp-img-slot" id="ppImg"><span class="pp-fig">Fig. 01</span></div>
+    <div class="pp-meta"><span>Rev A · 2026</span><span>YM Works</span></div>
+  </div>
+
+  <!-- Dimension line under the featured model -->
+  <div class="dim-line" id="dimLine"><span class="dim-label" id="dimLabel">L 3020 MM</span></div>
+
+  <!-- Hover callout tag (rest view) -->
+  <div class="hover-tag" id="hoverTag">01 · Open-Wheel Prototype</div>
+
+  <!-- Drawing-frame corner marks -->
+  <div class="frame-marks">
+    <i class="tick tl"></i><i class="tick tr"></i><i class="tick bl"></i><i class="tick br"></i>
+    <div class="sheet-note">YM · Build 1.0 · Index</div>
   </div>
 
   <!-- ───────── IDENTITY (bottom-left) ───────── -->
@@ -1598,13 +1782,17 @@
   const [prevBtn, nextBtn] = document.querySelectorAll('.section-btn');
   function getActiveDot() { return [...dots].findIndex(d => d.classList.contains('active')); }
 
-  prevBtn.addEventListener('click', () => {
+  prevBtn.addEventListener('click', e => {
+    e.stopPropagation();   // don't let the card's click handler zoom out
+    if (window._cycleFeatured && window._cycleFeatured(-1)) return;
     let i = getActiveDot();
     dots.forEach(d => d.classList.remove('active'));
     dots[Math.max(0, i - 1)].classList.add('active');
   });
 
-  nextBtn.addEventListener('click', () => {
+  nextBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (window._cycleFeatured && window._cycleFeatured(1)) return;
     let i = getActiveDot();
     dots.forEach(d => d.classList.remove('active'));
     dots[Math.min(dots.length - 1, i + 1)].classList.add('active');
@@ -1900,41 +2088,53 @@ let featured = 'car';
 // Filler text — replace with real project stories.
 const PROJECT_INFO = {
   car: {
-    tag: 'Project 01', title: 'Open-Wheel Prototype',
+    index: '01', tag: 'Project 01', title: 'Open-Wheel Prototype',
     points: [
       'Filler: tube-frame chassis machined and welded in-house',
       'Filler: custom uprights, hubs, and drivetrain packaging',
       'Filler: click the sprocket to see the drive assembly'
     ],
     layer: 'Build 1.0 — Open-Wheel Prototype',
-    desc: 'Filler description of the open-wheel<br>prototype and what went into it.'
+    desc: 'Filler description of the open-wheel<br>prototype and what went into it.',
+    dim: { l: 28, w: 44, y: 69, label: 'L 3020 MM' },
+    img: null
   },
   rivian: {
-    tag: 'Project 02', title: 'Rivian R1S Study',
+    index: '02', tag: 'Project 02', title: 'Rivian R1S Study',
     points: [
       'Filler: full-scale SUV surface and stance study',
       'Filler: liftgate mechanism and rear cargo layout',
       'Filler: wheel and tire packaging exploration'
     ],
     layer: 'Build 1.0 — Rivian R1S Study',
-    desc: 'Filler description of the R1S study<br>and the questions it explored.'
+    desc: 'Filler description of the R1S study<br>and the questions it explored.',
+    dim: { l: 36, w: 28, y: 73, label: 'W 2015 MM' },
+    img: 'renders/2026-Rivian-R1S-rear-quarter-boot-open-Carwow.avif'
   },
   scooter: {
-    tag: 'Project 03', title: 'Cargo Scooter',
+    index: '03', tag: 'Project 03', title: 'Cargo Scooter',
     points: [
       'Filler: welded cargo rack sized for a milk crate',
       'Filler: battery box and controller integration',
       'Filler: folding stem and ergonomics pass'
     ],
     layer: 'Build 1.0 — Cargo Scooter',
-    desc: 'Filler description of the cargo scooter<br>and how it came together.'
+    desc: 'Filler description of the cargo scooter<br>and how it came together.',
+    dim: { l: 34, w: 32, y: 66, label: 'L 1420 MM' },
+    img: null
   }
 };
 
 const projectPanel = document.getElementById('projectPanel');
 const ppTag        = document.getElementById('ppTag');
+const ppIndex      = document.getElementById('ppIndex');
 const ppTitle      = document.getElementById('ppTitle');
 const ppPoints     = document.getElementById('ppPoints');
+const ppImg        = document.getElementById('ppImg');
+const dimLine      = document.getElementById('dimLine');
+const dimLabel     = document.getElementById('dimLabel');
+const hoverTag     = document.getElementById('hoverTag');
+const sceneHint    = document.querySelector('.scene-hint');
 const identityMeta  = document.querySelector('.identity-meta');
 const identityLayer = document.querySelector('.identity-layer');
 const identityDesc  = document.querySelector('.identity-desc');
@@ -1942,14 +2142,24 @@ const IDENTITY_DEFAULT = {
   layer: identityLayer.textContent,
   desc:  identityDesc.innerHTML
 };
+const HINT_DEFAULT = sceneHint.textContent;
+const HINT_ZOOMED  = 'Click anywhere to return';
+const sheetNote    = document.querySelector('.sheet-note');
 let identityShows = 'default';   // 'default' | featured project key
+let hoverTagO = 0, hoverTagX = 0, hoverTagY = 0;   // hover callout state
 
 function fillProjectPanel(name) {
   const info = PROJECT_INFO[name];
   ppTag.textContent   = info.tag;
+  ppIndex.textContent = info.index;
   ppTitle.textContent = info.title;
   ppPoints.innerHTML  = info.points.map(p => `<li>${p}</li>`).join('');
+  ppImg.style.backgroundImage    = info.img ? `url(${info.img})` : '';
+  ppImg.style.backgroundSize     = info.img ? 'cover' : '';
+  ppImg.style.backgroundPosition = info.img ? 'center' : '';
+  dimLabel.textContent = info.dim.label;
 }
+fillProjectPanel(featured);
 
 const FEATURE_POSE = {
   // yaw orients the featured view: rivian rear-on (looking into the open
@@ -2206,6 +2416,18 @@ let zoomDir = 0;     // +1 = zooming in, -1 = zooming out
 let prevTime = performance.now();
 const sprocketPanel = document.getElementById('sprocketPanel');
 
+// While a project is featured, the section-nav arrows cycle to the next /
+// previous project: zoom out, swap the feature at rest, zoom back in.
+let pendingFeature = null;
+const FEATURE_ORDER = ['scooter', 'car', 'rivian'];
+window._cycleFeatured = dir => {
+  if (zoomT < 0.5 || pendingFeature) return false;
+  pendingFeature = FEATURE_ORDER[(FEATURE_ORDER.indexOf(featured) + dir + 3) % 3];
+  sprocketOpen = false;
+  zoomDir = -1;
+  return true;
+};
+
 // Click: zoom in on model, open sprocket, or zoom out
 card.addEventListener('click', e => {
   if (!modelMeshes.length) return;
@@ -2256,6 +2478,14 @@ function loop() {
   zoomT = Math.max(0, Math.min(1, zoomT + zoomDir * dt * 1.4));
   const ease = zoomT * zoomT * (3 - 2 * zoomT);   // smoothstep
 
+  // Arrow-cycling bounce: once fully back at rest, feature the next project
+  if (pendingFeature && zoomT === 0) {
+    featured = pendingFeature;
+    pendingFeature = null;
+    fillProjectPanel(featured);
+    zoomDir = 1;
+  }
+
   // Share zoom progress with the dot grid so it can reproject its own camera.
   const c = window._dotCam || { hSkew: -0.09, tilt: 1, vShift: 0 };
 
@@ -2276,12 +2506,21 @@ function loop() {
   sprocketPanel.style.pointerEvents = sprocketOpen || openEase > 0.5 ? 'auto' : 'none';
 
   // Project info panel: slides in as the featured zoom completes. On the car
-  // it yields to the sprocket detail panel while that is open.
+  // it yields to the sprocket detail panel while that is open. The .in class
+  // triggers the staggered row reveal.
   const ppIn = Math.max(0, (ease - 0.6) / 0.4) * (1 - openEase);
   projectPanel.style.opacity = ppIn;
   projectPanel.style.transform = `translateY(-50%) translateX(${(1 - ppIn) * 24}px)`;
+  projectPanel.classList.toggle('in', ppIn > 0.4);
 
-  // Identity caption crossfades to the featured project's copy mid-zoom:
+  // Dimension line under the featured model (per-project geometry)
+  const dg = PROJECT_INFO[featured].dim;
+  dimLine.style.opacity = ppIn;
+  dimLine.style.left    = (dg.l + dg.w * (1 - ppIn) / 2) + '%';  // draws outward
+  dimLine.style.width   = (dg.w * ppIn) + '%';                   //   from centre
+  dimLine.style.top     = dg.y + '%';
+
+  // Identity caption and scene hint crossfade to the featured copy mid-zoom:
   // opacity dips to 0 at ease 0.5, where the text is swapped, and recovers.
   const identityTarget = ease > 0.5 ? featured : 'default';
   if (identityTarget !== identityShows) {
@@ -2289,8 +2528,15 @@ function loop() {
     const src = identityTarget === 'default' ? IDENTITY_DEFAULT : PROJECT_INFO[identityTarget];
     identityLayer.textContent = src.layer;
     identityDesc.innerHTML    = src.desc;
+    sceneHint.textContent     = identityTarget === 'default' ? HINT_DEFAULT : HINT_ZOOMED;
+    sheetNote.textContent     = identityTarget === 'default'
+      ? 'YM · Build 1.0 · Index'
+      : `YM · Build 1.0 · Sheet ${PROJECT_INFO[identityTarget].index}/03`;
   }
-  identityMeta.style.opacity = Math.min(1, Math.abs(ease - 0.5) * 2);
+  const metaFade = Math.min(1, Math.abs(ease - 0.5) * 2);
+  identityMeta.style.opacity = metaFade;
+  sceneHint.style.opacity    = metaFade;
+  sheetNote.style.opacity    = metaFade;
 
   if (window._dotCam) {
     window._dotCam.zoomEase  = ease;
@@ -2478,6 +2724,21 @@ function loop() {
     if (rivianHovered)   { rivianHovered = false; card.style.cursor = ''; }
     if (scooterHovered)  { scooterHovered = false; card.style.cursor = ''; }
   }
+
+  // Hover callout tag: a mono spec label that trails the cursor over a model
+  const hoverName = rivianHovered ? 'rivian' : scooterHovered ? 'scooter'
+                  : isHovered ? 'car' : null;
+  if (hoverName) {
+    const hi = PROJECT_INFO[hoverName];
+    hoverTag.textContent = `${hi.index} · ${hi.title}`;
+  }
+  const tagK = 1 - Math.exp(-14 * dt);
+  if (hoverTagO < 0.02 && c.mx > -999) { hoverTagX = c.mx; hoverTagY = c.my; }  // no fly-in
+  hoverTagX += (c.mx - hoverTagX) * tagK;
+  hoverTagY += (c.my - hoverTagY) * tagK;
+  hoverTagO += ((hoverName && ease < 0.05 ? 1 : 0) - hoverTagO) * tagK;
+  hoverTag.style.opacity = hoverTagO;
+  hoverTag.style.transform = `translate(${hoverTagX + 16}px, ${hoverTagY - 44}px)`;
 
   // Non-featured models fade out during zoom; the featured one stays opaque.
   const fadeOut = Math.max(0, 1 - ease * 2.5);

@@ -329,3 +329,34 @@ The identity caption (bottom-left `.identity-meta`) crossfades to the
 featured project's `layer`/`desc` copy: its opacity is `|ease - 0.5| * 2`
 (dips to 0 at mid-zoom, where the text is swapped) — one formula handles
 both directions of the transition.
+
+---
+
+## UI layer — engineering spec-sheet language (July 2026)
+
+The chrome leans into the raw-engineering-model aesthetic. `--mono` (IBM Plex
+Mono) is the voice of all small technical labels; Instrument Sans stays for
+headlines and body copy.
+
+- **Spec-sheet panel:** corner tick marks (`.tick`, reused on the sprocket
+  panel and card frame), mono tag + ghost index numeral header, ruled title,
+  numbered rows (CSS counter `pp-row`), figure slot with diagonal hatch
+  placeholder ("Fig. 01"; Rivian shows the real press photo), and a
+  "REV A · 2026 / YM WORKS" meta footer. Rows stagger in via transition-delays
+  when the RAF loop toggles `.in` at ppIn > 0.4.
+- **Dimension line** (`#dimLine`): drawing-style dimension with end ticks and
+  a mono label under the featured model; geometry per project in
+  `PROJECT_INFO[..].dim` = {l, w, y (percent), label}. Draws outward from
+  centre with ppIn.
+- **Hover callout** (`#hoverTag`): mono tag ("02 · RIVIAN R1S STUDY") with a
+  leader line that trails the cursor over any model at rest. Lerped position,
+  snaps to the cursor when fully faded to avoid fly-in.
+- **Scene hint** swaps to "CLICK ANYWHERE TO RETURN" when zoomed, and the
+  **sheet note** (bottom centre, inside `.frame-marks`) reads
+  "…· Index" at rest / "…· Sheet 02/03" when featured — both crossfade on the
+  same `|ease − 0.5| × 2` dip as the identity caption.
+- **Arrow cycling:** while zoomed, the section-nav arrows call
+  `window._cycleFeatured(dir)` (module) — zoom out, swap feature at rest,
+  zoom back in (`pendingFeature` bounce). Button handlers stopPropagation so
+  the card's zoom-out click doesn't also fire; at rest they still cycle the
+  page dots.
