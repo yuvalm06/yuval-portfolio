@@ -310,3 +310,22 @@ origin side-view, dot-grid reprojection) then runs for any of them.
   when `carOpacity > 0.05` (raycaster hits invisible meshes otherwise).
 - Zoom-out reverses everything; `featured` persists until the next click
   (harmless — at ease 0 all models are at their rest poses).
+
+---
+
+## Project info panels + identity caption
+
+Each featured zoom shows a right-side info panel (`#projectPanel`, styled
+like the sprocket panel but 300px) with tag / title / bullets / image slot.
+Copy lives in the `PROJECT_INFO` map (currently FILLER TEXT — replace with
+real project stories). The panel is populated on click (`fillProjectPanel`)
+and driven from the RAF loop:
+
+- opacity/slide-in ramps over ease 0.6 → 1.0, and is multiplied by
+  `(1 - openEase)` so the car's panel yields to the sprocket detail panel.
+- `pointer-events: none` — clicks pass through it and zoom back out.
+
+The identity caption (bottom-left `.identity-meta`) crossfades to the
+featured project's `layer`/`desc` copy: its opacity is `|ease - 0.5| * 2`
+(dips to 0 at mid-zoom, where the text is swapped) — one formula handles
+both directions of the transition.

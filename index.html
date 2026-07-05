@@ -1154,6 +1154,67 @@
       border-radius: 8px;
       border: 1px solid rgba(26,25,22,0.08);
     }
+
+    /* ── Project info panel (featured zoom view) ── */
+    .project-panel {
+      position: absolute;
+      right: 60px;
+      top: 50%;
+      transform: translateY(-50%) translateX(24px);
+      width: 300px;
+      background: rgba(238,236,234,0.97);
+      border: 1px solid rgba(26,25,22,0.10);
+      border-radius: 14px;
+      padding: 24px 22px 20px;
+      z-index: 15;
+      opacity: 0;
+      pointer-events: none;   /* clicks pass through — anywhere zooms back out */
+      will-change: transform, opacity;
+    }
+    .pp-tag {
+      font-family: var(--font);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 6px;
+    }
+    .pp-title {
+      font-family: var(--font);
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin-bottom: 12px;
+    }
+    .pp-points {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .pp-points li {
+      font-size: 12px;
+      color: var(--ink-mid);
+      line-height: 1.5;
+      padding-left: 12px;
+      position: relative;
+    }
+    .pp-points li::before {
+      content: '–';
+      position: absolute;
+      left: 0;
+      color: var(--ink-light);
+    }
+    .pp-img-slot {
+      width: 100%;
+      height: 110px;
+      background: rgba(26,25,22,0.06);
+      border-radius: 8px;
+      border: 1px solid rgba(26,25,22,0.08);
+    }
   </style>
 </head>
 <body>
@@ -1420,6 +1481,18 @@
       <div class="sp-img-slot"></div>
       <div class="sp-img-slot"></div>
     </div>
+  </div>
+
+  <!-- ───────── PROJECT INFO PANEL (featured zoom view) ───────── -->
+  <div class="project-panel" id="projectPanel">
+    <div class="pp-tag" id="ppTag">Project 01</div>
+    <div class="pp-title" id="ppTitle">Project title</div>
+    <ul class="pp-points" id="ppPoints">
+      <li>Filler point one</li>
+      <li>Filler point two</li>
+      <li>Filler point three</li>
+    </ul>
+    <div class="pp-img-slot"></div>
   </div>
 
   <!-- ───────── IDENTITY (bottom-left) ───────── -->
@@ -1822,6 +1895,62 @@ let   scooterBaseS   = 1;         // normalisation scale baked into the group
 // same side-profile stage at the origin; the clicked one glides there while
 // the others fade out.
 let featured = 'car';
+
+// Per-project copy for the zoomed info panel and the identity caption.
+// Filler text — replace with real project stories.
+const PROJECT_INFO = {
+  car: {
+    tag: 'Project 01', title: 'Open-Wheel Prototype',
+    points: [
+      'Filler: tube-frame chassis machined and welded in-house',
+      'Filler: custom uprights, hubs, and drivetrain packaging',
+      'Filler: click the sprocket to see the drive assembly'
+    ],
+    layer: 'Build 1.0 — Open-Wheel Prototype',
+    desc: 'Filler description of the open-wheel<br>prototype and what went into it.'
+  },
+  rivian: {
+    tag: 'Project 02', title: 'Rivian R1S Study',
+    points: [
+      'Filler: full-scale SUV surface and stance study',
+      'Filler: liftgate mechanism and rear cargo layout',
+      'Filler: wheel and tire packaging exploration'
+    ],
+    layer: 'Build 1.0 — Rivian R1S Study',
+    desc: 'Filler description of the R1S study<br>and the questions it explored.'
+  },
+  scooter: {
+    tag: 'Project 03', title: 'Cargo Scooter',
+    points: [
+      'Filler: welded cargo rack sized for a milk crate',
+      'Filler: battery box and controller integration',
+      'Filler: folding stem and ergonomics pass'
+    ],
+    layer: 'Build 1.0 — Cargo Scooter',
+    desc: 'Filler description of the cargo scooter<br>and how it came together.'
+  }
+};
+
+const projectPanel = document.getElementById('projectPanel');
+const ppTag        = document.getElementById('ppTag');
+const ppTitle      = document.getElementById('ppTitle');
+const ppPoints     = document.getElementById('ppPoints');
+const identityMeta  = document.querySelector('.identity-meta');
+const identityLayer = document.querySelector('.identity-layer');
+const identityDesc  = document.querySelector('.identity-desc');
+const IDENTITY_DEFAULT = {
+  layer: identityLayer.textContent,
+  desc:  identityDesc.innerHTML
+};
+let identityShows = 'default';   // 'default' | featured project key
+
+function fillProjectPanel(name) {
+  const info = PROJECT_INFO[name];
+  ppTag.textContent   = info.tag;
+  ppTitle.textContent = info.title;
+  ppPoints.innerHTML  = info.points.map(p => `<li>${p}</li>`).join('');
+}
+
 const FEATURE_POSE = {
   // yaw orients the side profile nose-right like the race car's zoom view
   rivian:  { scale: 0.75, yaw: -Math.PI / 2 }, // pivot-relative extra scale
@@ -2105,6 +2234,7 @@ card.addEventListener('click', e => {
                        raycaster.intersectObjects(scooterMeshes, false).length > 0;
     if (carHit || rivianHit || scooterHit) {
       featured = carHit ? 'car' : rivianHit ? 'rivian' : 'scooter';
+      fillProjectPanel(featured);
       zoomDir = 1;
     }
   } else if (!sprocketOpen) {
@@ -2141,6 +2271,23 @@ function loop() {
   sprocketPanel.style.opacity = openEase;
   sprocketPanel.style.transform = `translateY(-50%) translateX(${(1 - openEase) * 24}px)`;
   sprocketPanel.style.pointerEvents = sprocketOpen || openEase > 0.5 ? 'auto' : 'none';
+
+  // Project info panel: slides in as the featured zoom completes. On the car
+  // it yields to the sprocket detail panel while that is open.
+  const ppIn = Math.max(0, (ease - 0.6) / 0.4) * (1 - openEase);
+  projectPanel.style.opacity = ppIn;
+  projectPanel.style.transform = `translateY(-50%) translateX(${(1 - ppIn) * 24}px)`;
+
+  // Identity caption crossfades to the featured project's copy mid-zoom:
+  // opacity dips to 0 at ease 0.5, where the text is swapped, and recovers.
+  const identityTarget = ease > 0.5 ? featured : 'default';
+  if (identityTarget !== identityShows) {
+    identityShows = identityTarget;
+    const src = identityTarget === 'default' ? IDENTITY_DEFAULT : PROJECT_INFO[identityTarget];
+    identityLayer.textContent = src.layer;
+    identityDesc.innerHTML    = src.desc;
+  }
+  identityMeta.style.opacity = Math.min(1, Math.abs(ease - 0.5) * 2);
 
   if (window._dotCam) {
     window._dotCam.zoomEase  = ease;
