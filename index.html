@@ -1952,8 +1952,10 @@ function fillProjectPanel(name) {
 }
 
 const FEATURE_POSE = {
-  // yaw orients the side profile nose-right like the race car's zoom view
-  rivian:  { scale: 0.75, yaw: -Math.PI / 2 }, // pivot-relative extra scale
+  // yaw orients the featured view: rivian rear-on (looking into the open
+  // trunk — its rear faces +z at pivot yaw 0), scooter side profile
+  // nose-right like the race car's zoom view.
+  rivian:  { scale: 0.75, yaw: 0 },            // pivot-relative extra scale
   scooter: { scale: 1.10, yaw: Math.PI }       // scale is × its base normalisation
 };
 let   isHovered       = false;
