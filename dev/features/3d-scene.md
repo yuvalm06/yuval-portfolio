@@ -280,3 +280,30 @@ Screen-X in the isometric view is proportional to `x − z` — the original
 `(2.0, −5.0)` gave `x−z = 7.0` which pushed it against / past the right card
 edge on narrower windows. `(1.2, −4.4)` keeps depth (`x+z ≈ −3.2`) similar
 while pulling it inward.
+
+---
+
+## Featured-project zoom — all three models clickable
+
+The nav hint promises "Click on a project to view more"; all three models now
+deliver it. `featured` (`'car' | 'rivian' | 'scooter'`) is set by the click
+handler at rest; the SAME zoom animation (`zoomT`/`ease`, camera dolly to the
+origin side-view, dot-grid reprojection) then runs for any of them.
+
+- **The clicked model glides to the origin stage** as `ease` advances: its
+  rest pose (Rivian: last ground-glue solution, frozen past ease 0.4; scooter:
+  its az-orbit pose) is lerped to `FEATURE_POSE[name]` — position (0,0,0),
+  a yaw that gives a nose-right side profile like the car's, and a stage scale.
+  The car needs no glide (it already lives at the origin).
+- `FEATURE_POSE`: rivian `{scale: 0.75, yaw: -PI/2}` (4.5-unit model scaled to
+  ~car size; -PI/2 because its length axis lies along world Z, rear at +z);
+  scooter `{scale: 1.10, yaw: PI}` (scale multiplies its base normalisation;
+  watch the y-position compensation `scooterBaseY * k` that keeps wheels on
+  the ground when scaling about the group origin).
+- **Fades:** non-featured models fade with `1 - ease*2.5`; the sprocket gear
+  fades with the car (its materials needed `transparent = true`).
+- **Gates:** sprocket click/hover only when `featured === 'car'`; rivian /
+  scooter hover-cursor only at rest (`ease < 0.05`); car hover outline only
+  when `carOpacity > 0.05` (raycaster hits invisible meshes otherwise).
+- Zoom-out reverses everything; `featured` persists until the next click
+  (harmless — at ease 0 all models are at their rest poses).

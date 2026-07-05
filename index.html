@@ -1809,11 +1809,24 @@ let   rivianMeshes      = [];
 let   rivianGroup       = null;   // pivot group at the ground point under the SUV's centre
 let   rivianWheelProbes = null;   // per-wheel lattice anchors: fit targets + drift probe
 let   rivianRestCam     = null;   // frozen rest-pose camera — yaw is solved through it
+let   rivianGlue        = null;   // last ground-glue solution {x, z, yaw, s}
 const rivianGroundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
 let   scooterMeshes  = [];
 let   scooterGroup   = null;
 let   scooterBaseX   = 0;
 let   scooterBaseZ   = 0;
+let   scooterBaseY   = 0;
+let   scooterBaseS   = 1;         // normalisation scale baked into the group
+
+// Which project the click-to-zoom features. All three models zoom into the
+// same side-profile stage at the origin; the clicked one glides there while
+// the others fade out.
+let featured = 'car';
+const FEATURE_POSE = {
+  // yaw orients the side profile nose-right like the race car's zoom view
+  rivian:  { scale: 0.75, yaw: -Math.PI / 2 }, // pivot-relative extra scale
+  scooter: { scale: 1.10, yaw: Math.PI }       // scale is × its base normalisation
+};
 let   isHovered       = false;
 let   sprocketHovered = false;
 let   rivianHovered   = false;
@@ -1872,6 +1885,7 @@ new GLTFLoader().load('renders/Sprocket.glb', gltf => {
     child.material        = child.material.clone();
     child.material.color.set(0xFFB800);
     child.material.side   = THREE.DoubleSide;
+    child.material.transparent = true;
     child.castShadow      = true;
   });
 
@@ -1988,6 +2002,8 @@ new GLTFLoader().load('renders/scooter.glb', gltf => {
   scooter.position.set(-2.25 - ctr.x, -box2.min.y, 3.0 - ctr.z);
   scooterBaseX = scooter.position.x;
   scooterBaseZ = scooter.position.z;
+  scooterBaseY = scooter.position.y;
+  scooterBaseS = scooter.scale.x;
 
   scooterGroup = scooter;
   threeScene.add(scooter);
@@ -2071,8 +2087,8 @@ card.addEventListener('click', e => {
     return;
   }
 
-  // In zoomed side view, sprocket click opens the detail view
-  if (zoomT > 0.9 && sprocketMeshes.length) {
+  // In zoomed side view, sprocket click opens the detail view (car feature only)
+  if (zoomT > 0.9 && featured === 'car' && sprocketMeshes.length) {
     const sprocketHit = raycaster.intersectObjects(sprocketMeshes, true).length > 0;
     if (sprocketHit) {
       sprocketOpen = true;
@@ -2080,11 +2096,18 @@ card.addEventListener('click', e => {
     }
   }
 
-  // Normal zoom toggle
-  const hit = raycaster.intersectObjects(modelMeshes, false).length > 0;
-  if (hit && zoomT < 0.5) {
-    zoomDir = 1;
-  } else if (zoomT > 0.5 && !sprocketOpen) {
+  // Zoom toggle: at rest, clicking any of the three projects features it
+  if (zoomT < 0.5) {
+    const carHit     = raycaster.intersectObjects(modelMeshes, false).length > 0;
+    const rivianHit  = !carHit && rivianMeshes.length &&
+                       raycaster.intersectObjects(rivianMeshes, false).length > 0;
+    const scooterHit = !carHit && !rivianHit && scooterMeshes.length &&
+                       raycaster.intersectObjects(scooterMeshes, false).length > 0;
+    if (carHit || rivianHit || scooterHit) {
+      featured = carHit ? 'car' : rivianHit ? 'rivian' : 'scooter';
+      zoomDir = 1;
+    }
+  } else if (!sprocketOpen) {
     zoomDir = -1;
     if (sprocketHovered) { sprocketHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
   }
@@ -2136,12 +2159,21 @@ function loop() {
   // Scooter: rotate in sync with camera azimuth so it shows different faces
   // as cursor moves (like the car does), and cancel the lateral translation
   // caused by the camera rotating around origin instead of the scooter.
+  // When featured, it glides to the origin stage as the camera zooms.
   if (scooterGroup) {
     const Cx = scooterBaseX * Math.cos(BASE_AZ) - scooterBaseZ * Math.sin(BASE_AZ);
     const D  = scooterBaseX * Math.sin(BASE_AZ) + scooterBaseZ * Math.cos(BASE_AZ);
-    scooterGroup.position.x =  Cx * Math.cos(az) + D * Math.sin(az);
-    scooterGroup.position.z = -Cx * Math.sin(az) + D * Math.cos(az);
-    scooterGroup.rotation.y = Math.PI / 3 + (az - BASE_AZ);
+    const ox = Cx * Math.cos(az) + D * Math.sin(az);
+    const oz = -Cx * Math.sin(az) + D * Math.cos(az);
+    const oy = Math.PI / 3 + (az - BASE_AZ);
+    const t  = featured === 'scooter' ? ease : 0;
+    const fp = FEATURE_POSE.scooter;
+    const k  = 1 + (fp.scale - 1) * t;          // extra scale factor on top of base
+    scooterGroup.position.x = ox * (1 - t);
+    scooterGroup.position.z = oz * (1 - t);
+    scooterGroup.position.y = scooterBaseY * k; // keeps the wheels on the ground
+    scooterGroup.rotation.y = oy + (fp.yaw - oy) * t;
+    scooterGroup.scale.setScalar(scooterBaseS * k);
   }
 
   // Rivian: glued to the dot lattice at its four wheel contact points. Each
@@ -2210,13 +2242,23 @@ function loop() {
         : -Math.atan2(qi, qr)) * RIVIAN_YAW_DAMP;
       // position = target centroid − (similarity applied to local centroid)
       const cy = Math.cos(yaw), sy = Math.sin(yaw);
-      rivianGroup.position.set(
-        tcx - s * (lcx * cy + lcz * sy), 0,
-        tcz - s * (lcz * cy - lcx * sy)
-      );
-      rivianGroup.rotation.y = yaw;
-      rivianGroup.scale.setScalar(s);
+      rivianGlue = {
+        x: tcx - s * (lcx * cy + lcz * sy),
+        z: tcz - s * (lcz * cy - lcx * sy),
+        yaw, s
+      };
     }
+  }
+
+  // Apply the Rivian pose: pure ground glue at rest; when featured, blend
+  // toward the origin stage as the camera zooms (the glue solution freezes
+  // past ease 0.4, which is exactly when the blend takes over).
+  if (rivianGroup && rivianGlue) {
+    const t  = featured === 'rivian' ? ease : 0;
+    const fp = FEATURE_POSE.rivian;
+    rivianGroup.position.set(rivianGlue.x * (1 - t), 0, rivianGlue.z * (1 - t));
+    rivianGroup.rotation.y = rivianGlue.yaw + (fp.yaw - rivianGlue.yaw) * t;
+    rivianGroup.scale.setScalar(rivianGlue.s + (fp.scale - rivianGlue.s) * t);
   }
 
   // Sprocket scales up, moves left and up as it opens
@@ -2242,8 +2284,8 @@ function loop() {
     mousePt.set((c.mx / rect.width) * 2 - 1, -(c.my / rect.height) * 2 + 1);
     raycaster.setFromCamera(mousePt, camera);
 
-    // Sprocket hover — only active in zoomed mode
-    const sprocketHit = (ease > 0.9 && sprocketMeshes.length)
+    // Sprocket hover — only active when zoomed on the car
+    const sprocketHit = (ease > 0.9 && featured === 'car' && sprocketMeshes.length)
       ? raycaster.intersectObjects(sprocketMeshes, true).length > 0
       : false;
     if (sprocketHit !== sprocketHovered) {
@@ -2252,8 +2294,8 @@ function loop() {
       card.style.cursor = sprocketHovered ? 'pointer' : '';
     }
 
-    // Car body hover (only when not over sprocket)
-    const carHit = (!sprocketHit && modelMeshes.length)
+    // Car body hover (only when not over sprocket, and not faded out)
+    const carHit = (!sprocketHit && carOpacity > 0.05 && modelMeshes.length)
       ? raycaster.intersectObjects(modelMeshes, false).length > 0
       : false;
     if (carHit !== isHovered) {
@@ -2262,8 +2304,8 @@ function loop() {
       outlineGrey.selectedObjects = isHovered ? modelMeshes : [];
     }
 
-    // Rivian hover
-    const rivianHit = (!sprocketHit && !carHit && rivianMeshes.length)
+    // Rivian hover (rest view only — in zoom it is either featured or hidden)
+    const rivianHit = (ease < 0.05 && !sprocketHit && !carHit && rivianMeshes.length)
       ? raycaster.intersectObjects(rivianMeshes, false).length > 0
       : false;
     if (rivianHit !== rivianHovered) {
@@ -2271,8 +2313,8 @@ function loop() {
       card.style.cursor = rivianHovered ? 'pointer' : '';
     }
 
-    // Scooter hover
-    const scooterHit = (!sprocketHit && !carHit && !rivianHit && scooterMeshes.length)
+    // Scooter hover (rest view only)
+    const scooterHit = (ease < 0.05 && !sprocketHit && !carHit && !rivianHit && scooterMeshes.length)
       ? raycaster.intersectObjects(scooterMeshes, false).length > 0
       : false;
     if (scooterHit !== scooterHovered) {
@@ -2286,8 +2328,12 @@ function loop() {
     if (scooterHovered)  { scooterHovered = false; card.style.cursor = ''; }
   }
 
-  // Car fades out as sprocket opens, fades back in on close
-  const carOpacityTarget = (sprocketHovered ? 0.30 : 1.0) * (1 - openEase);
+  // Non-featured models fade out during zoom; the featured one stays opaque.
+  const fadeOut = Math.max(0, 1 - ease * 2.5);
+
+  // Car additionally dims on sprocket hover and hides behind the open panel
+  const carOpacityTarget = (sprocketHovered ? 0.30 : 1.0) * (1 - openEase) *
+                           (featured === 'car' ? 1 : fadeOut);
   carOpacity += (carOpacityTarget - carOpacity) * (1 - Math.exp(-7 * dt));
   if (modelMeshes.length) {
     for (const m of modelMeshes) {
@@ -2296,15 +2342,21 @@ function loop() {
     }
   }
 
-  // Side objects fade out during zoom — the zoomed side view features the car only
-  const sideOpacity = Math.max(0, 1 - ease * 2.5);
+  const rivianOpacity = featured === 'rivian' ? 1 : fadeOut;
   for (const m of rivianMeshes) {
-    m.visible = sideOpacity > 0.01;
-    if (m.visible) m.material.opacity = sideOpacity;
+    m.visible = rivianOpacity > 0.01;
+    if (m.visible) m.material.opacity = rivianOpacity;
   }
+  const scooterOpacity = featured === 'scooter' ? 1 : fadeOut;
   for (const m of scooterMeshes) {
-    m.visible = sideOpacity > 0.01;
-    if (m.visible) m.material.opacity = sideOpacity;
+    m.visible = scooterOpacity > 0.01;
+    if (m.visible) m.material.opacity = scooterOpacity;
+  }
+  // The sprocket rides on the car's engine — it fades with the car
+  const sprocketOpacity = featured === 'car' ? 1 : fadeOut;
+  for (const m of sprocketMeshes) {
+    m.visible = sprocketOpacity > 0.01;
+    if (m.visible) m.material.opacity = sprocketOpacity;
   }
 
   composer.render();
