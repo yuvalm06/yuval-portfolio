@@ -141,6 +141,51 @@ outlinePass.visibleEdgeColor.set('#ffffff');
 
 Composer order: RenderPass → outlineGrey → outlinePass.
 
+### Outline pass cost (July 2026 fix)
+
+OutlinePass renders real geometry twice per pass per frame: a depth pre-pass of
+every NON-selected mesh (for hidden-edge classification) plus a mask render of
+the selected meshes. With these GLBs (car ~26 MB, Rivian ~48 MB) that dropped
+the loop to ~20 fps whenever the car glow was up — which read as "the mouse
+parallax freezes over the car". Two surgical patches in `index.html` (search
+`slimOutlinePass`):
+
+1. **slimOutlinePass(pass)** — all three passes set
+   `hiddenEdgeColor === visibleEdgeColor`, so occlusion classification never
+   changes a pixel. The wrapper hides every mesh except the pass's own
+   selection during `render()`, emptying the depth pre-pass. Pixel-identical.
+2. **Shared mask** — grey and white always outline the same selection (the
+   same `modelMeshes` array is assigned to both), so the white pass skips its
+   depth + mask renders entirely and reuses the grey pass's mask buffers,
+   running only its screen-space edge/blur/overlay chain. Falls back to a
+   normal render if the selection references ever diverge. Replicates the
+   r165 OutlinePass.render() internals — re-check if three.js is upgraded.
+
+## Hover/click hit proxies (July 2026 fix)
+
+Never raycast the raw GLB meshes — `Raycaster.intersectObjects` tests every
+triangle once the ray enters a mesh's bounding sphere, and the per-frame hover
+raycast stalled the render loop to 10–20 fps exactly while the cursor was over
+a model (10 fps over the Rivian). This froze the dot-grid parallax over models.
+
+Instead each model group gets an invisible `BoxGeometry` proxy child sized to
+its world AABB at load (`addHitProxy(group, list)` in index.html): the raycaster
+still hits `visible: false` meshes but the renderer and outline passes skip
+them, and as a child it rides every animation (zoom, glue, detach) for free.
+All hover checks AND the click handler intersect the `*Hitbox` lists
+(carHitbox, rivianHitbox, …); the `*Meshes` lists remain for outlines/fades.
+
+Gotchas:
+- The car/scooter split parts share one position attribute (only the index
+  differs), so `Box3.setFromObject` on a part returns the WHOLE model's box.
+  The seat-module proxy is therefore built from its own triangle indices in
+  the scooter loader — do the same for any future index-split part.
+- Add the proxy at the END of the loader, after final scale/position, and
+  never `Box3.setFromObject` a group at runtime after its proxy exists (a
+  rotated proxy inflates the AABB).
+- Hit shape is the box, not the silhouette — hover/click trigger slightly
+  outside the model edge. Cursor and click stay consistent by design.
+
 ---
 
 ## Shadow
@@ -267,6 +312,137 @@ Verification: `window._rivianCheck()` returns per-wheel `{dot, wheel}` px pairs
 4. *Centre-line two-point pin without scale*: yaw follows the field but the
    ±10% local stretch has nowhere to go — wheels still drift ~10px.
 
+**Trunk rear wall (July 2026):** `renders/Rivian-rear-wall.glb` — a gold
+accent panel inside the open cargo bay. Loaded NESTED in the Rivian's load
+callback (not top-level) so it can parent to the pivot and inherit the ground
+glue + featured blend. Key details:
+
+- The GLB ships **no materials** → Three.js applies the glTF default, which is
+  **fully metallic** and renders the colour as muddy olive. Fix: `metalness =
+  0`, `roughness = 0.85`, colour `0xFFB800` (same gold as the sprocket).
+- Sized to 0.95 units wide, placed at pivot-local `(0, 0.78, 1.15)` — floats
+  a touch above the trunk floor (~0.7), partway into the cargo bay (rear
+  opening is at z ≈ +2.25). User-tuned via screenshot iteration.
+- Opacity = `rivianOpacity * 0.35` per frame (separate `rearWallMeshes` array,
+  NOT in `rivianMeshes` — it must not join the click/hover raycast at rest).
+- **Shares the yellow-outline channel with the sprocket:** the idle glint and
+  hover outline (`outlineYellow`) are gated by `featured` — sprocket owns the
+  channel on the car, rear wall on the Rivian, so they never conflict. Hover
+  is active only when zoomed on the Rivian (`ease > 0.9`); no pointer cursor
+  because clicking it doesn't open a detail view (click = zoom out).
+
+**Z-axis printer (July 2026):** `renders/z-axis-printer.glb`
+sits deeper in the scene behind the scooter. Started as a background prop;
+now Project 04 — clickable/hoverable and featured like the others (see the
+featured-zoom section). Loader mirrors the scooter's (clone materials
+with `transparent = true`, normalise to 1.8 units, sit on ground). Base
+position `(-4.5, 0.3)`: screen-X ∝ x−z = −4.8 sits it right of the scooter
+(−5.25), toward the car; x+z = −4.2 pushes it deeper than the Rivian (−3.2).
+Final per-frame mechanic — the two axes are governed DIFFERENTLY, and the
+asymmetry is the point (measured at this spot, full cursor sweep: local dots
+move ~37px horizontally but only ~7px vertically):
+- **Horizontal: dot glue, no damping.** A lattice anchor is calibrated under
+  `PRINTER_POS` at load (rest-pose camera + `invertGroundRest`, same recipe
+  as the Rivian's wheel probes); per frame the printer's NDC-x follows
+  `projectGround(anchor)` exactly. Damping the sway instead was tried twice
+  (world-static ~14px, then 85%-damped ~2.6px) and the user said "way too
+  much" BOTH times — with the dots sweeping 37px, any screen-stilled object
+  visibly skates across the field, and the eye reads that relative slide as
+  the object moving (induced motion). Gluing raises the ABSOLUTE swing to
+  ~45px but zeroes the slide at the ground contact, which is what actually
+  reads as "less movement". Do not "fix" this by damping x again.
+- **Vertical: damped against a rest camera.** The camera's vertical tracking
+  (el + lookAt vShift) pivots on the origin; the printer sits ~3 units
+  beyond it and was levered ~18px. Project `PRINTER_POS` through the live
+  camera and through `printerRestCam` (el/lookAt pinned to vertical rest, az
+  pinned to the −0.09 resting hSkew), keep `1 − PRINTER_BOB_DAMP` (0.92 →
+  1.9px) of the NDC-y delta. Damping is fine here because the local dots
+  barely move vertically (~7px), so no skate.
+The combined NDC point is raycast back onto y=0 for the new ground position.
+
+**Print-action rig (July 2026):** the GLB is ONE fused mesh — no separate
+carriage/belt nodes, no animation clips — so the "actively printing" effect
+is a procedural overlay built at load in the printer loader:
+- **The model is kept fully INTACT — do not cut the mesh.** A long
+  iteration tried removing the A-frame gantry from the fused mesh
+  (region-based triangle removal; it leans the wrong way for a belt
+  printer) to replace it with procedural rails. Every variant — full-deck
+  cut, surgical z-bands with a flywheel exception — read as broken or
+  over-removed to the user, who finally asked to "maintain the entire
+  model". The A-frame stays and serves as the visual gantry.
+- **Belt surface:** striped CanvasTexture on a thin box, running the whole
+  bed up to the drive machinery (x −0.935..0.52 — the housings at x 0.6+
+  sit above belt height, so it cannot extend further); `texture.offset.x`
+  scrolls with the belt speed.
+- **Cross beam (X axis):** a z-spanning bar with truck blocks that rides
+  UP the model's own A-frame front legs — the driver keeps it on the
+  legs' front-face line (`x = 0.16 + (y + 0.15) / 1.47`, measured from
+  the mesh) at the head's height. No procedural rails.
+- **Occlusion — `workZ = −0.25`:** at the featured yaw (PI − 0.4), local
+  −z faces the viewer, and at the belt's centreline the A-frame's near
+  leg hides the head entirely. The whole print line (gears, head sweep
+  centre, fall, hole) is pulled to z −0.25 so the head works in the
+  frame's visible window. (First attempt moved it to +0.05 — wrong
+  direction, +z faces AWAY at this yaw.)
+- **45° print head:** carriage plate → finned heatsink (5 disc fins) →
+  heatbreak → heater block → nozzle cone, all in hardware grey 0x5a5a57
+  matched to the model body (user vetoed the earlier darker shade),
+  `rotation.z = −PI/4` (belt printers print onto a 45° plane). Tip is at
+  head-local (0, −0.165) → lean offset (−0.117, −0.117). The head RIDES the
+  plane layer by layer: each frame the driver finds the print front — the
+  top of the 45° slice where the plane meets the emerging gear (`min(yTop,
+  C − leadingEdge)`) — quantises it to `LH = 0.011` layer steps, smooths
+  (exp, ~0.3s), and places the tip on the plane at that height
+  (`x = C − y`), so the head climbs as the gear builds. The z sweep is a
+  constant-speed zigzag (0.9s round trip) whose amplitude is the CHORD
+  WIDTH of the slice the plane is currently cutting through the gear
+  (`hw = sqrt(R² − dx²)` with the chord x clamped into the plane∩gear
+  range) — the nozzle only travels over material it is actually
+  extruding. **Stall behaviour (user request):** when NO gear intersects
+  the plane, `printing` (smoothed 0..1) eases to 0 and the head glides to
+  a home pose — `PARK_Z = −0.32` beside the near leg, tip lifted to
+  `yBot + 0.05`, zigzag and y jitter blended out — then eases back into
+  the sweep when the next gear arrives. It must NOT pantomime printing
+  over an empty belt. NO melt bead — the user vetoed the glowing dot.
+- **The print plane — the piece that makes growth read as printing:** a
+  45° `THREE.Plane` through the gantry foot (local x + y = PRINT_PX +
+  PRINT_PY, normal (−1,−1,0)) assigned as `clippingPlanes` on the part
+  materials (`renderer.localClippingEnabled = true`, `clipShadows: true`,
+  `side: DoubleSide` so the cut face isn't hollow). Parts are born fully
+  behind it (X0 = 0.30) and material genuinely APPEARS at the nozzle line
+  as the belt carries them out — no scale-pop. Clipping planes live in
+  WORLD space, so it is re-derived from `printerGroup.matrixWorld` every
+  frame (the group moves constantly under the dot glue).
+- **Parts are small sprockets** (extruded 9-tooth gear Shape with a hub
+  hole, 0xB57F27 — echoes the car's sprocket detail and the Rivian accent),
+  flat on the belt, fresh yaw each lap.
+- **End-of-belt exit:** past `X_EDGE` (−0.945) a part tips forward
+  (rotation.z ramps), tumbles off with a slight forward toss (deterministic
+  in printT — pause/resume safe), and SINKS through a second clipping
+  plane at ground level (`groundPlane`, refreshed per frame like the print
+  plane; default clip-union means either plane clips) into a dark
+  `CircleGeometry` "hole" in the floor at local (−1.0, ground, −0.09).
+  Parts recycle only while hidden below ground (SPAN 1.36 leaves ~2s
+  buried) — no pop-out-of-existence.
+Group-local geometry measured from the mesh (see `window._printer` debug
+handle): belt frame x −0.95..0, rung tops y ≈ −0.15, gantry x 0.1..0.9
+(apex y 0.38). The rig is a CHILD of the printer group, so ground glue,
+featured glide, scaling, and the fade loop (rig meshes are pushed into
+`printerMeshes` — materials must be `transparent: true`) all apply for
+free. Driver (RAF): `printOn` eases toward 1 only while `featured ===
+'printer'` (scaled by `ease`), and `printT += dt * printOn` — the animation
+PAUSES on zoom-out and RESUMES where it was on the next visit (user
+requirement). Speed knobs: `BELT_V` 0.045 u/s, `SPAN` 1.15, head sweep
+2.4 rad/s.
+**Ground slide only, never a world-y lift** — two earlier attempts:
+(1) world-y counter-shift: exact damping but lifting off y=0 made the sun
+shadow slide out from under its feet (user complaint); (2) analytic
+slide-away-from-camera: shadow fixed, but motion toward the vanishing point
+added ~5px of horizontal drift for this off-centre object. The raycast form
+has neither problem. Gated `ease < 0.4` (faded out past there; zoom camera
+makes the plane intersection unstable) and returns to base beyond. It fades
+on the plain `fadeOut` curve during any featured zoom.
+
 **Zoom fade:** both side objects fade out as the zoom starts so the side view
 features only the race car:
 
@@ -281,35 +457,115 @@ Screen-X in the isometric view is proportional to `x − z` — the original
 edge on narrower windows. `(1.2, −4.4)` keeps depth (`x+z ≈ −3.2`) similar
 while pulling it inward.
 
+**Steering wheel (July 2026):** `renders/steering.glb` — Project 05, the
+smallest prop in the scene (normalised to 1.2 units). Stands upright on its
+rim edge at `STEERING_POS = (2.7, −1.7)`: `x−z = 4.4` puts it right of the
+car, short of the Rivian's 5.6; `x+z = 1.0` keeps it shallow, so it uses the
+SCOOTER's co-rotation mechanic (orbit position + counter-yaw with az — fine
+for small `|D|`, tiny footprint; no ground glue needed). Base yaw
+`PI/4 − 0.35` — toward the NE camera, a touch off dead-on. Like the printer
+and scooter, the GLB ships **no materials** → keep the untouched glTF
+default (white base, fully metallic) so it renders the exact same grey as
+those props. An earlier `color 0x2B2A27` override made it read darker than
+everything else and was removed.
+
+The bottom-right of the four face buttons is split out of the fused mesh and
+tinted green — it is the race-game easter egg's entry point (hover + click
+channels mirror the sprocket/seat pattern). See
+[race-game.md](race-game.md) for the split constants and the game itself.
+
+**Scooter seat/cargo module (July 2026):** the real scooter's rear seat +
+cargo rack is removable, so it is the scooter's clickable component (the
+sprocket pattern): zoomed on the scooter, the module owns the yellow
+glint/hover channel; clicking it detaches it (`seatOpen`), any click
+re-seats it, and `_cycleFeatured`/`_zoomOutAll` force it closed. The GLB is
+ONE fused mesh (positions only — flat-shaded default material), so the
+module is split out at load by triangle-centroid region, two meshes sharing
+the original position attribute with different indices (same trick as the
+race car's wheel split):
+
+- Region (mesh-local: x = length, handlebars at −x; y = height):
+  `(cx > 0.02 && cy > −0.56)` — rack over the rear wheel — OR
+  `(cx > −0.12 && cy > CUT_Y && |cz| < 0.13)` — the seat column, a narrow-z
+  tube descending to the deck. `CUT_Y = −0.61` cuts at the column base
+  (user-tuned twice: first cut at deck-strut height −0.44 left a jagged
+  sliver standing on the deck; −0.60 still read as "broken off"). The |cz|
+  filter keeps the wide fender/wheel shell out; deck-top centroids are
+  ≤ −0.63, safe by 0.02.
+- **Clean cut:** the index split leaves ragged part-triangle fringes both
+  sides of the plane. Two `BoxGeometry` plates sized to the column's
+  cross-section (measured x −0.111..0.009, z ±0.05) hide them — flat end
+  plate on the module, slightly LARGER socket collar on the deck (different
+  sizes so nested faces never z-fight). Reads as a quick-release joint.
+- **Pivot:** the seat mesh is recentred inside a group at the module's own
+  centre so the detach tilt turns about the module. The centre is averaged
+  from the module's triangles — `computeBoundingBox` is USELESS here, it
+  reads the full shared position attribute (both split meshes report the
+  whole scooter's bbox; this also means load-time normalise/ground code is
+  unaffected by the split).
+- **Detach animation** (RAF, `seatOpenT` → smoothstep, 0.7s out / 0.5s
+  back): lift leads (`rise = st^0.6 * 0.5`), rearward +x drift arrives late
+  (`st² * 0.5`) — an unhook arc — swing `rotation.z = st*0.10 +
+  sin(st·π)*0.06` mostly unwinds, scale settles at 1.08. While open the
+  frame dims (`1 − seatOpenEase*0.72`, per-mesh via `userData.isSeat`), the
+  project panel yields (ppIn multiplies `1 − max(openEase, seatOpenEase)
+  *2.5`), and `transitioning` includes the seat ease so hover raycasts pause.
+- **Gotcha:** the idle glint sets `outlineYellow.selectedObjects` on its own
+  schedule — when the glint gate goes inactive (e.g. the module detaches
+  mid-swell) the selection must be cleared in the else-branch or the outline
+  sticks at full strength on the floating module.
+- Debug handles: `window._feature(name)` zooms a project from rest without
+  a click; `window._seatDetach(bool)` drives the detach directly.
+
 ---
 
-## Featured-project zoom — all three models clickable
+## Featured-project zoom — all five models clickable
 
-The nav hint promises "Click on a project to view more"; all three models now
-deliver it. `featured` (`'car' | 'rivian' | 'scooter'`) is set by the click
-handler at rest; the SAME zoom animation (`zoomT`/`ease`, camera dolly to the
-origin side-view, dot-grid reprojection) then runs for any of them.
+The nav hint promises "Click on a project to view more"; all five models now
+deliver it. `featured` (`'car' | 'rivian' | 'scooter' | 'printer' |
+'steering'`) is set by the click handler at rest; the SAME zoom animation
+(`zoomT`/`ease`, camera dolly to the origin side-view, dot-grid reprojection)
+then runs for any of them. Arrow cycling order: `FEATURE_ORDER = ['scooter',
+'printer','car','steering','rivian']` — left-to-right by screen position
+(modulo uses `FEATURE_ORDER.length` — don't hardcode the count).
 
 - **The clicked model glides to the origin stage** as `ease` advances: its
-  rest pose (Rivian: last ground-glue solution, frozen past ease 0.4; scooter:
-  its az-orbit pose) is lerped to `FEATURE_POSE[name]` — position (0,0,0),
-  a yaw that gives a nose-right side profile like the car's, and a stage scale.
+  rest pose (Rivian and printer: last ground-glue solution, frozen past ease
+  0.4; scooter: its az-orbit pose) is lerped to `FEATURE_POSE[name]` —
+  position (0,0,0), a stage yaw, and a stage scale.
   The car needs no glide (it already lives at the origin).
 - `FEATURE_POSE`: rivian `{scale: 0.75, yaw: -PI/2}` (4.5-unit model scaled to
   ~car size; -PI/2 because its length axis lies along world Z, rear at +z);
   scooter `{scale: 1.10, yaw: PI}` (scale multiplies its base normalisation;
   watch the y-position compensation `scooterBaseY * k` that keeps wheels on
-  the ground when scaling about the group origin).
+  the ground when scaling about the group origin); printer
+  `{scale: 1.45, yaw: PI - 0.4, el: 0.30}` (yaw ~23° off dead-side — user
+  wanted a three-quarter view, not a pure profile; its stage position also
+  carries the load-time recentring offset `(printerBase − PRINTER_POS) * k`
+  so the VISUAL bbox centre — not the arbitrary GLB origin — lands on the
+  stage); steering `{scale: 1.80, yaw: -0.55, el: 0.24}` (its face points +z
+  at yaw 0 — dead-on to the zoom camera it reads as a flat black cutout, so
+  it takes a three-quarter yaw plus a raised camera to show rim depth).
+- **Per-project zoom elevation:** `FEATURE_POSE[..].el` overrides the shared
+  `ZOOM_EL` (0.10) for that project's dolly — the printer zooms to a higher
+  vantage (0.30, looking down onto the bed). Caveat: the dot grid's side-view
+  constants (`SV_*`) are derived for ZOOM_EL = 0.10, so a raised el slightly
+  mismatches the zoomed dot plane — checked visually at 0.30 and it reads
+  fine (the dots are a stylised background band by then), but don't push el
+  much higher without re-checking the dots/shadow relationship.
 - **Fades:** non-featured side models fade with `1 - ease*2.5`. The car fades
   FASTER (`1 - ease*4`, applied directly — NOT through its smoothed hover-dim
   opacity, whose lag made the car linger while the camera dollied toward its
   own side view, reading as the car transitioning behind the fade). The
   sprocket gear fades on the car's curve (materials need `transparent = true`).
 - **Gates:** sprocket click/hover only when `featured === 'car'`; rivian /
-  scooter hover-cursor only at rest (`ease < 0.05`); car hover outline only
-  when `carOpacity > 0.05` (raycaster hits invisible meshes otherwise).
+  scooter / printer / steering hover-cursor only at rest (`ease < 0.05`);
+  car hover outline only when `carOpacity > 0.05` (raycaster hits invisible
+  meshes otherwise).
 - Zoom-out reverses everything; `featured` persists until the next click
   (harmless — at ease 0 all models are at their rest poses).
+- The sheet note shows `Sheet NN/05` — bump the denominator when adding a
+  sixth project.
 
 ---
 

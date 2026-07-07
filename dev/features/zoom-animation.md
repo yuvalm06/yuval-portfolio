@@ -150,6 +150,62 @@ pts.push({ A, D, pScale: 1 / denom });
 
 ---
 
+## Rev vibration (car feature only)
+
+While the car is featured, its pivot group (`carGroup`, wrapping the GLB in the
+loader) gets a subtle engine-rev animation in the render loop, right after
+`openEase` is computed:
+
+- **Idle buzz** — two summed sines (82 and 47 rad/s) on `position.y`,
+  ≈±1 px on screen.
+- **Throttle blip** — `pow(max(0, sin(revClock·π/2.25)), 8)` gives one
+  deterministic pulse ~1.1 s after the zoom lands, swelling the buzz (≈±4 px)
+  and lifting the nose via `rotation.z` (0.006 rad torque rock + shudder).
+- **5-second window** — `revClock` accumulates while `featured === 'car' &&
+  ease > 0.5` and resets otherwise. Gain runs full until 4 s, smoothsteps to
+  zero at 5 s; the car then sits still. Zooming out resets the clock, so
+  re-featuring the car replays the act.
+- Gain is `(featured==='car' ? ease : 0) * (1 - openEase) * window` — zero at
+  rest (pivot returns to identity), fades in with the zoom, and fades out
+  while the sprocket detail view is open so the callout stays aligned.
+
+The sprocket is a separate object and does not vibrate; at this amplitude
+(≈1 px at the sprocket) the mismatch is imperceptible.
+
+### Wheel spin
+
+The GLB is a single merged mesh (`Mesh1`), so the wheels are carved out of it
+at load time (in the car's GLTFLoader callback): each vertex is tested against
+a cylinder around each axle — `WHEEL_AXLES` holds the axle centres/radii in
+mesh-local coords, measured offline from the GLB — and triangles whose three
+vertices all fall inside a cylinder move to a per-axle wheel geometry (shared
+position attribute, filtered index; the body keeps the complement index).
+
+Axle centres are least-squares circle fits to the tire tread — bbox midpoints
+were ~0.02 local units off and made the wheels visibly orbit. The cut radius
+must stay below the nearest non-wheel geometry (front: floor debris starts at
+radial 0.170) or fragments orbit outside the tire silhouette and sweep past
+the ground. Current values: front (−0.3541, −0.2566) r 0.166, rear
+(+0.6738, −0.2407) r 0.170.
+
+Key constraint: only geometry with `|z| > WHEEL_ZMIN (0.30)` spins. That
+excludes the suspension arms/uprights (inboard of 0.30), and the resulting
+static/spinning seam lands on the rotationally symmetric tire barrel where it
+is invisible. The spoke face lives at `|z| ≈ 0.40–0.46` and spins wholesale.
+
+Each wheel goes in a pivot group positioned on the axle line (`carWheels`);
+the loop advances `wheelSpin += dt * rev * (3.5 + 12 * blip)` — slow roll at
+idle, surging on each throttle blip. Positive local-z rotation reads as
+nose-forward through the model's 180° yaw. Wheel meshes share the body's
+cloned material and are pushed into `modelMeshes`, so opacity fades, hover
+outline, and click raycasts all include them automatically.
+
+If the car GLB is ever replaced, re-measure `WHEEL_AXLES` (contact-patch
+clustering + bbox of `|z| > 0.25` verts near each axle — see the offline
+analysis method in git history for this feature).
+
+---
+
 ## Hover outline during zoom
 
 The outline (OutlinePass) is gated off when zoomed:
@@ -176,9 +232,12 @@ const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox'] 
 const page = await browser.newPage();
 await page.setViewport({ width: 1400, height: 820 });
 await page.goto('http://localhost:3000', { waitUntil: 'networkidle0' });
+await new Promise(r => setTimeout(r, 2000));
+// The site opens on a landing chooser — click the Hands-On (left) half first
+await page.mouse.click(364, 407);
 await new Promise(r => setTimeout(r, 3000));
 await page.screenshot({ path: '/tmp/state_iso.png' });
-await page.click('body', { offset: { x: 700, y: 410 } });
+await page.mouse.click(700, 430);   // the car, centre of the 3D stage
 await new Promise(r => setTimeout(r, 1500));
 await page.screenshot({ path: '/tmp/state_zoomed.png' });
 await browser.close();

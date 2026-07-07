@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Yuval Munz — Portfolio</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231A1916'/%3E%3Ctext x='32' y='42' font-family='Helvetica,Arial,sans-serif' font-size='26' font-weight='700' letter-spacing='-1' fill='%23EEECEA' text-anchor='middle'%3EYM%3C/text%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -20,8 +21,6 @@
       --ink:        #1A1916;
       --ink-mid:    #4A4844;
       --ink-light:  #8A8784;
-      --pill-bg:    #2E2D2B;
-      --pill-icon:  #FFFFFF;
       --accent:     #2E2D2B;
       --border:     rgba(26,25,22,0.12);
       --radius:     6px;
@@ -86,7 +85,7 @@
     .nav {
       position: absolute;
       top: 0; left: 0; right: 0;
-      z-index: 20;
+      z-index: 35;    /* above the split intro so the brand + menu persist */
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -125,29 +124,6 @@
       display: flex;
       align-items: center;
       gap: 10px;
-    }
-
-    .nav-brand {
-      background: rgba(220,218,213,0.85);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 6px 12px;
-      font-size: 12.5px;
-      font-weight: 500;
-      letter-spacing: 0.01em;
-      color: var(--ink-mid);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      white-space: nowrap;
-    }
-
-    .nav-brand sup {
-      font-size: 9px;
-      color: var(--ink-light);
-      top: 0;
     }
 
     .nav-menu-btn {
@@ -265,42 +241,9 @@
     .nav-footer a:hover { color: rgba(255,255,255,0.6); }
 
     /* ─────────────────────────────────────────
-       SCENE (3D render area)
+       DISTANCE FOG
+       atmospheric haze that fades dots into bg toward the top
     ───────────────────────────────────────── */
-    .scene {
-      position: absolute;
-      inset: 0;
-      z-index: 3;
-    }
-
-    /* The actual render image — swap this src with your Blender output */
-    .scene-img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center 30%;
-      display: block;
-    }
-
-    /* Placeholder shown when there's no real render yet */
-    .scene-placeholder {
-      width: 100%;
-      height: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: transparent;   /* let canvas dot-grid show through */
-    }
-
-    .scene-placeholder svg {
-      width: 100%;
-      height: 100%;
-    }
-
-    /* ─────────────────────────────────────────
-       HOTSPOT PILLS
-    ───────────────────────────────────────── */
-    /* Distance fog — atmospheric haze that fades dots into bg toward the top */
     .distance-fog {
       position: absolute;
       inset: 0;
@@ -314,96 +257,6 @@
         rgba(238,236,234,0.06) 42%,
         rgba(238,236,234,0.00) 58%
       );
-    }
-
-    .hotspot {
-      position: absolute;
-      z-index: 8;
-      transform: translate(-50%, -50%);
-      cursor: pointer;
-    }
-
-    .hotspot-btn {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: var(--pill-bg);
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      transition: transform 0.2s, background 0.2s;
-      position: relative;
-    }
-
-    .hotspot-btn::before {
-      content: '';
-      position: absolute;
-      inset: -4px;
-      border-radius: 50%;
-      border: 1px solid rgba(46,45,43,0.25);
-      animation: pulse-ring 2.4s ease-out infinite;
-    }
-
-    .hotspot-btn::after {
-      content: '';
-      position: absolute;
-      inset: -10px;
-      border-radius: 50%;
-      border: 1px solid rgba(46,45,43,0.1);
-      animation: pulse-ring 2.4s ease-out infinite 0.4s;
-    }
-
-    @keyframes pulse-ring {
-      0%   { transform: scale(0.88); opacity: 0; }
-      20%  { opacity: 1; }
-      100% { transform: scale(1.4);  opacity: 0; }
-    }
-
-    .hotspot-btn:hover { background: #1a1916; transform: scale(1.1); }
-
-    .hotspot-btn svg {
-      width: 16px; height: 16px;
-      fill: none;
-      stroke: var(--pill-icon);
-      stroke-width: 1.6;
-      stroke-linecap: round;
-      stroke-linejoin: round;
-    }
-
-    /* Tooltip */
-    .hotspot-tip {
-      position: absolute;
-      left: 50%;
-      bottom: calc(100% + 12px);
-      transform: translateX(-50%);
-      background: var(--ink);
-      color: #fff;
-      font-size: 11.5px;
-      font-weight: 500;
-      white-space: nowrap;
-      padding: 6px 10px;
-      border-radius: 5px;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.15s, bottom 0.15s;
-      letter-spacing: 0.02em;
-    }
-
-    .hotspot-tip::after {
-      content: '';
-      position: absolute;
-      top: 100%;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 5px solid transparent;
-      border-top-color: var(--ink);
-    }
-
-    .hotspot:hover .hotspot-tip {
-      opacity: 1;
-      bottom: calc(100% + 14px);
     }
 
     /* ─────────────────────────────────────────
@@ -477,31 +330,146 @@
     }
 
     /* ─────────────────────────────────────────
-       PAGE INDICATOR dots (right edge)
+       SPLIT INTRO — front door: two equal worlds
     ───────────────────────────────────────── */
-    .page-dots {
+    .split-intro {
       position: absolute;
-      right: 22px;
-      top: 50%;
-      transform: translateY(-50%);
-      z-index: 20;
+      inset: 0;
+      z-index: 30;               /* over page chrome, under nav (35) */
+      display: flex;
+      border-radius: 14px;
+      overflow: hidden;
+      transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1);
+    }
+
+    /* choosing a side swipes the whole door toward the other one */
+    .split-intro.exit-left  { transform: translateX(-100%); pointer-events: none; }
+    .split-intro.exit-right { transform: translateX(100%);  pointer-events: none; }
+
+    .split-intro::after {   /* grain, same as the card */
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.035;
+      pointer-events: none;
+    }
+
+    .split-half {
+      position: relative;
+      flex: 1;
+      min-width: 0;
       display: flex;
       flex-direction: column;
-      gap: 7px;
-    }
-
-    .dot {
-      width: 5px; height: 5px;
-      border-radius: 50%;
-      background: var(--border);
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: var(--bg);
       cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
+      transition: background 0.25s ease;
     }
 
-    .dot.active {
-      background: var(--ink-mid);
-      transform: scale(1.3);
+    .split-half.left { border-right: 1px solid var(--border); }
+
+    /* each half previews its world's ground: dots vs graph paper */
+    .split-half.left::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(108,90,135,0.16) 1.2px, transparent 1.3px);
+      background-size: 24px 24px;
+      -webkit-mask-image: linear-gradient(to bottom, transparent 4%, rgba(0,0,0,0.7) 45%, #000 90%);
+      mask-image: linear-gradient(to bottom, transparent 4%, rgba(0,0,0,0.7) 45%, #000 90%);
+      pointer-events: none;
     }
+
+    .split-half.right::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(26.57deg,  rgba(108,90,135,0.06) 0 1px, transparent 1px 26px),
+        repeating-linear-gradient(153.43deg, rgba(108,90,135,0.06) 0 1px, transparent 1px 26px);
+      -webkit-mask-image: linear-gradient(to bottom, transparent 4%, rgba(0,0,0,0.7) 45%, #000 90%);
+      mask-image: linear-gradient(to bottom, transparent 4%, rgba(0,0,0,0.7) 45%, #000 90%);
+      pointer-events: none;
+    }
+
+    .split-half:hover { background: #E5E3DF; }   /* grey highlight */
+
+    .split-label {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+
+    .split-title {
+      font-size: clamp(38px, 4.5vw, 58px);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      line-height: 1;
+      transition: transform 0.25s ease;
+    }
+
+    .split-half:hover .split-title { transform: translateY(-3px); }
+
+    .split-desc {
+      font-size: 12px;
+      color: var(--ink-light);
+      margin-top: 4px;
+    }
+
+    /* ─────────────────────────────────────────
+       EDGE TABS — thin flip handles on the card sides
+    ───────────────────────────────────────── */
+    .edge-tab {
+      position: absolute;
+      top: 50%;
+      z-index: 21;
+      width: 34px;
+      height: min(280px, 44%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(220,218,213,0.75);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid var(--border);
+      cursor: pointer;
+      transition:
+        background 0.2s,
+        transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.35s ease;
+    }
+
+    .edge-tab.left  { left: 0;  border-left: none;  border-radius: 0 6px 6px 0; transform: translateY(-50%); }
+    .edge-tab.right { right: 0; border-right: none; border-radius: 6px 0 0 6px; transform: translateY(-50%); }
+
+    .edge-tab:hover { background: rgba(200,198,194,0.92); }
+
+    .edge-tab span {
+      writing-mode: vertical-rl;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      user-select: none;
+    }
+
+    .edge-tab.left span { transform: rotate(180deg); }
+
+    /* hidden state slides into its edge */
+    .edge-tab.left.hidden-tab  { transform: translateY(-50%) translateX(-100%); opacity: 0; pointer-events: none; }
+    .edge-tab.right.hidden-tab { transform: translateY(-50%) translateX(100%);  opacity: 0; pointer-events: none; }
+
+    /* yield to the opened file document on the digital page */
+    .digital-page.file-open ~ .edge-tab { opacity: 0; pointer-events: none; }
 
     /* ─────────────────────────────────────────
        SECTION NAV (bottom-right corner tiny text)
@@ -552,6 +520,46 @@
       border-radius: 14px;
       pointer-events: none;  /* mouse events pass through to card */
       display: block;
+    }
+
+    /* ─────────────────────────────────────────
+       RACE PAGE — steering-wheel easter egg
+    ───────────────────────────────────────── */
+    .race-page {
+      position: absolute;
+      inset: 0;
+      z-index: 45;
+      border-radius: 14px;
+      background: var(--bg);
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0s linear 0.4s;
+    }
+
+    .race-page.open {
+      opacity: 1;
+      visibility: visible;
+      transition: opacity 0.4s ease;
+    }
+
+    .race-page canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 14px;
+      display: block;
+    }
+
+    /* Grain reused from the contact page so the game sits in the same sheet */
+    .race-page::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.035;
+      pointer-events: none;
+      border-radius: 14px;
     }
 
     /* ─────────────────────────────────────────
@@ -1361,6 +1369,54 @@
       white-space: nowrap;
     }
 
+    /* ── Detail callout around the clickable sprocket (car zoom view) ── */
+    .detail-callout {
+      position: absolute;
+      left: 0; top: 0;
+      z-index: 14;
+      pointer-events: none;
+      opacity: 0;
+      will-change: transform, opacity;
+    }
+    .dc-circle {
+      position: absolute;
+      left: 0; top: 0;
+      width: 118px; height: 118px;
+      transform: translate(-50%, -50%);
+      border: 1.5px dashed rgba(255,184,0,0.85);   /* matches the sprocket gold */
+      border-radius: 50%;
+      animation: dc-breathe 3.2s ease-in-out infinite;
+    }
+    @keyframes dc-breathe {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); }
+      50%      { transform: translate(-50%, -50%) scale(1.05); }
+    }
+    .dc-label {
+      position: absolute;
+      left: 0; top: 70px;
+      transform: translateX(-50%);
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      background: rgba(238,236,234,0.92);
+      border: 1px solid rgba(26,25,22,0.18);
+      border-radius: 2px;
+      padding: 4px 8px 3px;
+      white-space: nowrap;
+    }
+    .dc-label::before {          /* short leader up to the circle's bottom edge */
+      content: '';
+      position: absolute;
+      left: 50%;
+      top: -10px;
+      width: 1px;
+      height: 9px;
+      background: rgba(26,25,22,0.35);
+    }
+
     /* ── Drawing-frame corner marks on the card ── */
     .frame-marks { position: absolute; inset: 14px; z-index: 20; pointer-events: none; }
     .frame-marks .tick { width: 12px; height: 12px; }
@@ -1380,6 +1436,437 @@
       text-transform: uppercase;
       color: rgba(26,25,22,0.32);
       white-space: nowrap;
+    }
+
+    /* ─────────────────────────────────────────
+       DIGITAL PAGE (Build 2.0) — flips in from the right.
+       Same world, different matter: the physical page is the shop floor
+       (dots), this one is the drafting table (ruled isometric graph paper),
+       and the projects are files instead of machines.
+    ───────────────────────────────────────── */
+    .digital-page {
+      position: absolute;
+      inset: 0;
+      z-index: 16;               /* above scene + panels, below chrome (20) */
+      border-radius: 14px;
+      background: var(--bg);
+      transform: translateX(100%);
+      transition: transform 0.6s cubic-bezier(0.76, 0, 0.24, 1);
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .digital-page.open {
+      transform: translateX(0);
+      pointer-events: auto;
+    }
+
+    /* Grain — matches the card */
+    .digital-page::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.035;
+      pointer-events: none;
+      border-radius: 14px;
+      z-index: 2;
+    }
+
+    /* Isometric graph paper — ruled lines on the same 26.57° axes as the
+       dot grid, fading in toward the bottom like the dots fade with distance */
+    .digital-page::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(26.57deg,  rgba(108,90,135,0.06) 0 1px, transparent 1px 26px),
+        repeating-linear-gradient(153.43deg, rgba(108,90,135,0.06) 0 1px, transparent 1px 26px);
+      -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.6) 40%, #000 75%);
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.6) 40%, #000 75%);
+      pointer-events: none;
+      border-radius: 14px;
+      z-index: 0;
+    }
+
+    .digital-inner {
+      position: relative;
+      z-index: 1;
+      height: 100%;
+      display: flex;
+      gap: 44px;
+      padding: 76px 46px 40px 24px;
+      transform: translateX(70px);   /* slight parallax against the page slide */
+      transition: transform 0.6s cubic-bezier(0.76, 0, 0.24, 1);
+    }
+
+    .digital-page.open .digital-inner { transform: translateX(0); }
+
+    .digital-left {
+      flex: 0 0 55%;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .digital-sub {
+      font-size: 12.5px;
+      color: var(--ink-light);
+      line-height: 1.6;
+      max-width: 430px;
+      margin-top: 10px;
+    }
+
+    /* ── Manifest — a drawing-register style file index ── */
+    .manifest {
+      margin-top: 24px;
+      font-family: var(--mono);
+      border-top: 1px solid var(--border);
+    }
+
+    .manifest-head,
+    .manifest-row {
+      display: grid;
+      grid-template-columns: 30px 1.25fr 0.95fr 1.3fr 40px 74px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .manifest-head {
+      padding: 10px 10px 8px 26px;   /* left inset clears the edge tab */
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .manifest-row {
+      --d: 0s;
+      padding: 13px 10px 13px 26px;  /* left inset clears the edge tab */
+      border-bottom: 1px solid rgba(26,25,22,0.06);
+      cursor: default;
+      opacity: 0;
+      transform: translateY(8px);
+      transition:
+        opacity 0.45s ease var(--d),
+        transform 0.45s ease var(--d),
+        background 0.15s ease 0s;
+    }
+
+    .digital-page.open .manifest-row { opacity: 1; transform: none; }
+
+    .manifest-row:nth-child(2) { --d: 0.10s; }
+    .manifest-row:nth-child(3) { --d: 0.16s; }
+    .manifest-row:nth-child(4) { --d: 0.22s; }
+    .manifest-row:nth-child(5) { --d: 0.28s; }
+    .manifest-row:nth-child(6) { --d: 0.34s; }
+
+    .manifest-row:hover,
+    .manifest-row.active { background: rgba(26,25,22,0.045); }
+
+    .m-no   { font-size: 10px; color: var(--ink-light); }
+    .m-name {
+      font-family: var(--font);
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .m-type, .m-stack, .m-year {
+      font-size: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .m-type  { color: var(--ink-mid); }
+    .m-stack { color: var(--ink-light); }
+    .m-year  { color: var(--ink-light); }
+
+    .m-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      white-space: nowrap;
+    }
+    .m-status i {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: #B9B7B1;
+      flex-shrink: 0;
+    }
+    .m-status.live i { background: #5c9e6b; }
+
+    /* ── Right column: isometric sheet stack ── */
+    .digital-right {
+      position: relative;
+      flex: 1;
+      min-width: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      padding-bottom: 30px;      /* clear the section-nav arrows */
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity 0.5s ease 0.2s, transform 0.5s ease 0.2s;
+    }
+
+    .digital-page.open .digital-right { opacity: 1; transform: none; }
+
+    #sheetStack {
+      width: min(100%, 370px);
+      height: auto;
+      overflow: visible;
+    }
+
+    #sheetStack .sheet {
+      filter: drop-shadow(0 0 0 rgba(26,25,22,0));
+      transition:
+        transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.4s ease,
+        filter 0.55s ease;
+    }
+
+    /* the hovered file slides out of the pile along the ground's +x axis */
+    #sheetStack .sheet.lift { transform: translate(30px, 15px); }
+
+    .manifest-row { cursor: pointer; }
+    #sheetStack   { cursor: pointer; }
+
+    /* ── File document view — clicking a file lays it out on the table ── */
+    .file-scrim {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      background: rgba(238,236,234,0.58);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.35s ease;
+      border-radius: 14px;
+    }
+
+    .file-scrim.open { opacity: 1; pointer-events: auto; }
+
+    .file-doc {
+      position: absolute;
+      left: 30px;
+      top: 50%;
+      z-index: 6;
+      width: min(580px, calc(55% - 50px));
+      max-height: calc(100% - 96px);
+      overflow-y: auto;
+      scrollbar-width: none;
+      background: #F7F6F4;
+      border: 1px solid rgba(26,25,22,0.16);
+      border-radius: 3px;
+      padding: 24px 26px 16px;
+      box-shadow:
+        0 30px 60px rgba(26,25,22,0.16),
+        0 6px 16px rgba(26,25,22,0.10);
+      transform: translateY(-44%) rotate(0.8deg) scale(0.96);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.3s ease;
+    }
+
+    .file-doc::-webkit-scrollbar { display: none; }
+
+    .file-doc.open {
+      transform: translateY(-50%) rotate(0deg) scale(1);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* While a file is open: the doc docks left, the stack column rises above
+       the scrim, and siblings in the pile recede behind the standing sheet */
+    .digital-page.file-open .digital-right {
+      z-index: 5;
+      pointer-events: none;   /* let clicks fall through to the scrim... */
+    }
+    .digital-page.file-open #sheetStack { pointer-events: auto; }  /* ...except the stack */
+
+    .digital-page.file-open #sheetStack .sheet:not(.front) { opacity: 0.4; }
+
+    /* the standing sheet is positioned by the morph, not the hover-lift,
+       and lifts off the pile with a soft shadow */
+    #sheetStack .sheet.front {
+      transform: none !important;
+      filter: drop-shadow(0 22px 26px rgba(26,25,22,0.20));
+    }
+
+    .file-close {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 28px; height: 28px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--ink-mid);
+      font-size: 13px;
+      font-weight: 300;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+    }
+
+    .file-close:hover { background: var(--ink); color: #fff; border-color: transparent; }
+
+    /* engineering-drawing title block strip */
+    .fd-tb {
+      display: flex;
+      align-items: stretch;
+      border: 1px solid rgba(26,25,22,0.16);
+      border-radius: 2px;
+      margin-bottom: 18px;
+      margin-right: 36px;    /* clear the close button */
+      overflow: hidden;
+    }
+
+    .fd-logo {
+      width: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--mono);
+      font-size: 15px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+      background: rgba(26,25,22,0.05);
+      flex-shrink: 0;
+    }
+
+    .fd-cell {
+      flex: 1;
+      min-width: 0;
+      padding: 7px 11px 6px;
+      border-left: 1px solid rgba(26,25,22,0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .fd-cell span {
+      font-family: var(--mono);
+      font-size: 8px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+
+    .fd-cell b {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--ink);
+      white-space: nowrap;
+    }
+
+    .fd-title {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+
+    .fd-sub {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 14px;
+    }
+
+    .fd-desc {
+      font-size: 12.5px;
+      color: var(--ink-mid);
+      line-height: 1.65;
+      margin-bottom: 14px;
+      max-width: 520px;
+    }
+
+    .fd-points {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      counter-reset: fd-row;
+      margin-bottom: 18px;
+    }
+
+    .fd-points li {
+      font-size: 12px;
+      color: var(--ink-mid);
+      line-height: 1.5;
+      padding-left: 18px;
+      position: relative;
+    }
+
+    .fd-points li::before {
+      content: counter(fd-row, decimal-leading-zero);
+      counter-increment: fd-row;
+      position: absolute;
+      left: 0;
+      top: 1.5px;
+      font-family: var(--mono);
+      font-size: 9px;
+      color: var(--ink-light);
+    }
+
+    .fd-figs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .fd-fig {
+      position: relative;
+      height: 138px;
+      border: 1px solid rgba(26,25,22,0.10);
+      border-radius: 2px;
+      background:
+        repeating-linear-gradient(-45deg,
+          rgba(26,25,22,0.045) 0px, rgba(26,25,22,0.045) 1px,
+          transparent 1px, transparent 7px);
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+    }
+
+    .fd-fig .pp-fig { left: 5px; bottom: 4px; }
+
+
+    @media (max-width: 900px) {
+      .digital-right { display: none; }
+      .digital-left  { flex: 1; }
+      .split-intro   { flex-direction: column; }
+      .split-half.left { border-right: none; border-bottom: 1px solid var(--border); }
+      /* no stack column to share with — recenter the doc */
+      .file-doc {
+        left: 50%;
+        width: calc(100% - 40px);
+        transform: translate(-50%, -44%) rotate(0.8deg) scale(0.96);
+      }
+      .file-doc.open { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
     }
   </style>
 </head>
@@ -1401,10 +1888,9 @@
     <div class="logo-ym"><span>Y</span><span class="logo-expand">uval  </span><span>M</span><span class="logo-expand">unz</span></div>
 
     <div class="nav-right">
-      <div class="nav-brand">YG<sup>*</sup></div>
       <button class="nav-menu-btn" id="menuBtn" aria-label="Open menu">
         <div class="hamburger">
-          <span></span><span></span>
+          <span></span><span></span><span></span>
         </div>
       </button>
     </div>
@@ -1418,7 +1904,8 @@
       <button class="nav-close-btn" id="closeBtn">&#x2715;</button>
     </div>
     <ul class="nav-links">
-      <li><a href="#">Projects <span>Work</span></a></li>
+      <li><a href="#">Projects <span>Build 1.0</span></a></li>
+      <li><a href="#">Digital <span>Build 2.0</span></a></li>
       <li><a href="#">About <span>Me</span></a></li>
       <li><a href="#">Skills <span>Stack</span></a></li>
       <li><a href="#">Contact <span>Reach out</span></a></li>
@@ -1428,6 +1915,12 @@
       <a href="#">LinkedIn</a>
       <a href="#">Resume</a>
     </div>
+  </div>
+
+  <!-- ───────── RACE GAME — steering-wheel easter egg ───────── -->
+  <div class="race-page" id="racePage">
+    <canvas id="raceCanvas"></canvas>
+    <button class="contact-back" id="raceClose" style="z-index:2;">&#x2715;</button>
   </div>
 
   <!-- ───────── CONTACT PAGE ───────── -->
@@ -1673,10 +2166,106 @@
   <!-- Hover callout tag (rest view) -->
   <div class="hover-tag" id="hoverTag">01 · Open-Wheel Prototype</div>
 
+  <!-- Detail callout around the clickable sprocket (car zoom view) -->
+  <div class="detail-callout" id="detailCallout">
+    <div class="dc-circle"></div>
+    <div class="dc-label">Detail A — Click to view</div>
+  </div>
+
   <!-- Drawing-frame corner marks -->
   <div class="frame-marks">
     <i class="tick tl"></i><i class="tick tr"></i><i class="tick bl"></i><i class="tick br"></i>
     <div class="sheet-note">YM · Build 1.0 · Index</div>
+  </div>
+
+  <!-- ───────── DIGITAL PAGE (Build 2.0 — flips in from the right) ───────── -->
+  <div class="digital-page" id="digitalPage">
+    <div class="digital-inner">
+
+      <div class="digital-left">
+        <div class="page-label">Build 2.0</div>
+        <h1 class="page-heading">Digital.</h1>
+        <p class="digital-sub">
+          Work with no mass — products, pipelines, and documents that ship as files.
+        </p>
+
+        <!-- File register: swap names / stacks / statuses with real projects -->
+        <div class="manifest" id="manifest">
+          <div class="manifest-head">
+            <span>No.</span><span>Name</span><span>Type</span><span>Stack</span><span>Year</span><span>Status</span>
+          </div>
+          <div class="manifest-row" data-i="0">
+            <span class="m-no">01</span>
+            <span class="m-name">Pursr Platform</span>
+            <span class="m-type">Full-stack product</span>
+            <span class="m-stack">TypeScript · React · Node</span>
+            <span class="m-year">2026</span>
+            <span class="m-status live"><i></i>Active</span>
+          </div>
+          <div class="manifest-row" data-i="1">
+            <span class="m-no">02</span>
+            <span class="m-name">Campus Cravings OS</span>
+            <span class="m-type">Ops &amp; ordering</span>
+            <span class="m-stack">Next.js · Stripe · Sheets</span>
+            <span class="m-year">2025</span>
+            <span class="m-status live"><i></i>Active</span>
+          </div>
+          <div class="manifest-row" data-i="2">
+            <span class="m-no">03</span>
+            <span class="m-name">Automation Pipelines</span>
+            <span class="m-type">Workflow infra</span>
+            <span class="m-stack">Workato · REST APIs</span>
+            <span class="m-year">2026</span>
+            <span class="m-status live"><i></i>Active</span>
+          </div>
+          <div class="manifest-row" data-i="3">
+            <span class="m-no">04</span>
+            <span class="m-name">Portfolio Engine</span>
+            <span class="m-type">Single-file WebGL</span>
+            <span class="m-stack">Three.js · Canvas 2D</span>
+            <span class="m-year">2026</span>
+            <span class="m-status"><i></i>Shipped</span>
+          </div>
+          <div class="manifest-row" data-i="4">
+            <span class="m-no">05</span>
+            <span class="m-name">Drivetrain Calc Sheets</span>
+            <span class="m-type">Engineering docs</span>
+            <span class="m-stack">MATLAB · Excel</span>
+            <span class="m-year">2025</span>
+            <span class="m-status"><i></i>Docs</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="digital-right">
+        <!-- Isometric file stack — built by JS with the dot grid's projection -->
+        <svg id="sheetStack" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"></svg>
+      </div>
+
+      <!-- ── File document view: opened by clicking a register row / the
+           stack. Lives inside .digital-inner so the sheet-stack column can
+           be raised above the scrim (the inner's transform traps z-order) ── -->
+      <div class="file-scrim" id="fileScrim"></div>
+      <div class="file-doc" id="fileDoc">
+      <button class="file-close" id="fileClose" aria-label="Close file">&#x2715;</button>
+      <div class="fd-tb">
+        <div class="fd-logo" id="fdLogo">PR</div>
+        <div class="fd-cell"><span>File</span><b id="fdNo">01</b></div>
+        <div class="fd-cell"><span>Rev</span><b id="fdRev">A</b></div>
+        <div class="fd-cell"><span>Year</span><b id="fdYear">2026</b></div>
+        <div class="fd-cell"><span>Status</span><b id="fdStatus">Active</b></div>
+      </div>
+      <div class="fd-title" id="fdTitle">Project</div>
+      <div class="fd-sub" id="fdSub">Stack</div>
+      <p class="fd-desc" id="fdDesc">Description</p>
+      <ul class="fd-points" id="fdPoints"></ul>
+      <div class="fd-figs">
+        <div class="fd-fig" id="fdFig1"><span class="pp-fig" id="fdFig1Cap">Fig. 01</span></div>
+        <div class="fd-fig" id="fdFig2"><span class="pp-fig" id="fdFig2Cap">Fig. 02</span></div>
+      </div>
+      </div>
+
+    </div>
   </div>
 
   <!-- ───────── IDENTITY (bottom-left) ───────── -->
@@ -1697,19 +2286,29 @@
     <div class="identity-meta">
       <div class="identity-layer">Build 1.0</div>
       <p class="identity-desc">
-        Physical products designed, machined,<br>
-        and assembled from first principles —<br>
-        mechatronics, fabrication, and motion.
+        Physical builds — designed, machined,<br>
+        and assembled from first principles.
       </p>
     </div>
   </div>
 
-  <!-- ───────── PAGE DOTS ───────── -->
-  <div class="page-dots">
-    <div class="dot active"></div>
-    <div class="dot"></div>
-    <div class="dot"></div>
+  <!-- ───────── SPLIT INTRO (front door: pick a world) ───────── -->
+  <div class="split-intro" id="splitIntro">
+    <div class="split-half left" id="splitLeft">
+      <div class="split-label">Build 1.0</div>
+      <h2 class="split-title">Hands-On.</h2>
+      <p class="split-desc">Machines — designed, machined, assembled.</p>
+    </div>
+    <div class="split-half right" id="splitRight">
+      <div class="split-label">Build 2.0</div>
+      <h2 class="split-title">Digital.</h2>
+      <p class="split-desc">Software, documents, and systems.</p>
+    </div>
   </div>
+
+  <!-- ───────── EDGE TABS (flip handles to the other world) ───────── -->
+  <div class="edge-tab left hidden-tab" id="tabLeft"><span>Hands-On</span></div>
+  <div class="edge-tab right hidden-tab" id="tabRight"><span>Digital</span></div>
 
   <!-- ───────── SECTION PREV / NEXT ───────── -->
   <div class="section-nav">
@@ -1743,7 +2342,9 @@
   menuBtn.addEventListener('click', () => navOverlay.classList.add('open'));
   closeBtn.addEventListener('click', () => navOverlay.classList.remove('open'));
 
-  // Wire nav links to their pages
+  // Wire nav links to their pages; Projects / Digital flip between the two
+  // root pages instead of opening an overlay.
+  const FLIP_TARGETS = { 'Projects': 0, 'Digital': 1 };
   navOverlay.querySelectorAll('.nav-links a').forEach(a => {
     const label = a.firstChild.textContent.trim();
     if (pages[label]) {
@@ -1753,6 +2354,13 @@
         closeAllPages();
         pages[label].classList.add('open');
       });
+    } else if (label in FLIP_TARGETS) {
+      a.addEventListener('click', e => {
+        e.preventDefault();
+        navOverlay.classList.remove('open');
+        closeAllPages();
+        flipTo(FLIP_TARGETS[label]);
+      });
     }
   });
 
@@ -1761,42 +2369,457 @@
   document.getElementById('aboutBack').addEventListener('click', closeAllPages);
   document.getElementById('skillsBack').addEventListener('click', closeAllPages);
 
-  // Close on Escape
+  // Close on Escape: overlays first, then flip back to the physical page
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
+      if (window._raceOpen) { window._closeRace(); return; }
+      const hadOverlay = navOverlay.classList.contains('open') ||
+        Object.values(pages).some(p => p.classList.contains('open'));
       navOverlay.classList.remove('open');
       closeAllPages();
+      if (hadOverlay) return;
+      if (window._fileDocOpen) { window._closeFileDoc(); return; }
+      flipTo(0);
     }
   });
 
-  // ── Page dots ──
-  const dots = document.querySelectorAll('.dot');
-  dots.forEach((dot, i) => {
-    dot.addEventListener('click', () => {
-      dots.forEach(d => d.classList.remove('active'));
-      dot.classList.add('active');
-    });
-  });
+  // ── Page flip: 0 = hands-on (3D scene), 1 = digital work.
+  //    The split intro is the front door; the edge tabs are the handles. ──
+  const digitalPage = document.getElementById('digitalPage');
+  const cardEl      = document.getElementById('card');
+  const splitIntro  = document.getElementById('splitIntro');
+  const tabLeft     = document.getElementById('tabLeft');
+  const tabRight    = document.getElementById('tabRight');
+  let currentPage   = 0;
+  let introUp       = true;
 
-  // ── Section nav buttons (cycle dots) ──
+  // choosing a side swipes the door toward the other one
+  function dismissIntro(chosen) {
+    if (!introUp) return;
+    introUp = false;
+    splitIntro.classList.add(chosen === 1 ? 'exit-left' : 'exit-right');
+  }
+
+  // exactly one tab is out at a time: the handle to the OTHER world
+  function updateTabs() {
+    tabRight.classList.toggle('hidden-tab', introUp || currentPage === 1);
+    tabLeft.classList.toggle('hidden-tab',  introUp || currentPage === 0);
+  }
+
+  function flipTo(i) {
+    const target = Math.max(0, Math.min(1, i));
+    dismissIntro(target);
+    if (target !== currentPage) {
+      currentPage = target;
+      const open = currentPage === 1;
+      digitalPage.classList.toggle('open', open);
+      cardEl.classList.toggle('digital-open', open);
+      window._digitalOpen = open;
+      if (open && window._zoomOutAll) window._zoomOutAll();   // return 3D world to rest
+      if (!open && window._closeFileDoc) window._closeFileDoc();
+    }
+    updateTabs();
+  }
+
+  // intro halves + edge tabs (stopPropagation keeps the card's 3D click
+  // handler from raycasting these clicks)
+  document.getElementById('splitLeft').addEventListener('click',  e => { e.stopPropagation(); flipTo(0); });
+  document.getElementById('splitRight').addEventListener('click', e => { e.stopPropagation(); flipTo(1); });
+  tabLeft.addEventListener('click',  e => { e.stopPropagation(); flipTo(0); });
+  tabRight.addEventListener('click', e => { e.stopPropagation(); flipTo(1); });
+
+  // ── Section nav arrows: cycle featured projects while zoomed on the
+  //    physical page; otherwise flip between the two root pages ──
   const [prevBtn, nextBtn] = document.querySelectorAll('.section-btn');
-  function getActiveDot() { return [...dots].findIndex(d => d.classList.contains('active')); }
 
   prevBtn.addEventListener('click', e => {
     e.stopPropagation();   // don't let the card's click handler zoom out
-    if (window._cycleFeatured && window._cycleFeatured(-1)) return;
-    let i = getActiveDot();
-    dots.forEach(d => d.classList.remove('active'));
-    dots[Math.max(0, i - 1)].classList.add('active');
+    if (!window._digitalOpen && window._cycleFeatured && window._cycleFeatured(-1)) return;
+    flipTo(currentPage - 1);
   });
 
   nextBtn.addEventListener('click', e => {
     e.stopPropagation();
-    if (window._cycleFeatured && window._cycleFeatured(1)) return;
-    let i = getActiveDot();
-    dots.forEach(d => d.classList.remove('active'));
-    dots[Math.min(dots.length - 1, i + 1)].classList.add('active');
+    if (!window._digitalOpen && window._cycleFeatured && window._cycleFeatured(1)) return;
+    flipTo(currentPage + 1);
   });
+
+  // ── Digital page: file register ⇄ isometric sheet stack ──────────────────
+  (function () {
+    // Detail copy per file — swap the Filler lines with real project stories.
+    // logo: initials printed in each sheet's title block AND shown in the
+    // opened document's title block (replace with an <image> href later).
+    // figs: captions for the two figure slots in the opened document;
+    // figImg: optional [url, url] to fill those slots with real screenshots.
+    const DIGITAL_INFO = [
+      { title: 'Pursr Platform', meta: 'TypeScript · React · Node',
+        logo: 'PR', rev: 'B', year: '2026', status: 'Active',
+        desc: 'Filler: two or three sentences on what Pursr is, the problem it goes after, and what you own end-to-end as founding engineer.',
+        figs: ['Product UI', 'System architecture'], figImg: [null, null],
+        points: ['Filler: core product architecture and data model',
+                 'Filler: features shipped as founding engineer',
+                 'Filler: link the live app or repo here'] },
+      { title: 'Campus Cravings OS', meta: 'Next.js · Stripe · Sheets',
+        logo: 'CC', rev: 'C', year: '2025', status: 'Active',
+        desc: 'Filler: the story of Campus Cravings — what you built to run it, how orders flow through it, and what it does per week.',
+        figs: ['Ordering flow', 'Ops dashboard'], figImg: [null, null],
+        points: ['Filler: ordering flow and menu tooling',
+                 'Filler: ops dashboards and delivery logistics',
+                 'Filler: growth and revenue notes'] },
+      { title: 'Automation Pipelines', meta: 'Workato · REST APIs',
+        logo: 'AP', rev: 'A', year: '2026', status: 'Active',
+        desc: 'Filler: the automation work at Workato — which workflows you wired together, what they replaced, and the hours they hand back.',
+        figs: ['Recipe graph', 'Integration map'], figImg: [null, null],
+        points: ['Filler: workflow automations built at Workato',
+                 'Filler: integration recipes and internal tooling',
+                 'Filler: what they replaced and the time saved'] },
+      { title: 'Portfolio Engine', meta: 'Three.js · Canvas 2D',
+        logo: 'PE', rev: 'D', year: '2026', status: 'Shipped',
+        desc: 'Filler: this site — one HTML file, a hand-rolled perspective dot grid, a WebGL scene glued to it, and the camera math that keeps them in lockstep.',
+        figs: ['Dot grid projection', 'Zoom camera path'], figImg: [null, null],
+        points: ['Filler: single-file site — dot grid + WebGL scene',
+                 'Filler: custom projection math, camera matching',
+                 'Filler: this page is part of the exhibit'] },
+      { title: 'Drivetrain Calc Sheets', meta: 'MATLAB · Excel',
+        logo: 'DC', rev: 'E', year: '2025', status: 'Docs',
+        desc: 'Filler: the FSAE paper trail — powertrain models, sprocket load cases, and the gearing studies behind the parts on page one.',
+        figs: ['Gearing study', 'Load case sheet'], figImg: [null, null],
+        points: ['Filler: FSAE powertrain models and calc documents',
+                 'Filler: sprocket load cases and gearing studies',
+                 'Filler: exported drawings and revision history'] },
+    ];
+
+    const rows = document.querySelectorAll('.manifest-row');
+    const svg  = document.getElementById('sheetStack');
+    const NS   = 'http://www.w3.org/2000/svg';
+    const n    = rows.length;
+
+    // Same isometric projection as the dot grid / SVG objects (see CLAUDE.md):
+    // sx = x*22 - z*22 ; sy = x*11 + z*11 - y*16
+    const PJ = (x, y, z) => ({ x: (x - z) * 22, y: (x + z) * 11 - y * 16 });
+
+    const SHEET_W = 5.6, SHEET_D = 7.4, SHEET_T = 0.30, STACK_STEP = 0.72;
+    // hand-tuned per-sheet offsets + tiny yaw so the pile reads as dropped,
+    // not extruded
+    const JITTER = [
+      { ox:  0.00, oz:  0.00, rot: -0.05 },
+      { ox:  0.45, oz: -0.35, rot:  0.05 },
+      { ox: -0.40, oz:  0.30, rot:  0.03 },
+      { ox:  0.30, oz:  0.45, rot: -0.04 },
+      { ox: -0.20, oz: -0.30, rot:  0.06 },
+    ];
+
+    const el = (name, attrs) => {
+      const node = document.createElementNS(NS, name);
+      for (const k in attrs) node.setAttribute(k, attrs[k]);
+      return node;
+    };
+    const pts = arr => arr.map(p => p.x.toFixed(1) + ',' + p.y.toFixed(1)).join(' ');
+
+    // Soft ground shadow (same 3-layer language as the render spec, simplified)
+    const defs = el('defs', {});
+    const blur = el('filter', { id: 'stackBlur', x: '-60%', y: '-60%', width: '220%', height: '220%' });
+    blur.appendChild(el('feGaussianBlur', { stdDeviation: 9 }));
+    defs.appendChild(blur);
+    svg.appendChild(defs);
+    const c0 = PJ(SHEET_W / 2, 0, SHEET_D / 2);
+    svg.appendChild(el('ellipse', {
+      cx: c0.x, cy: c0.y + 6, rx: 150, ry: 36,
+      fill: 'rgba(26,25,22,0.10)', filter: 'url(#stackBlur)'
+    }));
+
+    // Geometry is kept in LOCAL sheet coordinates [x, z, y] so each sheet can
+    // be re-projected every frame: at t=0 through the iso pile projection, at
+    // t=1 through a flat front view (the sheet held up to the camera) — the
+    // same dual-projection blend the dot grid uses for the 3D zoom.
+    const FRONT_S = 58;                 // front view: viewBox units per local unit
+    const FK = FRONT_S / 30;            // face-type scale (fonts tuned at 30)
+    const FRONT_ARC = -26;              // px the sheet rises mid-morph (picked up)
+    let frontCX = 0, frontCY = 0;       // set after the viewBox is fitted
+    const F = (x, z) => ({
+      x: frontCX + (x - SHEET_W / 2) * FRONT_S,
+      y: frontCY + (z - SHEET_D / 2) * FRONT_S
+    });
+    const SHEETS = [];
+    const trunc = (s, m) => s.length > m ? s.slice(0, m - 1) + '…' : s;
+
+    for (let i = 0; i < n; i++) {
+      const j = JITTER[i % JITTER.length];
+      const info = DIGITAL_INFO[n - 1 - i];   // sheet i ⇄ file n-1-i
+      const baseY = i * STACK_STEP;
+      const cx = SHEET_W / 2, cz = SHEET_D / 2;
+      const co = Math.cos(j.rot), si = Math.sin(j.rot);
+      // rotate the sheet about its centre in the ground plane, then project
+      const M = (x, z, y) => PJ(
+        cx + (x - cx) * co - (z - cz) * si + j.ox, y,
+        cz + (x - cx) * si + (z - cz) * co + j.oz
+      );
+      const yT = baseY + SHEET_T;
+
+      const g = el('g', { class: 'sheet', id: 'sheet-' + i });
+      const sheet = { g, M, info, t: 0, polys: [], lines: [] };
+
+      const addPoly = (loc, attrs, fadeOut) => {
+        const p = el('polygon', attrs);
+        g.appendChild(p);
+        sheet.polys.push({ el: p, loc, fadeOut });
+      };
+      const addLine = (a, b, attrs) => {
+        const l = el('line', attrs);
+        g.appendChild(l);
+        sheet.lines.push({ el: l, a, b });
+      };
+
+      // side faces (max-x / max-z edges face the camera); they collapse to
+      // nothing in the front view (F ignores height) and fade out with t
+      addPoly([[SHEET_W, 0, yT], [SHEET_W, SHEET_D, yT], [SHEET_W, SHEET_D, baseY], [SHEET_W, 0, baseY]],
+        { fill: '#D8D6D0' }, true);
+      addPoly([[SHEET_W, SHEET_D, yT], [0, SHEET_D, yT], [0, SHEET_D, baseY], [SHEET_W, SHEET_D, baseY]],
+        { fill: '#C6C4BE' }, true);
+      // paper top
+      addPoly([[0, 0, yT], [SHEET_W, 0, yT], [SHEET_W, SHEET_D, yT], [0, SHEET_D, yT]],
+        { fill: '#F7F6F4', stroke: 'rgba(26,25,22,0.10)', 'stroke-width': 1 });
+      // placeholder ruled lines — fade out as the sheet turns to face you,
+      // making room for the real face content (rows near the title block
+      // stop short of it)
+      for (let k = 0; k < 6; k++) {
+        const z = 1.1 + k * 0.92;
+        const xEnd = z < 1.85 ? SHEET_W - 2.5 : SHEET_W - 0.7 - (k % 3) * 0.8;
+        addLine([0.7, z, yT], [xEnd, z, yT],
+          { stroke: '#CDCBC5', 'stroke-width': 1.4, 'stroke-linecap': 'round' });
+      }
+      // drawing title block in the sheet corner (kept in the front view)
+      addPoly([[SHEET_W - 2.1, 0.55, yT], [SHEET_W - 0.55, 0.55, yT],
+               [SHEET_W - 0.55, 1.65, yT], [SHEET_W - 2.1, 1.65, yT]],
+        { fill: 'none', stroke: '#C4C2BC', 'stroke-width': 1 });
+
+      // project logo printed inside the title block: text mapped onto the
+      // sheet plane with a matrix built from the projection's basis vectors
+      // (u = sheet x-axis, v = sheet z-axis, both after the jitter rotation);
+      // the matrix blends to the identity front basis as the sheet stands up
+      const logoText = el('text', {
+        'text-anchor': 'middle',
+        'dominant-baseline': 'central',
+        'font-family': "'IBM Plex Mono', ui-monospace, monospace",
+        'font-size': '0.68',
+        'font-weight': '500',
+        'letter-spacing': '0.05',
+        fill: '#A8A6A0'
+      });
+      logoText.textContent = info.logo;
+      g.appendChild(logoText);
+      sheet.logo = {
+        el: logoText,
+        anchor: [SHEET_W - 1.325, 1.1, yT],
+        iso: [22 * (co - si), 11 * (co + si), -22 * (si + co), 11 * (co - si)]
+      };
+
+      // face content — the real document, revealed as the sheet stands up
+      sheet.face = el('g', { class: 'sheet-face', opacity: 0 });
+      g.appendChild(sheet.face);
+
+      // affine basis of the iso pose (for mapping face content through the
+      // morph): image of local x / z unit vectors and the local origin
+      const m0 = M(0, 0, yT), mu = M(1, 0, yT), mv = M(0, 1, yT);
+      sheet.basis = { Ux: mu.x - m0.x, Uy: mu.y - m0.y,
+                      Vx: mv.x - m0.x, Vy: mv.y - m0.y, Ox: m0.x, Oy: m0.y };
+
+      svg.appendChild(g);
+      SHEETS.push(sheet);
+    }
+
+    // re-project one sheet at blend t (0 = iso pile, 1 = front view). The
+    // sheet also rises in a small arc mid-morph — picked up, then set down.
+    function renderSheet(sheet, t) {
+      const arcY = FRONT_ARC * Math.sin(Math.PI * t);
+      const B = ([x, z, y]) => {
+        const a = sheet.M(x, z, y), b = F(x, z);
+        return { x: a.x + (b.x - a.x) * t, y: a.y + (b.y - a.y) * t + arcY };
+      };
+      for (const p of sheet.polys) {
+        p.el.setAttribute('points', pts(p.loc.map(B)));
+        if (p.fadeOut) p.el.setAttribute('opacity', Math.max(0, 1 - t * 2).toFixed(3));
+      }
+      const lineFade = Math.max(0, 1 - t * 1.8).toFixed(3);
+      for (const l of sheet.lines) {
+        const a = B(l.a), b = B(l.b);
+        l.el.setAttribute('x1', a.x.toFixed(1)); l.el.setAttribute('y1', a.y.toFixed(1));
+        l.el.setAttribute('x2', b.x.toFixed(1)); l.el.setAttribute('y2', b.y.toFixed(1));
+        l.el.setAttribute('opacity', lineFade);
+      }
+      const lg = sheet.logo, iso = lg.iso, a = B(lg.anchor);
+      const m = [
+        iso[0] + (FRONT_S - iso[0]) * t, iso[1] * (1 - t),
+        iso[2] * (1 - t),                iso[3] + (FRONT_S - iso[3]) * t
+      ];
+      lg.el.setAttribute('transform',
+        `matrix(${m[0].toFixed(3)} ${m[1].toFixed(3)} ${m[2].toFixed(3)} ${m[3].toFixed(3)} ${a.x.toFixed(1)} ${a.y.toFixed(1)})`);
+
+      // Face content is authored in front-view coordinates; map that space
+      // through the current blend (blend of two affine maps is affine) so
+      // the printed contents ride the paper through the whole turn.
+      const bs = sheet.basis, S = FRONT_S;
+      const f0x = frontCX - S * SHEET_W / 2, f0y = frontCY - S * SHEET_D / 2;
+      const ma = ((1 - t) * bs.Ux + t * S) / S, mb = ((1 - t) * bs.Uy) / S;
+      const mc = ((1 - t) * bs.Vx) / S,         md = ((1 - t) * bs.Vy + t * S) / S;
+      const b0x = (1 - t) * bs.Ox + t * f0x;
+      const b0y = (1 - t) * bs.Oy + t * f0y + arcY;
+      const me = b0x - (ma * f0x + mc * f0y);
+      const mf = b0y - (mb * f0x + md * f0y);
+      sheet.face.setAttribute('transform',
+        `matrix(${ma.toFixed(4)} ${mb.toFixed(4)} ${mc.toFixed(4)} ${md.toFixed(4)} ${me.toFixed(2)} ${mf.toFixed(2)})`);
+      sheet.face.setAttribute('opacity', Math.max(0, (t - 0.35) / 0.5).toFixed(3));
+    }
+    SHEETS.forEach(s => renderSheet(s, 0));
+
+    // fit the viewBox to the built geometry, then anchor the front view at
+    // the CENTRE OF THE RIGHT COLUMN (not the pile) — the standing sheet is
+    // much taller than the pile and should own the column, sized against the
+    // doc panel on the left. Measured from live layout, converted to viewBox
+    // units (the page is translated off-screen but fully laid out).
+    const bb = svg.getBBox();
+    const vbX = bb.x - 34, vbY = bb.y - 20, vbW = bb.width + 68, vbH = bb.height + 40;
+    svg.setAttribute('viewBox', `${vbX.toFixed(0)} ${vbY.toFixed(0)} ${vbW.toFixed(0)} ${vbH.toFixed(0)}`);
+    {
+      const svgR = svg.getBoundingClientRect();
+      const colR = svg.parentElement.getBoundingClientRect();
+      const pxPerUnit = svgR.width / vbW;
+      frontCX = vbX + (colR.left + colR.width / 2 - svgR.left) / pxPerUnit;
+      frontCY = vbY + (colR.top + colR.height * 0.48 - svgR.top) / pxPerUnit;
+    }
+
+    // build each sheet's face content (static front-view coordinates — it is
+    // invisible until the morph is nearly done, so it never needs to blend)
+    SHEETS.forEach(sheet => {
+      const info = sheet.info;
+      const txt = (x, z, attrs, content) => {
+        const p = F(x, z);
+        const t = el('text', Object.assign({ x: p.x.toFixed(1), y: p.y.toFixed(1) }, attrs));
+        t.textContent = content;
+        sheet.face.appendChild(t);
+      };
+      const MONO = "'IBM Plex Mono', ui-monospace, monospace";
+      const SANS = "'Instrument Sans', sans-serif";
+      // title + stack line
+      txt(0.7, 2.45, { 'font-family': SANS, 'font-size': 10.5 * FK, 'font-weight': 700,
+        'letter-spacing': -0.2 * FK, fill: '#1A1916' }, trunc(info.title, 26));
+      txt(0.7, 2.95, { 'font-family': MONO, 'font-size': 5.2 * FK, 'letter-spacing': 0.7 * FK,
+        fill: '#8A8784' }, info.meta.toUpperCase());
+      // numbered points
+      info.points.slice(0, 3).forEach((pt, k) => {
+        const z = 3.6 + k * 0.42;
+        txt(0.7,  z, { 'font-family': MONO, 'font-size': 4.6 * FK, fill: '#8A8784' }, '0' + (k + 1));
+        txt(1.12, z, { 'font-family': SANS, 'font-size': 5.6 * FK, fill: '#4A4844' }, trunc(pt, 38));
+      });
+      // two figure slots
+      [0, 1].forEach(k => {
+        const x0 = 0.7 + k * 2.18, p = F(x0, 4.95);
+        sheet.face.appendChild(el('rect', {
+          x: p.x.toFixed(1), y: p.y.toFixed(1),
+          width: (2.02 * FRONT_S).toFixed(1), height: (1.55 * FRONT_S).toFixed(1),
+          fill: 'rgba(26,25,22,0.045)', stroke: 'rgba(26,25,22,0.10)', 'stroke-width': 0.8
+        }));
+        txt(x0 + 0.12, 6.28, { 'font-family': MONO, 'font-size': 4.2 * FK,
+          'letter-spacing': 0.5 * FK, fill: '#8A8784' }, 'FIG. 0' + (k + 1));
+      });
+      // footer
+      const no = String(n - SHEETS.indexOf(sheet)).padStart(2, '0');
+      txt(0.7, 6.95, { 'font-family': MONO, 'font-size': 4.6 * FK, 'letter-spacing': 0.5 * FK,
+        fill: '#8A8784' }, `FILE ${no} · REV ${info.rev} · ${info.status.toUpperCase()}`);
+      txt(4.9, 6.95, { 'font-family': MONO, 'font-size': 4.6 * FK, 'letter-spacing': 0.5 * FK,
+        fill: '#8A8784', 'text-anchor': 'end' }, 'YM WORKS');
+    });
+
+    // tween a sheet between the pile and the front view
+    let frontSheet = null, animRAF = null;
+    function tweenFront(sheet, to, dur) {
+      frontSheet = to === 1 ? sheet : frontSheet;
+      const from = sheet.t, start = performance.now();
+      cancelAnimationFrame(animRAF);
+      const step = now => {
+        const k = Math.min(1, (now - start) / dur);
+        const e = k * k * (3 - 2 * k);
+        sheet.t = from + (to - from) * e;
+        renderSheet(sheet, sheet.t);
+        if (k < 1) animRAF = requestAnimationFrame(step);
+        else if (to === 0) {
+          // drop the sheet back into its slot in the paint order
+          const idx = SHEETS.indexOf(sheet);
+          svg.insertBefore(sheet.g, SHEETS[idx + 1] ? SHEETS[idx + 1].g : null);
+          frontSheet = null;
+        }
+      };
+      animRAF = requestAnimationFrame(step);
+    }
+
+    // row i (File 01 on top of the register) ⇄ sheet n-1-i (top of the pile)
+    let activeIdx = 0;
+    function setActive(i) {
+      activeIdx = i;
+      rows.forEach((r, k) => r.classList.toggle('active', k === i));
+      for (let k = 0; k < n; k++) {
+        document.getElementById('sheet-' + k).classList.toggle('lift', k === n - 1 - i);
+      }
+    }
+    rows.forEach((r, i) => r.addEventListener('mouseenter', () => setActive(i)));
+    setActive(0);
+
+    // ── File document view: click a row (or the stack) to open the file.
+    //    The doc panel docks left; the clicked sheet stands up out of the
+    //    pile into a front view on the right. ──
+    const fileScrim   = document.getElementById('fileScrim');
+    const fileDoc     = document.getElementById('fileDoc');
+    const sheetNoteEl = document.querySelector('.sheet-note');
+    const fd = id => document.getElementById(id);
+
+    function openFile(i) {
+      setActive(i);
+      const info = DIGITAL_INFO[i];
+      const no   = String(i + 1).padStart(2, '0');
+      const sheet = SHEETS[n - 1 - i];
+      svg.appendChild(sheet.g);           // paint the standing sheet on top
+      sheet.g.classList.add('front');
+      digitalPage.classList.add('file-open');
+      tweenFront(sheet, 1, 620);
+      fd('fdLogo').textContent   = info.logo;
+      fd('fdNo').textContent     = no;
+      fd('fdRev').textContent    = info.rev;
+      fd('fdYear').textContent   = info.year;
+      fd('fdStatus').textContent = info.status;
+      fd('fdTitle').textContent  = info.title;
+      fd('fdSub').textContent    = info.meta;
+      fd('fdDesc').textContent   = info.desc;
+      fd('fdPoints').innerHTML   = info.points.map(p => `<li>${p}</li>`).join('');
+      ['fdFig1', 'fdFig2'].forEach((id, k) => {
+        fd(id).style.backgroundImage = info.figImg && info.figImg[k] ? `url(${info.figImg[k]})` : '';
+        fd(id + 'Cap').textContent   = `Fig. 0${k + 1} — ${info.figs[k]}`;
+      });
+      fileDoc.scrollTop = 0;
+      fileDoc.classList.add('open');
+      fileScrim.classList.add('open');
+      window._fileDocOpen = true;
+      sheetNoteEl.textContent = `YM · Build 2.0 · File ${no}`;
+    }
+
+    function closeFile() {
+      if (!window._fileDocOpen) return;
+      fileDoc.classList.remove('open');
+      fileScrim.classList.remove('open');
+      digitalPage.classList.remove('file-open');
+      if (frontSheet) {
+        frontSheet.g.classList.remove('front');
+        tweenFront(frontSheet, 0, 480);
+      }
+      window._fileDocOpen = false;
+      sheetNoteEl.textContent = 'YM · Build 2.0 · Index';
+    }
+    window._closeFileDoc = closeFile;
+
+    rows.forEach((r, i) => r.addEventListener('click', () => openFile(i)));
+    svg.addEventListener('click', () => window._fileDocOpen ? closeFile() : openFile(activeIdx));
+    fileScrim.addEventListener('click', closeFile);
+    document.getElementById('fileClose').addEventListener('click', closeFile);
+  })();
 
   // ── Perspective Ground Plane Dot Grid ────────────────────────────────────
   (function () {
@@ -1991,6 +3014,350 @@
   })();
   // ── End Dot Grid ─────────────────────────────────────────────────────────
 
+  // ── Race easter egg ──────────────────────────────────────────────────────
+  // Opened by the green button on the steering wheel's face (the module
+  // script raycasts it and calls window._openRace). A first-person straight-
+  // road runner drawn in the site's sheet style: the run speeds up on its
+  // own, A/D angle the wheel to steer, cones / crates / barriers come at
+  // you. R restarts after a crash; ESC or the ✕ exits back to the portfolio.
+  (() => {
+    const page = document.getElementById('racePage');
+    const cv   = document.getElementById('raceCanvas');
+    const ctx  = cv.getContext('2d');
+
+    const INK = '#1A1916', MID = '#4A4844', GOLD = '#FFB800',
+          GREEN = '#2FA85C', BG = '#EEECEA';
+    const MONO = "'IBM Plex Mono', ui-monospace, monospace";
+
+    const ROAD_HALF = 3.2;    // road half-width, world units
+    const CAM_H     = 1.35;   // camera height above the ground plane
+    const FAR_Z     = 55;     // spawn / draw horizon
+    // The ground plane exits the bottom edge at z ≈ 2.4 (CAM_H·focal/(H−hy)),
+    // so the collision plane sits there — obstacles hit "you" right as they
+    // reach the wheel, not after they have already left the screen.
+    const HIT_Z     = 2.3;
+
+    let W = 0, H = 0, open = false, raf = 0, prev = 0;
+    let playerX, steer, speed, dist, obstacles, spawnT, crashed, crashT;
+    let best = 0;   // session best — in-memory only, no storage by design
+    const keys = { a: false, d: false };
+
+    function resize() {
+      const r   = page.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      W = r.width; H = r.height;
+      cv.width  = Math.round(W * dpr);
+      cv.height = Math.round(H * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function reset() {
+      playerX = 0; steer = 0; speed = 0; dist = 0;
+      obstacles = []; spawnT = 1.4; crashed = false; crashT = 0;
+    }
+
+    const horizonY = () => H * 0.40;
+    const focal    = () => W * 0.62;
+    // Ground-plane projection: world (x lateral, z ahead) → screen px.
+    // s is the px-per-world-unit scale at that depth.
+    function proj(wx, wz) {
+      const s = focal() / wz;
+      return { x: W / 2 + (wx - playerX) * s, y: horizonY() + CAM_H * s, s };
+    }
+
+    function spawn() {
+      const r    = Math.random();
+      const type = r < 0.52 ? 'cone' : r < 0.82 ? 'crate' : 'barrier';
+      const half = type === 'cone' ? 0.33 : type === 'crate' ? 0.5 : 1.05;
+      const x    = (Math.random() * 2 - 1) * (ROAD_HALF - half - 0.25);
+      obstacles.push({ x, z: FAR_Z, type, half });
+    }
+
+    function step(dt) {
+      if (crashed) { crashT += dt; return; }
+      // Quick ease-in to cruising speed, then a slow ramp toward the cap
+      speed = Math.min(30, speed + dt * (speed < 13 ? 9 : 0.5));
+      dist += speed * dt;
+
+      const target = (keys.d ? 1 : 0) - (keys.a ? 1 : 0);
+      steer += (target - steer) * (1 - Math.exp(-7 * dt));
+      playerX += steer * (2.2 + speed * 0.08) * dt;
+      playerX = Math.max(-ROAD_HALF + 0.45, Math.min(ROAD_HALF - 0.45, playerX));
+
+      spawnT -= dt;
+      if (spawnT <= 0) {
+        spawn();
+        // Cadence tightens with distance; the floor keeps gaps dodgeable
+        spawnT = Math.max(0.42, 1.25 - dist * 0.0035) * (0.75 + Math.random() * 0.5);
+      }
+      for (const o of obstacles) {
+        o.z -= speed * dt;
+        // ±0.55 window is wider than the largest per-frame z step (0.5 at
+        // the speed cap), so obstacles can't tunnel through the hit plane
+        if (Math.abs(o.z - HIT_Z) < 0.55 && Math.abs(o.x - playerX) < o.half + 0.38) {
+          crashed = true; crashT = 0; best = Math.max(best, dist);
+        }
+      }
+      obstacles = obstacles.filter(o => o.z > 0.4);
+    }
+
+    function drawObstacle(o) {
+      const p = proj(o.x, o.z);
+      if (p.y < horizonY() || p.y > H + 80) return;
+      const s  = p.s;
+      const lw = Math.max(1, s * 0.02);
+      ctx.lineWidth   = lw;
+      ctx.strokeStyle = INK;
+      // Contact shadow (same convention as the SVG object shadow system)
+      ctx.fillStyle = 'rgba(26,25,22,0.10)';
+      ctx.beginPath();
+      ctx.ellipse(p.x, p.y, o.half * s * 1.05, o.half * s * 0.22, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (o.type === 'cone') {
+        const w = o.half * 2 * s, h = 0.62 * s;
+        ctx.fillStyle = GOLD;
+        ctx.beginPath();
+        ctx.moveTo(p.x - w * 0.34, p.y);
+        ctx.lineTo(p.x, p.y - h);
+        ctx.lineTo(p.x + w * 0.34, p.y);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+        // white band
+        ctx.strokeStyle = BG;
+        ctx.lineWidth   = h * 0.13;
+        ctx.beginPath();
+        ctx.moveTo(p.x - w * 0.20, p.y - h * 0.40);
+        ctx.lineTo(p.x + w * 0.20, p.y - h * 0.40);
+        ctx.stroke();
+      } else if (o.type === 'crate') {
+        const w = o.half * 2 * s, h = 0.78 * s, k = w * 0.16;
+        // front face light, right face dark — SVG palette shading
+        ctx.fillStyle = '#D8D6D0';
+        ctx.fillRect(p.x - w / 2, p.y - h, w - k, h);
+        ctx.strokeRect(p.x - w / 2, p.y - h, w - k, h);
+        ctx.fillStyle = '#BCBAB4';
+        ctx.beginPath();
+        ctx.moveTo(p.x + w / 2 - k, p.y - h);
+        ctx.lineTo(p.x + w / 2, p.y - h - k * 0.6);
+        ctx.lineTo(p.x + w / 2, p.y - k * 0.6);
+        ctx.lineTo(p.x + w / 2 - k, p.y);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+      } else {
+        // barrier: striped board on two legs
+        const w = o.half * 2 * s, bh = 0.26 * s, top = 0.58 * s, leg = w * 0.05;
+        ctx.fillStyle = MID;
+        ctx.fillRect(p.x - w * 0.38, p.y - top, leg, top);
+        ctx.fillRect(p.x + w * 0.38 - leg, p.y - top, leg, top);
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(p.x - w / 2, p.y - top, w, bh);
+        ctx.clip();
+        ctx.fillStyle = GOLD;
+        ctx.fillRect(p.x - w / 2, p.y - top, w, bh);
+        ctx.fillStyle = INK;
+        for (let sx = -w / 2 - bh; sx < w / 2 + bh; sx += bh * 1.6) {
+          ctx.beginPath();
+          ctx.moveTo(p.x + sx, p.y - top + bh);
+          ctx.lineTo(p.x + sx + bh * 0.7, p.y - top + bh);
+          ctx.lineTo(p.x + sx + bh * 0.7 + bh, p.y - top);
+          ctx.lineTo(p.x + sx + bh, p.y - top);
+          ctx.closePath();
+          ctx.fill();
+        }
+        ctx.restore();
+        ctx.strokeRect(p.x - w / 2, p.y - top, w, bh);
+      }
+    }
+
+    // The driver's wheel — a stylised echo of the GLB: dark rim, hub plate,
+    // four face buttons with the bottom-right one green.
+    function drawWheel() {
+      const R  = Math.min(W, H) * 0.20;
+      // High enough that the hub plate and its four buttons stay on-screen —
+      // the wheel is the game's signature, the green button must read
+      const cx = W / 2, cy = H - R * 0.35;
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(steer * 0.55);
+      // rim
+      ctx.strokeStyle = '#2B2A27';
+      ctx.lineWidth   = R * 0.24;
+      ctx.beginPath();
+      ctx.arc(0, 0, R, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(238,236,234,0.25)';
+      ctx.lineWidth   = R * 0.03;
+      ctx.beginPath();
+      ctx.arc(0, 0, R * 1.09, 0, Math.PI * 2);
+      ctx.stroke();
+      // spokes + hub plate
+      ctx.fillStyle = '#3A3936';
+      ctx.fillRect(-R, -R * 0.14, R * 2, R * 0.28);
+      const hw = R * 0.94, hh = R * 0.60;
+      ctx.fillStyle = '#4A4844';
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(-hw / 2, -hh / 2, hw, hh, R * 0.07);
+      else ctx.rect(-hw / 2, -hh / 2, hw, hh);
+      ctx.fill();
+      // four buttons — bottom-right is THE button
+      const bx = hw * 0.30, byT = -hh * 0.22, byB = hh * 0.24, br = R * 0.055;
+      [[-bx, byT], [bx, byT], [-bx, byB]].forEach(([x, y]) => {
+        ctx.fillStyle = '#8A8784';
+        ctx.beginPath(); ctx.arc(x, y, br, 0, Math.PI * 2); ctx.fill();
+      });
+      ctx.fillStyle = GREEN;
+      ctx.beginPath(); ctx.arc(bx, byB, br, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      ctx.fillStyle = BG;
+      ctx.fillRect(0, 0, W, H);
+
+      ctx.save();
+      if (crashed && crashT < 0.35) {
+        const a = (0.35 - crashT) * 24;
+        ctx.translate((Math.random() - 0.5) * a, (Math.random() - 0.5) * a);
+      }
+
+      const hy = horizonY();
+      ctx.strokeStyle = 'rgba(26,25,22,0.16)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, hy); ctx.lineTo(W, hy);
+      ctx.stroke();
+
+      // Ground dots — the portfolio lattice, marching toward the camera so
+      // the forward motion reads even on an empty road
+      const ROW = 2.0, COL = 1.9;
+      ctx.fillStyle = INK;
+      for (let z = ROW - (dist % ROW) + 0.8; z < FAR_Z; z += ROW) {
+        const a = Math.min(1, 5 / z) * 0.35;
+        ctx.globalAlpha = a;
+        for (let gx = -10; gx <= 10; gx++) {
+          const wx = gx * COL;
+          if (Math.abs(wx) < ROAD_HALF + 0.5) continue;   // keep the road clean
+          const p = proj(wx, z);
+          if (p.x < -8 || p.x > W + 8 || p.y > H + 8) continue;
+          const r = Math.min(2.2, p.s * 0.02 + 0.7);
+          ctx.beginPath(); ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+      ctx.globalAlpha = 1;
+
+      // Road edges + centre dashes
+      ctx.strokeStyle = 'rgba(26,25,22,0.65)';
+      ctx.lineWidth = 1.5;
+      for (const e of [-ROAD_HALF, ROAD_HALF]) {
+        const a = proj(e, FAR_Z), b = proj(e, 0.6);
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      }
+      ctx.strokeStyle = 'rgba(26,25,22,0.35)';
+      const DASH = 2.6;
+      for (let z = DASH - (dist % DASH) + 0.6; z < FAR_Z; z += DASH) {
+        const a = proj(0, z), b = proj(0, Math.max(0.6, z - DASH * 0.42));
+        ctx.lineWidth = Math.min(4, a.s * 0.012 + 0.6);
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      }
+
+      // Obstacles, far → near (painter order, like the SVG objects)
+      [...obstacles].sort((m, n) => n.z - m.z).forEach(drawObstacle);
+
+      drawWheel();
+      ctx.restore();
+
+      // HUD — sheet-note voice, mono caps
+      ctx.font = `500 12px ${MONO}`;
+      if (ctx.letterSpacing !== undefined) ctx.letterSpacing = '0.08em';
+      ctx.fillStyle = MID;
+      ctx.textAlign = 'left';
+      ctx.fillText(`DIST ${String(Math.floor(dist)).padStart(4, '0')} M`, 24, 34);
+      ctx.fillText(`SPD  ${String(Math.round(speed * 4)).padStart(4, '0')}`, 24, 52);
+      ctx.fillStyle = 'rgba(74,72,68,0.75)';
+      if (!crashed && dist < 30) {
+        // bottom-left — the wheel owns the bottom centre
+        ctx.fillText('A / D — STEER · AVOID THE OBSTACLES', 24, H - 24);
+      }
+      ctx.textAlign = 'center';
+      if (crashed && crashT > 0.15) {
+        ctx.fillStyle = 'rgba(238,236,234,0.55)';
+        ctx.fillRect(0, 0, W, H);
+        ctx.fillStyle = INK;
+        ctx.font = `600 30px ${MONO}`;
+        ctx.fillText('CRASHED', W / 2, H * 0.42);
+        ctx.font = `500 13px ${MONO}`;
+        ctx.fillStyle = MID;
+        ctx.fillText(
+          `DIST ${String(Math.floor(dist)).padStart(4, '0')} M · BEST ${String(Math.floor(best)).padStart(4, '0')} M`,
+          W / 2, H * 0.42 + 30);
+        ctx.fillText('R — RESTART · ESC — EXIT', W / 2, H * 0.42 + 52);
+      }
+      ctx.textAlign = 'left';
+    }
+
+    function loop(now) {
+      if (!open) return;
+      raf = requestAnimationFrame(loop);
+      const dt = Math.min((now - prev) / 1000, 0.05);
+      prev = now;
+      step(dt);
+      draw();
+    }
+
+    window._raceOpen = false;
+    window._openRace = () => {
+      if (open) return;
+      open = true; window._raceOpen = true;
+      page.classList.add('open');
+      resize(); reset();
+      prev = performance.now();
+      raf = requestAnimationFrame(loop);
+    };
+    window._closeRace = () => {
+      if (!open) return;
+      open = false; window._raceOpen = false;
+      keys.a = keys.d = false;
+      page.classList.remove('open');
+      cancelAnimationFrame(raf);
+    };
+
+    // Debug/iteration handle (like _feature / _seatDetach): read the run
+    // state, or pass an x to drop a cone just ahead and force a collision
+    window._raceDebug = spawnAt => {
+      if (!open) return null;
+      if (spawnAt !== undefined) {
+        obstacles.push({ x: spawnAt, z: 8, type: 'cone', half: 0.33 });
+      }
+      return { dist, speed, crashed, playerX, obstacles: obstacles.length };
+    };
+
+    // stopPropagation: without it the close click bubbles to the card after
+    // _raceOpen flips false and the scene raycast handler zooms out
+    document.getElementById('raceClose').addEventListener('click', e => {
+      e.stopPropagation();
+      window._closeRace();
+    });
+
+    document.addEventListener('keydown', e => {
+      if (!open) return;
+      const k = e.key.toLowerCase();
+      if (k === 'a' || k === 'arrowleft')  { keys.a = true; e.preventDefault(); }
+      if (k === 'd' || k === 'arrowright') { keys.d = true; e.preventDefault(); }
+      if (k === 'r' && crashed) reset();
+    });
+    document.addEventListener('keyup', e => {
+      const k = e.key.toLowerCase();
+      if (k === 'a' || k === 'arrowleft')  keys.a = false;
+      if (k === 'd' || k === 'arrowright') keys.d = false;
+    });
+
+    new ResizeObserver(() => { if (open) resize(); }).observe(page);
+  })();
+  // ── End Race easter egg ──────────────────────────────────────────────────
+
 </script>
 
 <!-- ── Three.js WebGL scene ── -->
@@ -2019,6 +3386,7 @@ const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.localClippingEnabled = true;   // printer rig: parts emerge through the 45° gantry plane
 
 const cv = renderer.domElement;
 cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;border-radius:14px;display:block;';
@@ -2064,8 +3432,42 @@ threeScene.add(ground);
 // ── Raycaster + OutlinePass hover glow ──
 const raycaster   = new THREE.Raycaster();
 const mousePt     = new THREE.Vector2();
+
+// Hover/click hit proxies — one invisible AABB box mesh per model, attached to
+// the model's group so it rides every animation for free. Raycasting the raw
+// GLB meshes tests millions of triangles whenever the ray enters a model's
+// bounding sphere; running that per frame stalled the render loop to 10-20 fps
+// exactly while the cursor was over a model, freezing the mouse parallax.
+// The proxies are 12 triangles each. Raycaster hits visible:false meshes, but
+// the renderer and outline passes skip them. The mesh lists below stay as-is
+// for outlines and fades.
+const carHitbox      = [];
+const sprocketHitbox = [];
+const rearWallHitbox = [];
+const seatHitbox     = [];
+const rivianHitbox   = [];
+const scooterHitbox  = [];
+const printerHitbox  = [];
+const steeringHitbox = [];
+function addHitProxy(group, list) {
+  group.updateWorldMatrix(true, true);
+  const b   = new THREE.Box3().setFromObject(group);
+  const sz  = b.getSize(new THREE.Vector3());
+  const ctr = b.getCenter(new THREE.Vector3());
+  const box = new THREE.Mesh(new THREE.BoxGeometry(sz.x, sz.y, sz.z));
+  box.position.copy(ctr);
+  box.visible = false;
+  group.attach(box);      // keeps world placement, follows all group motion
+  list.push(box);
+  return box;
+}
 let   modelMeshes    = [];
+let   carGroup       = null;   // pivot wrapping the race car — rev vibration only
+let   carWheels      = [];     // wheel pivot groups split out of the merged mesh
+let   wheelSpin      = 0;      // accumulated wheel rotation (rad)
+let   revClock       = 0;      // seconds since the car zoom settled — rev runs 5 s
 let   sprocketMeshes = [];
+let   rearWallMeshes = [];   // yellow accent wall inside the Rivian trunk
 let   rivianMeshes      = [];
 let   rivianGroup       = null;   // pivot group at the ground point under the SUV's centre
 let   rivianWheelProbes = null;   // per-wheel lattice anchors: fit targets + drift probe
@@ -2078,6 +3480,35 @@ let   scooterBaseX   = 0;
 let   scooterBaseZ   = 0;
 let   scooterBaseY   = 0;
 let   scooterBaseS   = 1;         // normalisation scale baked into the group
+let   printerMeshes  = [];        // z-axis printer
+let   printerGroup   = null;
+let   printerBaseX   = 0;
+let   printerBaseZ   = 0;
+let   printerBaseY   = 0;
+let   printerBaseS   = 1;         // normalisation scale baked at load
+let   printerGlueX   = 0;         // last ground-glue solution — the glide starts from it
+let   printerGlueZ   = 0;
+let   printerRestCam = null;      // vertical-rest camera — the bob is measured against it
+let   printerAnchor  = null;      // dot-lattice point under the printer — horizontal glue target
+let   printerRig     = null;      // procedural print-action rig (head / belt / parts)
+let   printT         = 0;         // accumulated print time — persists across zooms ("resumes where it was")
+let   printOn        = 0;         // smoothed run state 0..1
+const printerNdc     = new THREE.Vector2();
+const _pn = new THREE.Vector3();  // scratch: print-plane normal / point
+const _pp = new THREE.Vector3();
+const PRINTER_YAW    = Math.PI;   // face the NE camera
+const PRINTER_POS    = { x: -4.5, z: 0.3 };  // ground spot behind the scooter
+const PRINTER_BOB_DAMP  = 0.92;   // fraction of the vertical-cursor screen bob removed (1 = screen-still, reads as floating)
+let   steeringMeshes = [];        // steering wheel — small prop right of the car
+let   steeringGroup  = null;
+let   steeringBaseX  = 0;
+let   steeringBaseZ  = 0;
+let   steeringBaseY  = 0;
+let   steeringBaseS  = 1;         // normalisation scale baked at load
+let   greenBtnMeshes = [];        // steering easter egg — green bottom-right face button
+let   greenBtnHovered = false;
+const STEERING_YAW   = Math.PI / 4 - 0.35;   // toward the NE camera, a touch off dead-on
+const STEERING_POS   = { x: 2.7, z: -1.7 };  // right of the car, in front of the SUV
 
 // Which project the click-to-zoom features. All three models zoom into the
 // same side-profile stage at the origin; the clicked one glides there while
@@ -2116,11 +3547,35 @@ const PROJECT_INFO = {
     points: [
       'Filler: welded cargo rack sized for a milk crate',
       'Filler: battery box and controller integration',
-      'Filler: folding stem and ergonomics pass'
+      'Filler: click the seat to lift off the cargo module'
     ],
     layer: 'Build 1.0 — Cargo Scooter',
     desc: 'Filler description of the cargo scooter<br>and how it came together.',
     dim: { l: 34, w: 32, y: 66, label: 'L 1420 MM' },
+    img: null
+  },
+  printer: {
+    index: '04', tag: 'Project 04', title: 'Z-Axis Printer',
+    points: [
+      'Filler: motion platform and gantry design',
+      'Filler: extruder carriage and Z-axis drive',
+      'Filler: frame stiffness and print-bed leveling'
+    ],
+    layer: 'Build 1.0 — Z-Axis Printer',
+    desc: 'Filler description of the printer build<br>and what it can produce.',
+    dim: { l: 30, w: 30, y: 68, label: 'W 480 MM' },
+    img: null
+  },
+  steering: {
+    index: '05', tag: 'Project 05', title: 'Steering Wheel',
+    points: [
+      'Filler: rim profile and grip ergonomics study',
+      'Filler: spoke layout and quick-release hub',
+      'Filler: control and paddle packaging'
+    ],
+    layer: 'Build 1.0 — Steering Wheel',
+    desc: 'Filler description of the steering wheel<br>and its design decisions.',
+    dim: { l: 36, w: 28, y: 70, label: 'Ø 350 MM' },
     img: null
   }
 };
@@ -2144,9 +3599,19 @@ const IDENTITY_DEFAULT = {
 };
 const HINT_DEFAULT = sceneHint.textContent;
 const HINT_ZOOMED  = 'Click anywhere to return';
+const HINT_DIGITAL = 'Click a file to open it';
 const sheetNote    = document.querySelector('.sheet-note');
-let identityShows = 'default';   // 'default' | featured project key
+// Identity caption for the digital page (Build 2.0) — the page flip swaps
+// the bottom-left copy through the same crossfade as the featured zoom.
+const IDENTITY_DIGITAL = {
+  layer: 'Build 2.0',
+  desc:  'Software, documents, and systems —<br>work that ships as files.'
+};
+let digitalT = 0;                // eased flip state: 0 = physical, 1 = digital
+let identityShows = 'default';   // 'default' | 'digital' | featured project key
 let hoverTagO = 0, hoverTagX = 0, hoverTagY = 0;   // hover callout state
+const detailCallout = document.getElementById('detailCallout');
+let detailO = 0;                 // detail-callout smoothed opacity
 
 function fillProjectPanel(name) {
   const info = PROJECT_INFO[name];
@@ -2166,11 +3631,21 @@ const FEATURE_POSE = {
   // trunk — its rear faces +z at pivot yaw 0), scooter side profile
   // nose-right like the race car's zoom view.
   // z pushes the model toward the zoom camera — it sits lower in the frame
-  rivian:  { scale: 0.80, yaw: 0, z: 1.2 },    // pivot-relative extra scale
-  scooter: { scale: 1.10, yaw: Math.PI, z: 0 } // scale is × its base normalisation
+  rivian:  { scale: 0.80, yaw: 0, z: 1.2 },     // pivot-relative extra scale
+  scooter: { scale: 1.10, yaw: Math.PI, z: 0 }, // scale is × its base normalisation
+  // printer: yaw ~23° off dead-side for a three-quarter view; el raises the
+  // zoom camera above the shared ZOOM_EL for a higher vantage (user-tuned)
+  printer: { scale: 1.45, yaw: Math.PI - 0.4, z: 0, el: 0.30 },
+  // steering: its face points +z at yaw 0 — dead-on to the zoom camera reads
+  // as a flat black cutout, so it takes a three-quarter yaw and a slightly
+  // raised camera (el, like the printer's) to show the rim's depth
+  steering: { scale: 1.80, yaw: -0.55, z: 0, el: 0.24 }
 };
 let   isHovered       = false;
 let   sprocketHovered = false;
+let   rearWallHovered = false;
+let   printerHovered  = false;
+let   steeringHovered = false;
 let   rivianHovered   = false;
 let   scooterHovered  = false;
 let   carOpacity      = 1.0;
@@ -2178,6 +3653,16 @@ let   sprocketOpen      = false;
 let   sprocketOpenT     = 0.0;
 let   sprocketGroup     = null;
 let   sprocketBaseScale = 1.0;
+// Scooter rear seat / cargo module — split from the fused mesh at load; the
+// scooter's answer to the sprocket: clicking it in the featured view detaches
+// it (seatOpen) and presents it above/behind the dimmed frame.
+let   seatMeshes        = [];
+let   scooterBodyMeshes = [];
+let   scooterSeatPivot  = null;   // group at the module's local centre — detach target
+let   seatRestPos       = null;   // pivot rest position (mesh-holder-local)
+let   seatHovered       = false;
+let   seatOpen          = false;
+let   seatOpenT         = 0.0;
 const SPROCKET_BASE_X   = -0.92;
 const OPEN_LOOK_X       = 0.4;
 
@@ -2214,8 +3699,69 @@ new GLTFLoader().load('renders/Meshy_AI_Open_Wheel_Prototype__0515194205_generat
     modelMeshes.push(child);
   });
 
-  threeScene.add(model);
-  console.log('[3D] Model added to scene');
+  // Split the wheels out of the merged mesh so they can spin. The GLB is one
+  // mesh, so wheels are carved out by a cylinder test around each axle
+  // (constants measured offline from the GLB's local coords). Only triangles
+  // fully outside |z| = WHEEL_ZMIN spin: that excludes the suspension arms and
+  // upright, and the static/spinning seam lands on the rotationally symmetric
+  // tire barrel where it is invisible.
+  // Centres are least-squares circle fits to the tire tread (bbox midpoints
+  // were biased and made the wheels orbit off-axis). r is the cut radius —
+  // it must stay BELOW the nearest non-wheel geometry (front: floor debris
+  // from 0.170 outward), or fragments orbit outside the tire silhouette.
+  const WHEEL_AXLES = [
+    { xc: -0.3541, yc: -0.2566, r: 0.166 },   // front axle
+    { xc:  0.6738, yc: -0.2407, r: 0.170 },   // rear axle
+  ];
+  const WHEEL_ZMIN = 0.30;
+  const carMesh = modelMeshes[0];
+  const posAttr = carMesh.geometry.getAttribute('position');
+  const varr    = posAttr.array;
+  const vClass  = new Int8Array(posAttr.count).fill(-1);
+  for (let v = 0; v < posAttr.count; v++) {
+    if (Math.abs(varr[v * 3 + 2]) <= WHEEL_ZMIN) continue;
+    const x = varr[v * 3], y = varr[v * 3 + 1];
+    for (let w = 0; w < WHEEL_AXLES.length; w++) {
+      const a = WHEEL_AXLES[w];
+      const dx = x - a.xc, dy = y - a.yc;
+      if (dx * dx + dy * dy < a.r * a.r) { vClass[v] = w; break; }
+    }
+  }
+  const iarr     = carMesh.geometry.getIndex().array;
+  const wheelIdx = WHEEL_AXLES.map(() => []);
+  const bodyIdx  = [];
+  for (let t = 0; t < iarr.length; t += 3) {
+    const a = iarr[t], b = iarr[t + 1], c = iarr[t + 2];
+    const w = vClass[a];
+    if (w >= 0 && vClass[b] === w && vClass[c] === w) wheelIdx[w].push(a, b, c);
+    else bodyIdx.push(a, b, c);
+  }
+  carMesh.geometry.setIndex(bodyIdx);
+  WHEEL_AXLES.forEach((a, w) => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', posAttr);        // shared — the index selects the wheel
+    g.setIndex(wheelIdx[w]);
+    const wm = new THREE.Mesh(g, carMesh.material); // shared material: opacity fades stay in sync
+    wm.castShadow = wm.receiveShadow = true;
+    wm.position.set(-a.xc, -a.yc, 0);
+    const piv = new THREE.Group();              // pivot origin on the axle line
+    piv.position.set(a.xc, a.yc, 0);
+    piv.add(wm);
+    model.add(piv);
+    carWheels.push(piv);
+    modelMeshes.push(wm);   // fades, hover outline, and click raycast include the wheels
+  });
+
+  // Pivot at the world origin (ground point under the car). The model keeps
+  // its own centring transform; the pivot carries only the rev vibration so
+  // the two never fight.
+  const pivot = new THREE.Group();
+  pivot.add(model);
+  threeScene.add(pivot);
+  carGroup = pivot;
+  addHitProxy(pivot, carHitbox);
+  console.log('[3D] Model added to scene, wheels split:',
+    wheelIdx.map(w => w.length / 3), 'tris');
 }, undefined, err => console.error('[3D] GLB load error:', err));
 
 // ── Load Sprocket ──
@@ -2242,6 +3788,7 @@ new GLTFLoader().load('renders/Sprocket.glb', gltf => {
   sprocket.traverse(child => { if (child.isMesh) sprocketMeshes.push(child); });
   threeScene.add(sprocket);
   sprocketGroup = sprocket;
+  addHitProxy(sprocket, sprocketHitbox);
 }, undefined, err => console.error('[3D] Sprocket load error:', err));
 
 // ── Load Rivian ──
@@ -2274,6 +3821,37 @@ new GLTFLoader().load('renders/rivian-r1s.glb', gltf => {
   pivot.position.set(1.2, 0, -4.4);
   rivian.position.set(-ctr.x, -box2.min.y, -ctr.z);
   pivot.add(rivian);
+
+  // Rear wall — sprocket-yellow accent panel inside the open trunk. Loaded
+  // here (not top-level) so it parents to the pivot and inherits the ground
+  // glue + featured blend. The GLB ships no materials, so the default
+  // standard material takes the flat colour directly; opacity is driven per
+  // frame at a fraction of the SUV's (see the fade block in the loop).
+  new GLTFLoader().load('renders/Rivian-rear-wall.glb', g => {
+    const wall = g.scene;
+    wall.traverse(child => {
+      if (!child.isMesh) return;
+      child.material = child.material.clone();
+      child.material.color.set(0xFFB800);   // same gold as the sprocket
+      child.material.metalness = 0;         // glTF default is fully metallic,
+      child.material.roughness = 0.85;      //   which muddies the gold to olive
+      child.material.side = THREE.DoubleSide;
+      child.material.transparent = true;
+      rearWallMeshes.push(child);
+    });
+    // Fit across the trunk opening; the wall's face already spans x/y with
+    // depth on z, so no reorientation is needed for the rear-on view.
+    const wb = new THREE.Box3().setFromObject(wall);
+    const ws = wb.getSize(new THREE.Vector3());
+    wall.scale.setScalar(0.95 / ws.x);
+    const wb2  = new THREE.Box3().setFromObject(wall);
+    const wctr = wb2.getCenter(new THREE.Vector3());
+    // Floats a touch above the trunk floor (~0.7), partway into the cargo
+    // bay (rear opening is at the +z end of the 4.5-unit body, z ~2.25)
+    wall.position.set(-wctr.x, 0.78 - wb2.min.y, 1.15 - wctr.z);
+    pivot.add(wall);
+    addHitProxy(wall, rearWallHitbox);
+  }, undefined, err => console.error('[3D] Rear wall load error:', err));
 
   // Calibrate a ground anchor under each wheel at the exact rest pose
   // (hSkew −0.09 → az +0.027, tilt 1, vShift 0): the wheel's world ground
@@ -2316,20 +3894,104 @@ new GLTFLoader().load('renders/rivian-r1s.glb', gltf => {
 
   rivianGroup = pivot;
   threeScene.add(pivot);
+  addHitProxy(pivot, rivianHitbox);
 }, undefined, err => console.error('[3D] Rivian load error:', err));
 
 // ── Load Scooter ──
+// The GLB is ONE fused mesh (positions only — no part nodes), but the real
+// scooter's rear seat / cargo module is removable, so it is split out at
+// load: triangles whose centroid falls in the module's local-space region
+// (rear half, above the rear wheel — measured from the mesh) become a
+// separate mesh on a pivot that detaches when clicked in the featured view.
 new GLTFLoader().load('renders/scooter.glb', gltf => {
   const scooter = gltf.scene;
 
-  scooter.traverse(child => {
-    if (!child.isMesh) return;
-    child.material = child.material.clone();
-    child.material.transparent = true;
-    child.castShadow    = true;
-    child.receiveShadow = true;
-    scooterMeshes.push(child);
-  });
+  let fused = null;
+  scooter.traverse(child => { if (child.isMesh && !fused) fused = child; });
+
+  // Local frame: x = length (handlebars at −x, rear at +x), y = height.
+  // Bounds x −0.95..0.95, y −0.72..0.72. Module region (user-specified: the
+  // whole assembly comes off at the base of the seat column): the rack over
+  // the rear wheel (cx > 0.02 above the hub line cy > −0.56) PLUS the seat
+  // column — a narrow-z tube descending through x −0.11..0.15 to meet the
+  // deck at y ≈ −0.62 — cut at its base (cy > CUT_Y). The |cz| filter keeps
+  // the wide rear fender/wheel shell out of the column box; the deck itself
+  // is safe (its top-surface centroids sit at ≤ −0.63).
+  const CUT_Y   = -0.61;   // cut plane at the column base (deck top ≈ −0.62)
+  const posAttr = fused.geometry.getAttribute('position');
+  const srcIdx  = fused.geometry.index.array;
+  const seatIdx = [], bodyIdx = [];
+  for (let i = 0; i < srcIdx.length; i += 3) {
+    const a = srcIdx[i], b = srcIdx[i + 1], c2 = srcIdx[i + 2];
+    const cx = (posAttr.getX(a) + posAttr.getX(b) + posAttr.getX(c2)) / 3;
+    const cy = (posAttr.getY(a) + posAttr.getY(b) + posAttr.getY(c2)) / 3;
+    const cz = (posAttr.getZ(a) + posAttr.getZ(b) + posAttr.getZ(c2)) / 3;
+    const inSeat = (cx > 0.02 && cy > -0.56)
+                || (cx > -0.12 && cy > CUT_Y && Math.abs(cz) < 0.13);
+    (inSeat ? seatIdx : bodyIdx).push(a, b, c2);
+  }
+  const partMesh = idx => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', posAttr);   // shared — only the index differs
+    g.setIndex(idx);
+    const m = new THREE.Mesh(g, fused.material.clone());
+    m.material.transparent = true;
+    m.castShadow    = true;
+    m.receiveShadow = true;
+    scooterMeshes.push(m);
+    return m;
+  };
+  const bodyMesh = partMesh(bodyIdx);
+  const seatMesh = partMesh(seatIdx);
+  seatMesh.userData.isSeat = true;
+  scooterBodyMeshes.push(bodyMesh);
+  seatMeshes.push(seatMesh);
+
+  // Pivot at the module's own centre — averaged from its triangles, since
+  // computeBoundingBox would read the full shared position attribute — so
+  // the detach tilt turns about the module, not the mesh origin.
+  const sc = new THREE.Vector3();
+  for (const i of seatIdx) { sc.x += posAttr.getX(i); sc.y += posAttr.getY(i); sc.z += posAttr.getZ(i); }
+  sc.divideScalar(seatIdx.length || 1);
+  seatMesh.position.copy(sc).negate();
+  const seatPiv = new THREE.Group();
+  seatPiv.position.copy(sc);
+  seatPiv.add(seatMesh);
+  scooterSeatPivot = seatPiv;
+  seatRestPos = sc.clone();
+
+  // Clean machined cut: the raw index split leaves ragged part-triangle
+  // fringes on both sides of the cut plane. Two plates sized to the column's
+  // cross-section there (x −0.111..0.009, z ±0.05, measured) hide them: the
+  // module carries a flat end plate; the deck keeps a slightly larger socket
+  // collar it nests into (different sizes so the faces never z-fight).
+  const mkCap = (w, h, d, y, isSeat) => {
+    const cap = new THREE.Mesh(
+      new THREE.BoxGeometry(w, h, d), fused.material.clone());
+    cap.material.transparent = true;
+    cap.castShadow = true;
+    cap.position.set(-0.051, y, -0.001);
+    if (isSeat) {
+      cap.position.sub(sc);            // pivot-local — rides the module
+      cap.userData.isSeat = true;
+      seatPiv.add(cap);
+      seatMeshes.push(cap);
+    }
+    scooterMeshes.push(cap);
+    return cap;
+  };
+  mkCap(0.128, 0.050, 0.108, CUT_Y - 0.015, true);           // module end plate
+  const bodyCap = mkCap(0.140, 0.048, 0.120, CUT_Y + 0.013, false); // deck socket
+  scooterBodyMeshes.push(bodyCap);
+
+  // The two parts replace the fused node, carrying over its transform
+  const holder = new THREE.Group();
+  holder.position.copy(fused.position);
+  holder.quaternion.copy(fused.quaternion);
+  holder.scale.copy(fused.scale);
+  holder.add(bodyMesh, seatPiv, bodyCap);
+  fused.parent.add(holder);
+  fused.parent.remove(fused);
 
   // Normalize: longest axis = 2 world units
   const box = new THREE.Box3().setFromObject(scooter);
@@ -2349,7 +4011,317 @@ new GLTFLoader().load('renders/scooter.glb', gltf => {
 
   scooterGroup = scooter;
   threeScene.add(scooter);
+  addHitProxy(scooter, scooterHitbox);
+
+  // Seat-module proxy: the split meshes share the fused position attribute
+  // (only the index differs), so setFromObject would return the whole-scooter
+  // box. Measure the module's bounds from its own triangle indices instead,
+  // in fused-local space, then place the box pivot-local (seat mesh sits at
+  // −sc inside the pivot).
+  {
+    const sb = new THREE.Box3();
+    const _v = new THREE.Vector3();
+    for (const i of seatIdx) sb.expandByPoint(_v.set(posAttr.getX(i), posAttr.getY(i), posAttr.getZ(i)));
+    const ssz  = sb.getSize(new THREE.Vector3());
+    const sctr = sb.getCenter(new THREE.Vector3());
+    const sbox = new THREE.Mesh(new THREE.BoxGeometry(ssz.x, ssz.y, ssz.z));
+    sbox.position.copy(sctr.sub(sc));
+    sbox.visible = false;
+    seatPiv.add(sbox);
+    seatHitbox.push(sbox);
+  }
 }, undefined, err => console.error('[3D] Scooter load error:', err));
+
+// ── Load Z-axis printer — background prop, deeper in the scene behind the
+// scooter (screen-X ∝ x−z keeps it on the left; smaller x+z pushes it back) ──
+new GLTFLoader().load('renders/z-axis-printer.glb', gltf => {
+  const printer = gltf.scene;
+
+  // NOTE: the model is kept INTACT — an earlier iteration cut the A-frame
+  // out of the fused mesh (region-based triangle removal) to replace it
+  // with procedural rails, but partial cuts always read as broken and the
+  // user asked to maintain the entire model. The A-frame now serves as the
+  // gantry the cross-beam visually rides on.
+  printer.traverse(child => {
+    if (!child.isMesh) return;
+    child.material = child.material.clone();
+    child.material.transparent = true;
+    child.castShadow    = true;
+    child.receiveShadow = true;
+    printerMeshes.push(child);
+  });
+
+  // Normalize: longest axis = 1.8 world units — reads smaller, sits further back
+  const box = new THREE.Box3().setFromObject(printer);
+  const sz  = box.getSize(new THREE.Vector3());
+  printer.scale.setScalar(1.8 / Math.max(sz.x, sz.y, sz.z));
+
+  printer.rotation.y = PRINTER_YAW;
+
+  // Sit on ground, behind the scooter and pulled in toward the car
+  const box2 = new THREE.Box3().setFromObject(printer);
+  const ctr  = box2.getCenter(new THREE.Vector3());
+  printer.position.set(PRINTER_POS.x - ctr.x, -box2.min.y, PRINTER_POS.z - ctr.z);
+  printerBaseX = printer.position.x;
+  printerBaseZ = printer.position.z;
+  printerBaseY = printer.position.y;
+  printerBaseS = printer.scale.x;
+  printerGlueX = printerBaseX;
+  printerGlueZ = printerBaseZ;
+
+  // Calibrate a dot-lattice anchor under the printer at the exact rest pose
+  // (hSkew −0.09 → az +0.027, tilt 1, vShift 0 — same recipe as the Rivian's
+  // wheel probes). Per frame the printer follows this dot horizontally, so
+  // it can never skate sideways across the field.
+  if (window._dotCam) {
+    const restAz = BASE_AZ + 0.09 * 0.30;
+    const rc = camera.clone();
+    rc.position.set(
+      Math.cos(BASE_EL) * Math.sin(restAz) * BASE_DIST,
+      Math.sin(BASE_EL) * BASE_DIST,
+      Math.cos(BASE_EL) * Math.cos(restAz) * BASE_DIST
+    );
+    rc.lookAt(0, 0, 0);
+    rc.updateMatrixWorld(true);
+    const rect = card.getBoundingClientRect();
+    const v = new THREE.Vector3(PRINTER_POS.x, 0, PRINTER_POS.z).project(rc);
+    printerAnchor = window._dotCam.invertGroundRest(
+      (v.x + 1) / 2 * rect.width,
+      (1 - v.y) / 2 * rect.height
+    );
+  }
+
+  // ── Print-action rig ──────────────────────────────────────────────────
+  // The GLB is ONE fused mesh (no separate carriage/belt nodes, no clips),
+  // so the "actively printing" effect is a procedural overlay: a scrolling
+  // belt surface laid over the ladder frame, an oscillating print head on
+  // the gantry face, and accent-coloured printed parts that grow under the
+  // nozzle and ride the belt away. Group-local frame (measured from the
+  // mesh): belt frame x −0.95..0, rung tops y ≈ −0.15, belt z −0.44..0.25;
+  // A-frame gantry x 0.1..0.9, apex y 0.38. Children of the printer group,
+  // so glue / glide / featured scaling all apply for free.
+  {
+    const rig = new THREE.Group();
+
+    // Hardware grey — matched to the model's rendered body colour
+    const grey = new THREE.MeshStandardMaterial({
+      color: 0x5a5a57, roughness: 0.85, metalness: 0.1, transparent: true });
+
+    // Belt surface: striped canvas texture, scrolled along the run direction.
+    // Runs the WHOLE bed: from past the print zone under the axis (x 0.52,
+    // clear of the rear housings at 0.6+) out to the drop-off end (−0.935).
+    const bc = document.createElement('canvas');
+    bc.width = 256; bc.height = 64;
+    const bctx = bc.getContext('2d');
+    bctx.fillStyle = '#242422'; bctx.fillRect(0, 0, 256, 64);
+    bctx.fillStyle = '#31312d';
+    for (let x = 0; x < 256; x += 32) bctx.fillRect(x, 0, 4, 64);
+    const beltTex = new THREE.CanvasTexture(bc);
+    beltTex.wrapS = beltTex.wrapT = THREE.RepeatWrapping;
+    beltTex.repeat.set(5.5, 1);
+    const beltMat = new THREE.MeshStandardMaterial({
+      map: beltTex, roughness: 0.95, metalness: 0, transparent: true });
+    const BELT_LEN = 1.455;                  // −0.935 .. 0.52 — whole bed up to the drive machinery
+    const belt = new THREE.Mesh(new THREE.BoxGeometry(BELT_LEN, 0.012, 0.6), beltMat);
+    belt.position.set(-0.2075, -0.15, -0.09);
+    belt.receiveShadow = true;
+    rig.add(belt);
+
+    // Print head at 45° — belt printers print onto a plane tilted 45° over
+    // the belt; the whole assembly leans so the nozzle axis matches it.
+    // Proper hotend anatomy: carriage plate → finned heatsink → heatbreak →
+    // heater block → nozzle tip.
+    const head = new THREE.Group();
+    const carriage = new THREE.Mesh(new THREE.BoxGeometry(0.085, 0.075, 0.075), grey);
+    const finGeo = new THREE.CylinderGeometry(0.030, 0.030, 0.008, 14);
+    for (let i = 0; i < 5; i++) {
+      const fin = new THREE.Mesh(finGeo, grey);
+      fin.position.y = -0.052 - i * 0.014;
+      fin.castShadow = true;
+      head.add(fin);
+    }
+    const heatbreak = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.008, 0.008, 0.075, 8), grey);
+    heatbreak.position.y = -0.08;
+    const block = new THREE.Mesh(new THREE.BoxGeometry(0.046, 0.026, 0.030), grey);
+    block.position.y = -0.128;
+    const nozzle = new THREE.Mesh(new THREE.ConeGeometry(0.014, 0.026, 6), grey);
+    nozzle.rotation.x = Math.PI;             // tip down (in head space)
+    nozzle.position.y = -0.152;
+    carriage.castShadow = heatbreak.castShadow = block.castShadow = nozzle.castShadow = true;
+    head.add(carriage, heatbreak, block, nozzle);
+    head.rotation.z = -Math.PI / 4;          // lean 45° toward the belt exit
+    // tip at head-local (0,-0.165) → world offset (-0.117,-0.117) from the
+    // head origin. The RAF driver rides the head along the 45° print plane,
+    // layer by layer, tracking the emerging part; this is just the start pose.
+    head.position.set(0.25, -0.02, -0.25);
+    rig.add(head);
+
+    // X/Y axis for the head (replaces the model's A-frame, removed above):
+    // two 45° linear rails flanking the belt lean over the exit, and a
+    // cross beam spans them; the carriage hangs from the beam. The beam
+    // follows the head up the rails per frame (rail line: x + y = RAIL_C).
+    // Cross beam (X axis): rides UP the model's own A-frame front legs —
+    // no procedural rails, the intact model provides the frame. The driver
+    // keeps it on the legs' front-face line (x ≈ 0.16 + (y + 0.15) / 1.47,
+    // measured from the mesh) at the head's height; trucks grip the legs.
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, 0.70), grey);
+    beam.position.set(0.286, 0.035, -0.09);
+    beam.castShadow = true;
+    for (const tz of [-0.31, 0.31]) {        // at the legs: z ≈ −0.40 / +0.22
+      const truck = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.085, 0.055), grey);
+      truck.position.set(0, 0, tz);
+      truck.castShadow = true;
+      beam.add(truck);
+    }
+    rig.add(beam);
+
+    // The print plane: 45° through the gantry foot. Parts are clipped by it,
+    // so material genuinely "appears" at the nozzle line as the belt carries
+    // the part out — this is what makes the growth read as printing.
+    // Local definition x + y = PRINT_PX + PRINT_PY; world plane refreshed
+    // per frame from the group's matrix (clipping planes live in world space).
+    const clipPlane = new THREE.Plane(new THREE.Vector3(-1, -1, 0).normalize(), 0);
+
+    // Ground plane at the machine's feet: finished gears tip off the belt
+    // end and SINK through it (clipped), instead of blinking out of existence
+    const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+
+    // The hole they fall into — a dark opening in the floor just past the
+    // belt end, under the fall trajectory
+    const holeGeo = new THREE.CircleGeometry(0.14, 24);
+    holeGeo.rotateX(-Math.PI / 2);
+    const hole = new THREE.Mesh(holeGeo,
+      new THREE.MeshBasicMaterial({ color: 0x161614, transparent: true }));
+    hole.scale.z = 0.8;
+    hole.position.set(-1.0, -0.3775, -0.25);
+    rig.add(hole);
+
+    // Printed parts: small sprockets (echoes the car's gear detail), lying
+    // flat on the belt, emerging through the print plane
+    const gearShape = new THREE.Shape();
+    const TEETH = 9, GR = 0.085, gr = 0.062;
+    for (let i = 0; i < TEETH; i++) {
+      const a = j => ((i + j) / TEETH) * Math.PI * 2;
+      if (i === 0) gearShape.moveTo(Math.cos(a(0)) * GR, Math.sin(a(0)) * GR);
+      else gearShape.lineTo(Math.cos(a(0)) * GR, Math.sin(a(0)) * GR);
+      gearShape.lineTo(Math.cos(a(0.35)) * GR, Math.sin(a(0.35)) * GR);
+      gearShape.lineTo(Math.cos(a(0.50)) * gr, Math.sin(a(0.50)) * gr);
+      gearShape.lineTo(Math.cos(a(0.85)) * gr, Math.sin(a(0.85)) * gr);
+    }
+    gearShape.closePath();
+    gearShape.holes.push(new THREE.Path().absarc(0, 0, 0.024, 0, Math.PI * 2, true));
+    const gearGeo = new THREE.ExtrudeGeometry(gearShape, { depth: 0.055, bevelEnabled: false });
+    gearGeo.rotateX(-Math.PI / 2);           // lie flat, thickness up (+y)
+
+    const parts = [];
+    for (let i = 0; i < 3; i++) {
+      const p = new THREE.Mesh(gearGeo, new THREE.MeshStandardMaterial({
+        color: 0xB57F27, roughness: 0.85, metalness: 0, transparent: true,
+        side: THREE.DoubleSide,              // the clipped cross-section shows the inside
+        clippingPlanes: [clipPlane, groundPlane], clipShadows: true }));
+      p.castShadow = true;
+      rig.add(p);
+      parts.push(p);
+    }
+
+    printerRig = { head, beam, parts, beltTex, clipPlane, groundPlane,
+                   beltTopY: -0.144, groundY: -0.379,
+                   PRINT_PX: 0.14, PRINT_PY: -0.144,
+                   workZ: -0.25,   // print line pulled toward the camera (local −z
+                                   // faces the viewer at the featured yaw) so the
+                                   // A-frame doesn't hide the head
+                   printing: 0,    // smoothed print-vs-stall blend
+                   tipY: -0.132, gearH: 0.055 };   // smoothed nozzle-tip height
+    rig.traverse(ch => { if (ch.isMesh) printerMeshes.push(ch); });
+    printer.add(rig);
+  }
+
+  printerGroup = printer;
+  window._printer = printer;   // debug/measurement handle (like _rivianCheck)
+  threeScene.add(printer);
+  addHitProxy(printer, printerHitbox);
+}, undefined, err => console.error('[3D] Printer load error:', err));
+
+// ── Load steering wheel — small prop standing upright on the right, between
+// the car and the SUV (screen-X ∝ x−z puts x−z ≈ 4.4 short of the Rivian's
+// 5.6; x+z ≈ 1.0 keeps it shallow, so scooter-style co-rotation holds
+// without ground glue) ──
+new GLTFLoader().load('renders/steering.glb', gltf => {
+  const steering = gltf.scene;
+
+  // The GLB ships no materials — keep the untouched glTF default, exactly
+  // like the printer and scooter, so all three props share the same grey.
+  // One exception: the wheel face (local +z) carries four round buttons, and
+  // the BOTTOM-RIGHT one is the race-game easter egg. It is split out of the
+  // fused mesh (scooter-seat pattern: shared position attribute, index-only
+  // split) and tinted green. Button centre (0.5062, 0.1559), cap radius
+  // 0.048, face plate at z ≈ 0.10 — measured offline from the GLB like the
+  // car's wheel axles; the tight radius keeps the grey outer bezel and the
+  // thumb-grip geometry at x > 0.54 out of the cut.
+  let fused = null;
+  steering.traverse(child => { if (child.isMesh && !fused) fused = child; });
+  const posAttr = fused.geometry.getAttribute('position');
+  const srcIdx  = fused.geometry.index.array;
+  const BTN_X = 0.5062, BTN_Y = 0.1559, BTN_R2 = 0.048 * 0.048, BTN_Z = 0.105;
+  const btnIdx = [], bodyIdx = [];
+  for (let i = 0; i < srcIdx.length; i += 3) {
+    const a = srcIdx[i], b = srcIdx[i + 1], c2 = srcIdx[i + 2];
+    const cx = (posAttr.getX(a) + posAttr.getX(b) + posAttr.getX(c2)) / 3;
+    const cy = (posAttr.getY(a) + posAttr.getY(b) + posAttr.getY(c2)) / 3;
+    const cz = (posAttr.getZ(a) + posAttr.getZ(b) + posAttr.getZ(c2)) / 3;
+    const dx = cx - BTN_X, dy = cy - BTN_Y;
+    (cz > BTN_Z && dx * dx + dy * dy < BTN_R2 ? btnIdx : bodyIdx).push(a, b, c2);
+  }
+  const partMesh = idx => {
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', posAttr);   // shared — only the index differs
+    g.setIndex(idx);
+    const m = new THREE.Mesh(g, fused.material.clone());
+    m.material.transparent = true;
+    m.castShadow    = true;
+    m.receiveShadow = true;
+    steeringMeshes.push(m);
+    return m;
+  };
+  const bodyMesh = partMesh(bodyIdx);
+  const btnMesh  = partMesh(btnIdx);
+  // The glTF default is fully metallic, which would muddy a flat tint — same
+  // de-metal treatment as the Rivian rear wall's gold
+  btnMesh.material.color.set(0x2FA85C);
+  btnMesh.material.metalness = 0;
+  btnMesh.material.roughness = 0.55;
+  greenBtnMeshes.push(btnMesh);
+
+  // The two parts replace the fused node, carrying over its transform
+  const holder = new THREE.Group();
+  holder.position.copy(fused.position);
+  holder.quaternion.copy(fused.quaternion);
+  holder.scale.copy(fused.scale);
+  holder.add(bodyMesh, btnMesh);
+  fused.parent.add(holder);
+  fused.parent.remove(fused);
+
+  // Normalize: longest axis = 1.2 world units — the smallest prop in the scene
+  const box = new THREE.Box3().setFromObject(steering);
+  const sz  = box.getSize(new THREE.Vector3());
+  steering.scale.setScalar(1.2 / Math.max(sz.x, sz.y, sz.z));
+
+  steering.rotation.y = STEERING_YAW;
+
+  // Stand on the rim edge, right of the car and just in front of the SUV
+  const box2 = new THREE.Box3().setFromObject(steering);
+  const ctr  = box2.getCenter(new THREE.Vector3());
+  steering.position.set(STEERING_POS.x - ctr.x, -box2.min.y, STEERING_POS.z - ctr.z);
+  steeringBaseX = steering.position.x;
+  steeringBaseZ = steering.position.z;
+  steeringBaseY = steering.position.y;
+  steeringBaseS = steering.scale.x;
+
+  steeringGroup = steering;
+  threeScene.add(steering);
+  addHitProxy(steering, steeringHitbox);
+}, undefined, err => console.error('[3D] Steering load error:', err));
 
 // ── Post-processing composer ──
 const composer   = new EffectComposer(renderer);
@@ -2383,6 +4355,114 @@ outlineYellow.edgeGlow      = 0.2;
 outlineYellow.visibleEdgeColor.set('#FFB800');
 outlineYellow.hiddenEdgeColor.set('#FFB800');
 composer.addPass(outlineYellow);
+
+// All three outline passes set hiddenEdgeColor === visibleEdgeColor, so the
+// occluded-vs-visible edge classification OutlinePass computes never changes a
+// pixel — yet its depth pre-pass re-renders every NON-selected mesh in the
+// scene (the full Rivian, printer, scooter...) once per pass, per frame. With
+// these GLBs that extra multi-million-triangle render dropped the loop to
+// ~20 fps whenever the car glow was up, freezing the mouse parallax over it.
+// Wrap render() to hide every mesh except the pass's own selection for the
+// duration of the pass: the depth buffer stays empty (everything classifies
+// as a visible edge — same colour), the mask pass draws only the glowing
+// model, and the output is pixel-identical.
+function slimOutlinePass(pass) {
+  const orig = pass.render.bind(pass);
+  pass.render = function (...args) {
+    if (pass.selectedObjects.length === 0) return orig(...args);
+    const keep = new Set();
+    for (const o of pass.selectedObjects) o.traverse(m => { if (m.isMesh) keep.add(m); });
+    const hidden = [];
+    threeScene.traverse(m => {
+      if (m.isMesh && m.visible && !keep.has(m)) { hidden.push(m); m.visible = false; }
+    });
+    orig(...args);
+    for (const m of hidden) m.visible = true;
+  };
+}
+slimOutlinePass(outlineGrey);
+slimOutlinePass(outlinePass);
+slimOutlinePass(outlineYellow);
+
+// Second halving: the white pass always outlines the exact same selection the
+// grey pass just masked (both are assigned together, sharing the modelMeshes
+// array), so its own depth + mask geometry renders are pure duplicates. Skip
+// them and run only its screen-space edge/blur/overlay chain against the grey
+// pass's mask buffers. Composer order guarantees grey renders first. Falls
+// back to the normal (slimmed) render if the selections ever diverge.
+{
+  const slimmedWhite = outlinePass.render;
+  outlinePass.render = function (renderer, writeBuffer, readBuffer, deltaTime, maskActive) {
+    const p = outlinePass, g = outlineGrey;
+    if (p.selectedObjects.length === 0) return;
+    if (p.selectedObjects !== g.selectedObjects)
+      return slimmedWhite(renderer, writeBuffer, readBuffer, deltaTime, maskActive);
+
+    renderer.getClearColor(p._oldClearColor);
+    const oldClearAlpha = renderer.getClearAlpha();
+    const oldAutoClear  = renderer.autoClear;
+    renderer.autoClear = false;
+    if (maskActive) renderer.state.buffers.stencil.setTest(false);
+    renderer.setClearColor(0xffffff, 1);
+
+    p.tempPulseColor1.copy(p.visibleEdgeColor);
+    p.tempPulseColor2.copy(p.hiddenEdgeColor);
+
+    // Edge detection on the grey pass's downsampled mask
+    p.fsQuad.material = p.edgeDetectionMaterial;
+    p.edgeDetectionMaterial.uniforms['maskTexture'].value = g.renderTargetMaskDownSampleBuffer.texture;
+    p.edgeDetectionMaterial.uniforms['texSize'].value.set(
+      g.renderTargetMaskDownSampleBuffer.width, g.renderTargetMaskDownSampleBuffer.height);
+    p.edgeDetectionMaterial.uniforms['visibleEdgeColor'].value = p.tempPulseColor1;
+    p.edgeDetectionMaterial.uniforms['hiddenEdgeColor'].value  = p.tempPulseColor2;
+    renderer.setRenderTarget(p.renderTargetEdgeBuffer1);
+    renderer.clear();
+    p.fsQuad.render(renderer);
+
+    // Blur at half res
+    p.fsQuad.material = p.separableBlurMaterial1;
+    p.separableBlurMaterial1.uniforms['colorTexture'].value = p.renderTargetEdgeBuffer1.texture;
+    p.separableBlurMaterial1.uniforms['direction'].value    = OutlinePass.BlurDirectionX;
+    p.separableBlurMaterial1.uniforms['kernelRadius'].value = p.edgeThickness;
+    renderer.setRenderTarget(p.renderTargetBlurBuffer1);
+    renderer.clear();
+    p.fsQuad.render(renderer);
+    p.separableBlurMaterial1.uniforms['colorTexture'].value = p.renderTargetBlurBuffer1.texture;
+    p.separableBlurMaterial1.uniforms['direction'].value    = OutlinePass.BlurDirectionY;
+    renderer.setRenderTarget(p.renderTargetEdgeBuffer1);
+    renderer.clear();
+    p.fsQuad.render(renderer);
+
+    // Blur at quarter res (feeds the edgeGlow term)
+    p.fsQuad.material = p.separableBlurMaterial2;
+    p.separableBlurMaterial2.uniforms['colorTexture'].value = p.renderTargetEdgeBuffer1.texture;
+    p.separableBlurMaterial2.uniforms['direction'].value    = OutlinePass.BlurDirectionX;
+    renderer.setRenderTarget(p.renderTargetBlurBuffer2);
+    renderer.clear();
+    p.fsQuad.render(renderer);
+    p.separableBlurMaterial2.uniforms['colorTexture'].value = p.renderTargetBlurBuffer2.texture;
+    p.separableBlurMaterial2.uniforms['direction'].value    = OutlinePass.BlurDirectionY;
+    renderer.setRenderTarget(p.renderTargetEdgeBuffer2);
+    renderer.clear();
+    p.fsQuad.render(renderer);
+
+    // Additive overlay into the composer's read buffer
+    p.fsQuad.material = p.overlayMaterial;
+    p.overlayMaterial.uniforms['maskTexture'].value  = g.renderTargetMaskBuffer.texture;
+    p.overlayMaterial.uniforms['edgeTexture1'].value = p.renderTargetEdgeBuffer1.texture;
+    p.overlayMaterial.uniforms['edgeTexture2'].value = p.renderTargetEdgeBuffer2.texture;
+    p.overlayMaterial.uniforms['patternTexture'].value    = p.patternTexture;
+    p.overlayMaterial.uniforms['edgeStrength'].value      = p.edgeStrength;
+    p.overlayMaterial.uniforms['edgeGlow'].value          = p.edgeGlow;
+    p.overlayMaterial.uniforms['usePatternTexture'].value = p.usePatternTexture;
+    if (maskActive) renderer.state.buffers.stencil.setTest(true);
+    renderer.setRenderTarget(readBuffer);
+    p.fsQuad.render(renderer);
+
+    renderer.setClearColor(p._oldClearColor, oldClearAlpha);
+    renderer.autoClear = oldAutoClear;
+  };
+}
 
 composer.addPass(new OutputPass());
 
@@ -2419,17 +4499,30 @@ const sprocketPanel = document.getElementById('sprocketPanel');
 // While a project is featured, the section-nav arrows cycle to the next /
 // previous project: zoom out, swap the feature at rest, zoom back in.
 let pendingFeature = null;
-const FEATURE_ORDER = ['scooter', 'car', 'rivian'];
+const FEATURE_ORDER = ['scooter', 'printer', 'car', 'steering', 'rivian'];
 window._cycleFeatured = dir => {
   if (zoomT < 0.5 || pendingFeature) return false;
-  pendingFeature = FEATURE_ORDER[(FEATURE_ORDER.indexOf(featured) + dir + 3) % 3];
+  pendingFeature = FEATURE_ORDER[
+    (FEATURE_ORDER.indexOf(featured) + dir + FEATURE_ORDER.length) % FEATURE_ORDER.length];
   sprocketOpen = false;
+  seatOpen = false;
   zoomDir = -1;
   return true;
 };
 
+// Flipping to the digital page returns the 3D world to rest so page 1 is
+// back at the isometric overview when the user flips home.
+window._zoomOutAll = () => {
+  if (zoomT > 0) zoomDir = -1;
+  pendingFeature = null;
+  sprocketOpen = false;
+  seatOpen = false;
+};
+
 // Click: zoom in on model, open sprocket, or zoom out
 card.addEventListener('click', e => {
+  if (window._digitalOpen) return;   // clicks belong to the digital page
+  if (window._raceOpen) return;      // clicks belong to the race easter egg
   if (!modelMeshes.length) return;
   const r = card.getBoundingClientRect();
   mousePt.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
@@ -2441,32 +4534,70 @@ card.addEventListener('click', e => {
     return;
   }
 
+  // While the seat module is detached, any click re-seats it
+  if (seatOpen) {
+    seatOpen = false;
+    return;
+  }
+
   // In zoomed side view, sprocket click opens the detail view (car feature only)
   if (zoomT > 0.9 && featured === 'car' && sprocketMeshes.length) {
-    const sprocketHit = raycaster.intersectObjects(sprocketMeshes, true).length > 0;
+    const sprocketHit = raycaster.intersectObjects(sprocketHitbox, false).length > 0;
     if (sprocketHit) {
       sprocketOpen = true;
       return;
     }
   }
 
-  // Zoom toggle: at rest, clicking any of the three projects features it
+  // In zoomed side view, clicking the rear module detaches it (scooter only)
+  if (zoomT > 0.9 && featured === 'scooter' && seatMeshes.length) {
+    const seatHit = raycaster.intersectObjects(seatHitbox, false).length > 0;
+    if (seatHit) {
+      seatOpen = true;
+      return;
+    }
+  }
+
+  // In zoomed steering view, the green face button opens the race easter egg
+  if (zoomT > 0.9 && featured === 'steering' && greenBtnMeshes.length) {
+    if (raycaster.intersectObjects(greenBtnMeshes, false).length > 0) {
+      if (window._openRace) window._openRace();
+      return;
+    }
+  }
+
+  // Zoom toggle: at rest, clicking any of the five projects features it
   if (zoomT < 0.5) {
-    const carHit     = raycaster.intersectObjects(modelMeshes, false).length > 0;
+    const carHit     = raycaster.intersectObjects(carHitbox, false).length > 0;
     const rivianHit  = !carHit && rivianMeshes.length &&
-                       raycaster.intersectObjects(rivianMeshes, false).length > 0;
+                       raycaster.intersectObjects(rivianHitbox, false).length > 0;
     const scooterHit = !carHit && !rivianHit && scooterMeshes.length &&
-                       raycaster.intersectObjects(scooterMeshes, false).length > 0;
-    if (carHit || rivianHit || scooterHit) {
-      featured = carHit ? 'car' : rivianHit ? 'rivian' : 'scooter';
+                       raycaster.intersectObjects(scooterHitbox, false).length > 0;
+    const printerHit = !carHit && !rivianHit && !scooterHit && printerMeshes.length &&
+                       raycaster.intersectObjects(printerHitbox, false).length > 0;
+    const steeringHit = !carHit && !rivianHit && !scooterHit && !printerHit && steeringMeshes.length &&
+                       raycaster.intersectObjects(steeringHitbox, false).length > 0;
+    if (carHit || rivianHit || scooterHit || printerHit || steeringHit) {
+      featured = carHit ? 'car' : rivianHit ? 'rivian' : scooterHit ? 'scooter'
+               : printerHit ? 'printer' : 'steering';
       fillProjectPanel(featured);
       zoomDir = 1;
     }
   } else if (!sprocketOpen) {
     zoomDir = -1;
     if (sprocketHovered) { sprocketHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
+    if (seatHovered)     { seatHovered = false;     outlineYellow.selectedObjects = []; card.style.cursor = ''; }
   }
 });
+
+// Debug/iteration handles (like _rivianCheck / _printer): feature a project
+// without simulating a click, and drive the seat-module detach directly.
+window._feature = name => {
+  if (zoomT === 0 && PROJECT_INFO[name]) {
+    featured = name; fillProjectPanel(name); zoomDir = 1;
+  }
+};
+window._seatDetach = v => { seatOpen = !!v; };
 
 function loop() {
   requestAnimationFrame(loop);
@@ -2489,26 +4620,69 @@ function loop() {
   // Share zoom progress with the dot grid so it can reproject its own camera.
   const c = window._dotCam || { hSkew: -0.09, tilt: 1, vShift: 0 };
 
-  // Blend between mouse-driven isometric and locked side-view
+  // Blend between mouse-driven isometric and locked side-view. A project can
+  // override the zoom elevation via FEATURE_POSE[..].el (printer: higher
+  // vantage); the others use the shared near-horizontal ZOOM_EL.
+  const zoomEl = (FEATURE_POSE[featured] && FEATURE_POSE[featured].el) || ZOOM_EL;
   const baseAz = BASE_AZ - c.hSkew * 0.30 * (1 - ease);
   const baseEl = BASE_EL - (1.0 - c.tilt) * 0.11 * (1 - ease);
   const az   = baseAz + (ZOOM_AZ - BASE_AZ) * ease;
-  const el   = baseEl + (ZOOM_EL - BASE_EL) * ease;
+  const el   = baseEl + (zoomEl - BASE_EL) * ease;
   const dist = BASE_DIST + (ZOOM_DIST - BASE_DIST) * ease;
 
-  // Sprocket open: lerp toward 1, close: lerp toward 0
-  sprocketOpenT += ((sprocketOpen ? 1 : 0) - sprocketOpenT) * (1 - Math.exp(-5 * dt));
+  // Sprocket open: constant-rate + smoothstep — the old exponential chase
+  // lurched on the first frame and crawled asymptotically at the end. Open
+  // settles in a touch slower than close snaps back.
+  sprocketOpenT = Math.max(0, Math.min(1,
+    sprocketOpenT + (sprocketOpen ? dt / 0.6 : -dt / 0.45)));
   const openEase = sprocketOpenT * sprocketOpenT * (3 - 2 * sprocketOpenT);
 
-  // Drive panel entirely from JS so it stays in sync with the WebGL frame
-  sprocketPanel.style.opacity = openEase;
-  sprocketPanel.style.transform = `translateY(-50%) translateX(${(1 - openEase) * 24}px)`;
-  sprocketPanel.style.pointerEvents = sprocketOpen || openEase > 0.5 ? 'auto' : 'none';
+  // Seat module detach: same constant-rate + smoothstep shape as the
+  // sprocket — detach settles a touch slower than the re-seat snaps back.
+  seatOpenT = Math.max(0, Math.min(1,
+    seatOpenT + (seatOpen ? dt / 0.7 : -dt / 0.5)));
+  const seatOpenEase = seatOpenT * seatOpenT * (3 - 2 * seatOpenT);
+
+  // Rev animation while the car is featured: a faint high-frequency idle
+  // buzz on the body, one throttle blip that swells the buzz and rocks the
+  // nose, and the wheels rolling (split out of the merged mesh at load).
+  // The whole act runs on revClock — it plays for 5 s after the zoom lands
+  // (fading out over the last second), then the car sits still. Zooming out
+  // resets the clock, so re-featuring the car replays it. It also fades out
+  // while the sprocket detail view is open, so the callout stays steady.
+  if (carGroup) {
+    if (featured === 'car' && ease > 0.5) revClock += dt; else revClock = 0;
+    const winT = Math.max(0, Math.min(1, 5 - revClock));   // 1 until 4 s, 0 at 5 s
+    const win  = winT * winT * (3 - 2 * winT);
+    const rev  = (featured === 'car' ? ease : 0) * (1 - openEase) * win;
+    const tSec = now / 1000;
+    // Blip phase runs on revClock too: one deterministic blip ~1.1 s in
+    const blip = Math.pow(Math.max(0, Math.sin(revClock * (Math.PI / 2.25))), 8);
+    const amp  = rev * (0.003 + 0.010 * blip);
+    carGroup.position.y = amp * (Math.sin(tSec * 82) + 0.6 * Math.sin(tSec * 47));
+    carGroup.rotation.z = rev * (0.006 * blip                    // torque lift on the blip
+                                 + 0.0018 * blip * Math.sin(tSec * 30)
+                                 + 0.0006 * Math.sin(tSec * 64)); // idle shudder
+    // Wheels: slow roll at idle, surging on the blip, coasting to a stop as
+    // the 5 s window closes. Positive local z spins them nose-forward
+    // through the model's 180° yaw.
+    wheelSpin += dt * rev * (3.5 + 12 * blip);
+    for (const p of carWheels) p.rotation.z = wheelSpin;
+  }
+
+  // The detail panel enters only after the gear is mostly in place (last 65%
+  // of the open) and leaves first on close — a clean baton pass.
+  const panelT  = Math.max(0, Math.min(1, (openEase - 0.35) / 0.65));
+  const panelIn = panelT * panelT * (3 - 2 * panelT);
+  sprocketPanel.style.opacity = panelIn;
+  sprocketPanel.style.transform = `translateY(-50%) translateX(${(1 - panelIn) * 24}px)`;
+  sprocketPanel.style.pointerEvents = sprocketOpen || panelIn > 0.5 ? 'auto' : 'none';
 
   // Project info panel: slides in as the featured zoom completes. On the car
   // it yields to the sprocket detail panel while that is open. The .in class
   // triggers the staggered row reveal.
-  const ppIn = Math.max(0, (ease - 0.6) / 0.4) * (1 - openEase);
+  const ppIn = Math.max(0, (ease - 0.6) / 0.4)
+             * Math.max(0, 1 - Math.max(openEase, seatOpenEase) * 2.5);
   projectPanel.style.opacity = ppIn;
   projectPanel.style.transform = `translateY(-50%) translateX(${(1 - ppIn) * 24}px)`;
   projectPanel.classList.toggle('in', ppIn > 0.4);
@@ -2522,18 +4696,27 @@ function loop() {
 
   // Identity caption and scene hint crossfade to the featured copy mid-zoom:
   // opacity dips to 0 at ease 0.5, where the text is swapped, and recovers.
-  const identityTarget = ease > 0.5 ? featured : 'default';
+  // The digital page flip drives the same crossfade through digitalT.
+  digitalT += ((window._digitalOpen ? 1 : 0) - digitalT) * (1 - Math.exp(-6 * dt));
+  if (digitalT < 0.001) digitalT = 0; else if (digitalT > 0.999) digitalT = 1;
+  const identityTarget = digitalT > 0.5 ? 'digital' : ease > 0.5 ? featured : 'default';
   if (identityTarget !== identityShows) {
     identityShows = identityTarget;
-    const src = identityTarget === 'default' ? IDENTITY_DEFAULT : PROJECT_INFO[identityTarget];
+    const src = identityTarget === 'digital' ? IDENTITY_DIGITAL
+              : identityTarget === 'default' ? IDENTITY_DEFAULT
+              : PROJECT_INFO[identityTarget];
     identityLayer.textContent = src.layer;
     identityDesc.innerHTML    = src.desc;
-    sceneHint.textContent     = identityTarget === 'default' ? HINT_DEFAULT : HINT_ZOOMED;
-    sheetNote.textContent     = identityTarget === 'default'
+    sceneHint.textContent     = identityTarget === 'digital' ? HINT_DIGITAL
+                              : identityTarget === 'default' ? HINT_DEFAULT : HINT_ZOOMED;
+    sheetNote.textContent     = identityTarget === 'digital'
+      ? 'YM · Build 2.0 · Index'
+      : identityTarget === 'default'
       ? 'YM · Build 1.0 · Index'
-      : `YM · Build 1.0 · Sheet ${PROJECT_INFO[identityTarget].index}/03`;
+      : `YM · Build 1.0 · Sheet ${PROJECT_INFO[identityTarget].index}/05`;
   }
-  const metaFade = Math.min(1, Math.abs(ease - 0.5) * 2);
+  const metaFade = Math.min(1, Math.abs(ease - 0.5) * 2)
+                 * Math.min(1, Math.abs(digitalT - 0.5) * 2);
   identityMeta.style.opacity = metaFade;
   sceneHint.style.opacity    = metaFade;
   sheetNote.style.opacity    = metaFade;
@@ -2570,6 +4753,190 @@ function loop() {
     scooterGroup.position.y = scooterBaseY * k; // keeps the wheels on the ground
     scooterGroup.rotation.y = oy + (fp.yaw - oy) * t;
     scooterGroup.scale.setScalar(scooterBaseS * k);
+  }
+
+  // Steering wheel: scooter-style co-rotation — position orbits with the
+  // camera azimuth and the model counter-yaws, so it shows different faces
+  // as the cursor moves. Fine at this spot (small |D|, tiny footprint); the
+  // Rivian-style ground glue is not needed. When featured it glides to the
+  // origin stage like the others.
+  if (steeringGroup) {
+    const Cx = steeringBaseX * Math.cos(BASE_AZ) - steeringBaseZ * Math.sin(BASE_AZ);
+    const D  = steeringBaseX * Math.sin(BASE_AZ) + steeringBaseZ * Math.cos(BASE_AZ);
+    const ox = Cx * Math.cos(az) + D * Math.sin(az);
+    const oz = -Cx * Math.sin(az) + D * Math.cos(az);
+    const oy = STEERING_YAW + (az - BASE_AZ);
+    const t  = featured === 'steering' ? ease : 0;
+    const fp = FEATURE_POSE.steering;
+    const k  = 1 + (fp.scale - 1) * t;           // extra scale on top of base
+    steeringGroup.position.x = ox * (1 - t);
+    steeringGroup.position.z = oz * (1 - t) + fp.z * t;
+    steeringGroup.position.y = steeringBaseY * k; // rim stays on the ground
+    steeringGroup.rotation.y = oy + (fp.yaw - oy) * t;
+    steeringGroup.scale.setScalar(steeringBaseS * k);
+  }
+
+  // Seat module detach (mesh-local: +x = rear, +y = up). The lift leads and
+  // the rearward drift arrives late — an unhook arc — with a light swing
+  // that mostly unwinds, settling presented above/behind the dimmed frame.
+  if (scooterSeatPivot) {
+    const st   = seatOpenEase;
+    const rise = Math.pow(st, 0.6);
+    scooterSeatPivot.position.x = seatRestPos.x + st * st * 0.50;
+    scooterSeatPivot.position.y = seatRestPos.y + rise * 0.50;
+    scooterSeatPivot.rotation.z = st * 0.10 + Math.sin(st * Math.PI) * 0.06;
+    scooterSeatPivot.scale.setScalar(1 + st * 0.08);
+  }
+
+  // Printer: world-static like the race car, except the vertical-cursor bob
+  // is damped. The camera's vertical tracking (el + lookAt vShift) pivots on
+  // the origin; the printer sits ~3 units beyond it and gets levered up/down
+  // more than the user wants. Vertical: project its ground anchor through
+  // the live camera and through a rest camera (tilt 1, vShift 0, hSkew at
+  // its -0.09 resting value) and keep (1 - PRINTER_BOB_DAMP) of the screen
+  // delta. Horizontal: follow the calibrated dot-lattice point EXACTLY —
+  // damping the sway made it worse, because at this depth the dots sweep
+  // ~37px while a damped printer stays put, and the eye reads that relative
+  // slide as the printer skating across the ground. Re-seat the result on
+  // the ground via raycast. Always a ground slide, never a y-lift — lifting
+  // made the sun shadow slide out from under its feet; on the ground the
+  // shadow rides with it. Gated like the Rivian: past ease 0.4 it is faded
+  // out and the near-horizontal zoom camera makes the intersection unstable.
+  if (printerGroup) {
+    if (ease < 0.4) {
+      if (!printerRestCam) printerRestCam = camera.clone();
+      printerRestCam.aspect = camera.aspect;
+      printerRestCam.updateProjectionMatrix();
+      const rAz = BASE_AZ + 0.09 * 0.30 * (1 - ease) + (ZOOM_AZ - BASE_AZ) * ease;
+      const rEl = BASE_EL + (zoomEl - BASE_EL) * ease;
+      printerRestCam.position.set(
+        Math.cos(rEl) * Math.sin(rAz) * dist,
+        Math.sin(rEl) * dist,
+        Math.cos(rEl) * Math.cos(rAz) * dist
+      );
+      printerRestCam.lookAt(0, 0.5 * ease, 0);
+      printerRestCam.updateMatrixWorld();
+      camera.updateMatrixWorld();
+      const live = new THREE.Vector3(PRINTER_POS.x, 0, PRINTER_POS.z).project(camera);
+      const rest = new THREE.Vector3(PRINTER_POS.x, 0, PRINTER_POS.z).project(printerRestCam);
+      let ndcX = live.x;                       // fallback: ride the camera
+      if (printerAnchor && window._dotCam) {
+        const rect = card.getBoundingClientRect();
+        const p = window._dotCam.projectGround(printerAnchor.A, printerAnchor.D);
+        ndcX = (p.x / rect.width) * 2 - 1;     // glue to the dot
+      }
+      printerNdc.set(ndcX,
+                     rest.y + (live.y - rest.y) * (1 - PRINTER_BOB_DAMP));
+      raycaster.setFromCamera(printerNdc, camera);
+      const t = new THREE.Vector3();
+      if (raycaster.ray.intersectPlane(rivianGroundPlane, t)) {
+        printerGlueX = printerBaseX + (t.x - PRINTER_POS.x);
+        printerGlueZ = printerBaseZ + (t.z - PRINTER_POS.z);
+      }
+    }
+    // Featured glide: from the last glue solution (frozen past ease 0.4,
+    // like the Rivian's) to the origin stage — same pattern as the scooter.
+    // The stage keeps the load-time recentring offset (scaled by k, since
+    // the group scales about its origin) so the VISUAL centre lands on 0.
+    const ft = featured === 'printer' ? ease : 0;
+    const fp = FEATURE_POSE.printer;
+    const k  = 1 + (fp.scale - 1) * ft;         // extra scale on top of base
+    const stageX = (printerBaseX - PRINTER_POS.x) * k;
+    const stageZ = (printerBaseZ - PRINTER_POS.z) * k + fp.z;
+    printerGroup.position.x = printerGlueX * (1 - ft) + stageX * ft;
+    printerGroup.position.z = printerGlueZ * (1 - ft) + stageZ * ft;
+    printerGroup.position.y = printerBaseY * k; // keeps the feet on the ground
+    printerGroup.rotation.y = PRINTER_YAW + (fp.yaw - PRINTER_YAW) * ft;
+    printerGroup.scale.setScalar(printerBaseS * k);
+  }
+
+  // Print-action rig: runs while the printer is featured, pauses otherwise.
+  // printT accumulates only while running, so the print RESUMES where it
+  // stopped on the next visit. All coordinates are printer-group-local.
+  if (printerRig) {
+    printOn += ((featured === 'printer' ? ease : 0) - printOn) * (1 - Math.exp(-6 * dt));
+    printT  += dt * printOn;
+    const BELT_V = 0.045;                 // belt speed, units/sec toward −x
+    const SPAN   = 1.36;                  // travel before a part recycles
+    const X0     = 0.30;                  // born fully behind the print plane
+    const X_EDGE = -0.945;                // belt end — parts tip off past here
+    printerRig.beltTex.offset.x = (printT * BELT_V / 1.455) * 5.5;
+    // Refresh the two clip planes in world space (the group moves every frame)
+    printerGroup.updateMatrixWorld();
+    _pn.set(-1, -1, 0).transformDirection(printerGroup.matrixWorld);
+    _pp.set(printerRig.PRINT_PX, printerRig.PRINT_PY, 0);
+    printerGroup.localToWorld(_pp);
+    printerRig.clipPlane.setFromNormalAndCoplanarPoint(_pn, _pp);
+    _pn.set(0, 1, 0).transformDirection(printerGroup.matrixWorld);
+    _pp.set(X_EDGE, printerRig.groundY, -0.09);
+    printerGroup.localToWorld(_pp);
+    printerRig.groundPlane.setFromNormalAndCoplanarPoint(_pn, _pp);
+    printerRig.parts.forEach((p, i) => {
+      const travel = printT * BELT_V + i * (SPAN / 3);
+      const xLin   = X0 - (travel % SPAN);
+      const yaw    = Math.floor(travel / SPAN) * 2.399 + i;  // fresh yaw each lap
+      if (xLin > X_EDGE) {
+        p.position.set(xLin, printerRig.beltTopY, printerRig.workZ);
+        p.rotation.set(0, yaw, 0);
+      } else {
+        // Off the end: tip forward, tumble, and sink into the floor hole
+        // (the ground clip plane swallows it). Deterministic in printT, so
+        // pause/resume keeps working.
+        const tf = (X_EDGE - xLin) / BELT_V;   // seconds past the edge
+        p.position.set(X_EDGE - BELT_V * tf - 0.04 * tf * tf,
+                       printerRig.beltTopY - 0.5 * tf * tf,
+                       printerRig.workZ);
+        p.rotation.set(0, yaw, Math.min(2.1, tf * 2.2));
+      }
+    });
+    // The head tracks the print front LAYER BY LAYER. The 45° plane meets
+    // the emerging gear along a slice whose top edge rises as the belt
+    // carries the part out; quantise that height to layer steps and ride
+    // the head along the plane (x = C − y, like the carriage on 45° rails),
+    // sweeping z across the part. Between parts it glides back to the belt.
+    const C    = printerRig.PRINT_PX + printerRig.PRINT_PY;
+    const yBot = printerRig.beltTopY, yTop = yBot + printerRig.gearH;
+    let yFront = yBot, act = null;                   // act = gear at the plane
+    for (const p of printerRig.parts) {
+      const lead = p.position.x - 0.085;             // gear leading edge
+      if (lead < C - yBot && p.position.x + 0.085 > C - yTop) {
+        const f = Math.min(yTop, C - lead);
+        if (f >= yFront) { yFront = f; act = p; }
+      }
+    }
+    // Sweep only as wide as the slice the plane is actually cutting through
+    // the gear right now — hw follows the chord width, so the nozzle stays
+    // ON the material it is extruding.
+    let hw = 0;
+    if (act) {
+      const x0 = Math.max(act.position.x - 0.085, C - yTop);
+      const x1 = Math.min(act.position.x + 0.085, C - yBot);
+      const xs = Math.min(Math.max(act.position.x, x0), x1);
+      const dx = xs - act.position.x;
+      hw = Math.sqrt(Math.max(0, 0.085 * 0.085 - dx * dx));
+    }
+    // Stall: with no gear at the plane, the head eases to a home pose by
+    // the near leg (slightly lifted, jitter off) instead of pantomiming
+    // printing over an empty belt. `printing` is the smoothed blend.
+    printerRig.printing += ((act ? 1 : 0) - printerRig.printing) * (1 - Math.exp(-6 * dt));
+    const pr = printerRig.printing;
+    const LH     = 0.011;                            // visual layer height
+    const PARK_Z = -0.32;                            // home, beside the near leg
+    const yLayer = yBot + Math.floor((yFront - yBot) / LH + 1e-6) * LH;
+    const tipTgt = (yLayer + 0.012) * pr + (yBot + 0.05) * (1 - pr);
+    printerRig.tipY += (tipTgt - printerRig.tipY) * (1 - Math.exp(-10 * dt));
+    const tipX = C - printerRig.tipY + 0.004;        // stay on the 45° plane
+    const ph   = (printT / 0.45) % 2;                // constant-speed zigzag
+    const tri  = (ph < 1 ? ph : 2 - ph) * 2 - 1;
+    const sweepZ = printerRig.workZ + tri * Math.max(0.012, hw * 0.9);
+    printerRig.head.position.x = tipX + 0.117;       // head origin = tip − lean offset
+    printerRig.head.position.y = printerRig.tipY + 0.117 + Math.sin(printT * 7.3) * 0.003 * pr;
+    printerRig.head.position.z = PARK_Z + (sweepZ - PARK_Z) * pr;
+    // Cross beam rides the A-frame's front legs at the head's height; the
+    // carriage hangs in front of it at the print plane
+    const beamY = printerRig.head.position.y + 0.05;
+    printerRig.beam.position.x = 0.16 + (beamY + 0.15) / 1.47;
+    printerRig.beam.position.y = beamY;
   }
 
   // Rivian: glued to the dot lattice at its four wheel contact points. Each
@@ -2659,30 +5026,89 @@ function loop() {
 
   // Sprocket scales up, moves left and up as it opens
   if (sprocketGroup) {
-    sprocketGroup.scale.setScalar(sprocketBaseScale * (1 + openEase * 2.2));
-    sprocketGroup.position.x = SPROCKET_BASE_X - openEase * 0.5;
-    sprocketGroup.position.y = 0.36 + openEase * 0.45;
+    // The gear waits a beat (first ~18% of the open) while the car clears,
+    // then flies on an arc (y leads x), scale settling with a soft overshoot;
+    // a transient swing about the gear axis reads as the sprocket meshing
+    // free — it unwinds to 0 so the settled pose is unchanged.
+    const gearT = Math.max(0, Math.min(1, (openEase - 0.18) / 0.82));
+    const rise = Math.pow(gearT, 0.65);
+    const back = 1 + 1.9 * Math.pow(gearT - 1, 3) + 0.9 * Math.pow(gearT - 1, 2);
+    sprocketGroup.scale.setScalar(sprocketBaseScale * (1 + back * 2.2));
+    sprocketGroup.position.x = SPROCKET_BASE_X - gearT * 0.5;
+    sprocketGroup.position.y = 0.36 + rise * 0.45;
+    sprocketGroup.rotation.z = Math.sin(gearT * Math.PI) * 0.15;
   }
 
-  const transitioning = (ease > 0.001 && ease < 0.999) || (openEase > 0.001 && openEase < 0.999);
+  // Idle glint: every ~2.4s the yellow outline swells, holds ~1s, then fades,
+  // as if catching light — same visual channel as the hover state, so it teaches
+  // "yellow glow = point of interest" without a permanent highlight. The
+  // sprocket owns the channel on the car; the trunk rear wall on the Rivian.
+  const glintMeshes  = featured === 'car'      ? sprocketMeshes
+                     : featured === 'rivian'   ? rearWallMeshes
+                     : featured === 'scooter'  ? seatMeshes
+                     : featured === 'steering' ? greenBtnMeshes : [];
+  const glintHovered = featured === 'rivian'   ? rearWallHovered
+                     : featured === 'scooter'  ? seatHovered
+                     : featured === 'steering' ? greenBtnHovered : sprocketHovered;
+  if (ease > 0.9 && !sprocketOpen && openEase < 0.05 &&
+      !seatOpen && seatOpenEase < 0.05 && glintMeshes.length) {
+    if (glintHovered) {
+      outlineYellow.edgeStrength = 5.0;
+    } else {
+      // Trapezoid envelope: rise 360ms, hold 960ms at peak, fall 360ms, rest.
+      const ph   = (now % 2400) / 2400;
+      const env  = Math.max(0, Math.min(1, Math.min(ph / 0.15, (0.7 - ph) / 0.15)));
+      const swell = env * env * (3 - 2 * env) * 2.8;
+      outlineYellow.selectedObjects = swell > 0.03 ? glintMeshes : [];
+      outlineYellow.edgeStrength = Math.max(swell, 0.01);
+    }
+  } else if (!glintHovered) {
+    outlineYellow.edgeStrength = 5.0;   // restore for the next hover
+    // A glint frame may have left its meshes selected — without this the
+    // outline sticks at full strength on the detached seat module
+    outlineYellow.selectedObjects = [];
+  }
+
+  // Detail callout: dashed "Detail A" circle around the sprocket once the car
+  // zoom settles — the drawing convention for "this area has a blow-up view".
+  // Yields to the hover outline and to the open detail panel.
+  if (sprocketGroup && featured === 'car') {
+    camera.updateMatrixWorld();
+    const sv = sprocketGroup.position.clone().project(camera);
+    const rect = card.getBoundingClientRect();
+    detailCallout.style.transform =
+      `translate(${(sv.x + 1) / 2 * rect.width}px, ${(1 - sv.y) / 2 * rect.height}px)`;
+  }
+  const detailTarget = (featured === 'car' ? ppIn : 0) *
+                       (1 - openEase) * (sprocketHovered ? 0 : 1);
+  detailO += (detailTarget - detailO) * (1 - Math.exp(-10 * dt));
+  detailCallout.style.opacity = detailO;
+
+  const transitioning = (ease > 0.001 && ease < 0.999)
+                     || (openEase > 0.001 && openEase < 0.999)
+                     || (seatOpenEase > 0.001 && seatOpenEase < 0.999);
 
   // Skip raycasting during transitions — it's expensive and not needed while moving
   if (transitioning) {
     if (isHovered)       { isHovered = false; outlinePass.selectedObjects = []; outlineGrey.selectedObjects = []; }
     if (sprocketHovered) { sprocketHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
+    if (rearWallHovered) { rearWallHovered = false; outlineYellow.selectedObjects = []; }
+    if (seatHovered)     { seatHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
+    if (greenBtnHovered) { greenBtnHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
     if (rivianHovered)   { rivianHovered = false; card.style.cursor = ''; }
     if (scooterHovered)  { scooterHovered = false; card.style.cursor = ''; }
   }
 
-  // Hover detection (only at rest — raycaster is expensive on complex mesh)
-  if (!transitioning && c.mx > -999) {
+  // Hover detection (only at rest, and never under the digital page —
+  // raycaster is expensive on complex mesh)
+  if (!transitioning && !window._digitalOpen && c.mx > -999) {
     const rect = card.getBoundingClientRect();
     mousePt.set((c.mx / rect.width) * 2 - 1, -(c.my / rect.height) * 2 + 1);
     raycaster.setFromCamera(mousePt, camera);
 
     // Sprocket hover — only active when zoomed on the car
     const sprocketHit = (ease > 0.9 && featured === 'car' && sprocketMeshes.length)
-      ? raycaster.intersectObjects(sprocketMeshes, true).length > 0
+      ? raycaster.intersectObjects(sprocketHitbox, false).length > 0
       : false;
     if (sprocketHit !== sprocketHovered) {
       sprocketHovered = sprocketHit;
@@ -2690,10 +5116,44 @@ function loop() {
       card.style.cursor = sprocketHovered ? 'pointer' : '';
     }
 
+    // Rear-wall hover — only active when zoomed on the Rivian; same yellow
+    // outline treatment as the sprocket (no pointer cursor: it doesn't open
+    // a detail view, a click still zooms back out)
+    const wallHit = (ease > 0.9 && featured === 'rivian' && rearWallMeshes.length)
+      ? raycaster.intersectObjects(rearWallHitbox, false).length > 0
+      : false;
+    if (wallHit !== rearWallHovered) {
+      rearWallHovered = wallHit;
+      outlineYellow.selectedObjects = rearWallHovered ? rearWallMeshes : [];
+    }
+
+    // Seat-module hover — only when zoomed on the scooter; pointer cursor
+    // because a click detaches the module (or re-seats it while open)
+    const seatHit = (ease > 0.9 && featured === 'scooter' && seatMeshes.length)
+      ? raycaster.intersectObjects(seatHitbox, false).length > 0
+      : false;
+    if (seatHit !== seatHovered) {
+      seatHovered = seatHit;
+      outlineYellow.selectedObjects = seatHovered ? seatMeshes : [];
+      card.style.cursor = seatHovered ? 'pointer' : '';
+    }
+
+    // Green-button hover — only when zoomed on the steering wheel; pointer
+    // cursor because a click starts the race easter egg. The button mesh is
+    // raycast directly (no proxy): ~1800 triangles, cheap at hover cadence.
+    const btnHit = (ease > 0.9 && featured === 'steering' && greenBtnMeshes.length)
+      ? raycaster.intersectObjects(greenBtnMeshes, false).length > 0
+      : false;
+    if (btnHit !== greenBtnHovered) {
+      greenBtnHovered = btnHit;
+      outlineYellow.selectedObjects = greenBtnHovered ? greenBtnMeshes : [];
+      card.style.cursor = greenBtnHovered ? 'pointer' : '';
+    }
+
     // Car body hover (only when not over sprocket, and not faded out)
     const carHit = (!sprocketHit && (featured === 'car' || ease < 0.05) &&
                     carOpacity > 0.05 && modelMeshes.length)
-      ? raycaster.intersectObjects(modelMeshes, false).length > 0
+      ? raycaster.intersectObjects(carHitbox, false).length > 0
       : false;
     if (carHit !== isHovered) {
       isHovered = carHit;
@@ -2703,7 +5163,7 @@ function loop() {
 
     // Rivian hover (rest view only — in zoom it is either featured or hidden)
     const rivianHit = (ease < 0.05 && !sprocketHit && !carHit && rivianMeshes.length)
-      ? raycaster.intersectObjects(rivianMeshes, false).length > 0
+      ? raycaster.intersectObjects(rivianHitbox, false).length > 0
       : false;
     if (rivianHit !== rivianHovered) {
       rivianHovered = rivianHit;
@@ -2712,21 +5172,45 @@ function loop() {
 
     // Scooter hover (rest view only)
     const scooterHit = (ease < 0.05 && !sprocketHit && !carHit && !rivianHit && scooterMeshes.length)
-      ? raycaster.intersectObjects(scooterMeshes, false).length > 0
+      ? raycaster.intersectObjects(scooterHitbox, false).length > 0
       : false;
     if (scooterHit !== scooterHovered) {
       scooterHovered = scooterHit;
       card.style.cursor = scooterHovered ? 'pointer' : '';
     }
+
+    // Printer hover (rest view only)
+    const printerHit = (ease < 0.05 && !sprocketHit && !carHit && !rivianHit && !scooterHit && printerMeshes.length)
+      ? raycaster.intersectObjects(printerHitbox, false).length > 0
+      : false;
+    if (printerHit !== printerHovered) {
+      printerHovered = printerHit;
+      card.style.cursor = printerHovered ? 'pointer' : '';
+    }
+
+    // Steering hover (rest view only)
+    const steeringHit = (ease < 0.05 && !sprocketHit && !carHit && !rivianHit && !scooterHit && !printerHit && steeringMeshes.length)
+      ? raycaster.intersectObjects(steeringHitbox, false).length > 0
+      : false;
+    if (steeringHit !== steeringHovered) {
+      steeringHovered = steeringHit;
+      card.style.cursor = steeringHovered ? 'pointer' : '';
+    }
   } else {
     if (isHovered)      { isHovered = false; outlinePass.selectedObjects = []; outlineGrey.selectedObjects = []; }
     if (sprocketHovered) { sprocketHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
+    if (rearWallHovered) { rearWallHovered = false; outlineYellow.selectedObjects = []; }
+    if (seatHovered)     { seatHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
+    if (greenBtnHovered) { greenBtnHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
     if (rivianHovered)   { rivianHovered = false; card.style.cursor = ''; }
     if (scooterHovered)  { scooterHovered = false; card.style.cursor = ''; }
+    if (printerHovered)  { printerHovered = false; card.style.cursor = ''; }
+    if (steeringHovered) { steeringHovered = false; card.style.cursor = ''; }
   }
 
   // Hover callout tag: a mono spec label that trails the cursor over a model
   const hoverName = rivianHovered ? 'rivian' : scooterHovered ? 'scooter'
+                  : printerHovered ? 'printer' : steeringHovered ? 'steering'
                   : isHovered ? 'car' : null;
   if (hoverName) {
     const hi = PROJECT_INFO[hoverName];
@@ -2749,9 +5233,14 @@ function loop() {
   // any lingering makes it look like the car is doing its featured transition
   // behind the fade. Gone by ease 0.25, before the camera visibly commits.
   const carFade = featured === 'car' ? 1 : Math.max(0, 1 - ease * 4);
-  const carOpacityTarget = (sprocketHovered ? 0.30 : 1.0) * (1 - openEase);
+  // The car clears out ahead of the gear's arrival (gone by openEase 0.66)
+  const carOpacityTarget = (sprocketHovered ? 0.30 : 1.0) *
+                           Math.max(0, 1 - openEase * 1.5);
   carOpacity += (carOpacityTarget - carOpacity) * (1 - Math.exp(-7 * dt));
-  const carFinal = carOpacity * carFade;
+  // Direct (unsmoothed) fade on sprocket-open: the half-faded car writes
+  // depth and punches holes across the gear flying through it — it must be
+  // fully gone before the gear starts moving (gear waits until openEase 0.18).
+  const carFinal = carOpacity * carFade * Math.max(0, 1 - openEase * 6);
   if (modelMeshes.length) {
     for (const m of modelMeshes) {
       m.visible = carFinal > 0.01;
@@ -2764,10 +5253,30 @@ function loop() {
     m.visible = rivianOpacity > 0.01;
     if (m.visible) m.material.opacity = rivianOpacity;
   }
+  // The trunk rear wall rides the SUV's fade at reduced opacity — it reads
+  // as an inserted accent panel, not part of the bodywork
+  for (const m of rearWallMeshes) {
+    m.visible = rivianOpacity > 0.01;
+    if (m.visible) m.material.opacity = rivianOpacity * 0.35;
+  }
+  // While the seat module is detached, the frame recedes so the module is
+  // the emphasis — the scooter's version of the car dimming for the sprocket
   const scooterOpacity = featured === 'scooter' ? 1 : fadeOut;
+  const scooterBodyDim = 1 - seatOpenEase * 0.72;
   for (const m of scooterMeshes) {
     m.visible = scooterOpacity > 0.01;
-    if (m.visible) m.material.opacity = scooterOpacity;
+    if (m.visible) m.material.opacity =
+      scooterOpacity * (m.userData.isSeat ? 1 : scooterBodyDim);
+  }
+  const printerOpacity = featured === 'printer' ? 1 : fadeOut;
+  for (const m of printerMeshes) {
+    m.visible = printerOpacity > 0.01;
+    if (m.visible) m.material.opacity = printerOpacity;
+  }
+  const steeringOpacity = featured === 'steering' ? 1 : fadeOut;
+  for (const m of steeringMeshes) {
+    m.visible = steeringOpacity > 0.01;
+    if (m.visible) m.material.opacity = steeringOpacity;
   }
   // The sprocket rides on the car's engine — it fades exactly with the car
   for (const m of sprocketMeshes) {

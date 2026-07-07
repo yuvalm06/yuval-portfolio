@@ -11,13 +11,21 @@ Everything lives in one file: HTML structure, CSS, and JavaScript.
 card (rounded inset frame, #EEECEA background)
  ├── #dot-canvas          ← animated perspective dot grid (Canvas 2D)
  ├── .distance-fog        ← CSS gradient overlay that fades dots into distance
- ├── .scene               ← 3D render / SVG objects sit here
- ├── .nav                 ← top bar: logo left, brand pill + hamburger right
+ ├── <canvas> (WebGL)     ← Three.js scene, injected by JS with inline styles (z 3)
+ ├── .digital-page        ← Build 2.0 page, flips in from the right (z 16)
+ ├── .race-page           ← race-game easter egg overlay (z 45), opened by the
+ │                          green button on the steering wheel's face
+ ├── .nav                 ← top bar: logo left, hamburger right (z 35, above intro)
  ├── .nav-overlay         ← full-screen slide-up nav menu
  ├── .identity            ← bottom-left: icon | title | layer label | description
- ├── .page-dots           ← right edge vertical dot indicators
- └── .section-nav         ← bottom-right prev/next buttons
+ ├── .frame-marks         ← drawing-frame corner ticks + sheet note
+ ├── .split-intro         ← front door: two equal halves (Hands-On / Digital),
+ │                          click swipes to that world (z 30, shown until a pick)
+ ├── .edge-tab ×2         ← thin side handles to flip to the other world (z 21)
+ └── .section-nav         ← bottom-right prev/next (cycle projects / flip page)
 ```
+
+See `dev/features/*.md` for how each major feature works.
 
 ---
 
@@ -73,22 +81,13 @@ const sceneY = vShift * 0.25; // ±4px vertical
 
 ---
 
-## Adding a new 3D object / Blender render
+## Adding a new 3D object
 
-### With a Blender PNG render (recommended)
-Replace the scene div content:
-```html
-<div class="scene">
-  <img class="scene-img" src="your-render.png" alt="Scene" />
-</div>
-```
-
-Blender camera settings to match this system:
-- Type: **Orthographic**
-- Rotation: X = 60°, Z = 45°
-- Material: Principled BSDF, roughness 1.0, off-white (#E8E6E1)
-- Lighting: HDRI overcast, no direct lights
-- Render: transparent background, 2680×1560px (2× card size)
+### With a GLB model (how the current scene works)
+The 3D scene is a Three.js WebGL canvas injected by the module script — see
+`dev/features/3d-scene.md` and `dev/lessons/glb-workflow.md`. Add a GLB under
+`renders/` and follow the existing loader pattern (clone materials, normalise
+scale, sit on ground).
 
 ### With SVG geometry (for simple shapes)
 All SVG objects must use the same projection:
@@ -117,12 +116,19 @@ Shadow system (3 layers):
 ## CSS z-index stack
 ```
 1  → #dot-canvas
-2  → .distance-fog
-3  → .scene
-5  → .card::after (vignette)
-8  → .hotspot
+2  → .distance-fog, .card::after (vignette)
+3  → WebGL canvas (inline style)
 10 → .card::before (grain)
-20 → .nav, .identity, .page-dots, .section-nav
+14 → .dim-line, .detail-callout
+15 → .sprocket-panel, .project-panel
+16 → .digital-page (scrim z3 / doc z6 / raised stack column z5 inside it)
+20 → .identity, .frame-marks, .section-nav
+21 → .edge-tab
+22 → .hover-tag
+30 → .split-intro
+35 → .nav
+40 → .contact-page, .page-overlay (about / skills)
+45 → .race-page (steering-wheel easter egg)
 50 → .nav-overlay
 ```
 
@@ -134,8 +140,8 @@ Shadow system (3 layers):
 --ink:       #1A1916   /* dark text */
 --ink-mid:   #4A4844
 --ink-light: #8A8784
---pill-bg:   #2E2D2B   /* hotspot buttons */
 --font:      'Instrument Sans', sans-serif
+--mono:      'IBM Plex Mono', ui-monospace, monospace
 ```
 
 ---
@@ -145,5 +151,5 @@ Shadow system (3 layers):
 - Do not split into multiple files unless explicitly asked — single-file is intentional
 - Do not add a JS framework — vanilla JS only
 - Do not change `PERSP`, `GS`, `CX`, `CY` constants without re-deriving all SVG object positions
-- Do not apply `skewX` or `scaleY` to `.scene` — it warps the render. Translate only.
-- Do not use `transition` on `.scene` — the lerp in the rAF loop handles smoothing
+- Do not add CSS `transition` to elements whose style is driven per-frame by the rAF loops
+  (identity/hint opacity, panels, dim line, hover tag) — the lerp handles smoothing

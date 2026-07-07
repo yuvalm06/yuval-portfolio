@@ -18,6 +18,8 @@ dev/
 - [dot-grid.md](features/dot-grid.md) — animated perspective ground plane
 - [3d-scene.md](features/3d-scene.md) — Three.js WebGL model integrated with dot grid
 - [zoom-animation.md](features/zoom-animation.md) — click-to-zoom into side-profile view
+- [digital-page.md](features/digital-page.md) — Build 2.0 flip page: file manifest + isometric sheet stack
+- [race-game.md](features/race-game.md) — easter egg: green steering-wheel button opens an A/D obstacle runner
 
 ## Lessons
 
@@ -29,4 +31,7 @@ dev/
 
 Puppeteer is installed at `/tmp/node_modules` for taking automated screenshots during iteration.
 Run: `cd /tmp && node your_script.mjs`
+Note: `/tmp` gets wiped on reboot — if the module is missing, either reinstall or use headless
+Chrome directly, which works without any install:
+`"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --disable-gpu --screenshot=out.png --window-size=W,H --force-device-scale-factor=2 <url>`
 Server runs at port 3000 via `npx serve` from project root.
