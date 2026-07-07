@@ -19,6 +19,30 @@ Put GLB files in `renders/`. Path used in loader: `'renders/filename.glb'`.
 
 ---
 
+## Draco compression — REQUIRED before committing
+
+Raw Meshy exports are huge (3-46 MB each; the original seven totalled
+~131 MB and made the deployed site take forever to show any model).
+Compress every GLB before it ships:
+
+```
+npx --package=@gltf-transform/cli gltf-transform draco in.glb out.glb
+```
+
+~13x smaller (the full set is ~10 MB). The module script uses ONE shared
+`gltfLoader` with a `DRACOLoader` attached (decoder wasm from the same
+three CDN) — new loads must use `gltfLoader.load(...)`, not
+`new GLTFLoader().load(...)`.
+
+Why plain `draco` and not `optimize`: Draco decodes back to float32
+positions in the ORIGINAL local space, so the offline-measured mesh-split
+constants (car wheel axles, scooter seat region, steering green button)
+keep working. `optimize`/`gltfpack` quantize with a baked node transform,
+which would break every one of those measurements. No simplification
+either — the car's wheel-split seam relies on dense tessellation.
+
+---
+
 ## Local server requirement
 
 **GLTFLoader uses fetch(), which is blocked on file:// protocol.**

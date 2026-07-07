@@ -87,7 +87,9 @@ const sceneY = vShift * 0.25; // ±4px vertical
 The 3D scene is a Three.js WebGL canvas injected by the module script — see
 `dev/features/3d-scene.md` and `dev/lessons/glb-workflow.md`. Add a GLB under
 `renders/` and follow the existing loader pattern (clone materials, normalise
-scale, sit on ground).
+scale, sit on ground). Draco-compress it first (`gltf-transform draco`) and
+load it through the shared `gltfLoader` — see the Draco section of
+`dev/lessons/glb-workflow.md`; raw Meshy exports are 10-15x too heavy to ship.
 
 ### With SVG geometry (for simple shapes)
 All SVG objects must use the same projection:

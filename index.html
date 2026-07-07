@@ -3372,6 +3372,7 @@
 <script type="module">
 import * as THREE from 'three';
 import { GLTFLoader }     from 'three/addons/loaders/GLTFLoader.js';
+import { DRACOLoader }    from 'three/addons/loaders/DRACOLoader.js';
 import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass }     from 'three/addons/postprocessing/RenderPass.js';
 import { OutlinePass }    from 'three/addons/postprocessing/OutlinePass.js';
@@ -3666,9 +3667,20 @@ let   seatOpenT         = 0.0;
 const SPROCKET_BASE_X   = -0.92;
 const OPEN_LOOK_X       = 0.4;
 
+// ── Shared GLB loader ──
+// Every model in renders/ is Draco-compressed (raw Meshy meshes were 3-46 MB
+// each, ~131 MB total page weight; compressed they total ~10 MB). The decoder
+// wasm comes from the same CDN as three. Draco decodes back to float32
+// positions in the ORIGINAL local space, so the measured mesh-split constants
+// (car wheel axles, scooter seat region, steering green button) keep working.
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/libs/draco/');
+const gltfLoader = new GLTFLoader();
+gltfLoader.setDRACOLoader(dracoLoader);
+
 // ── Load GLB ──
 console.log('[3D] Starting GLB load...');
-new GLTFLoader().load('renders/Meshy_AI_Open_Wheel_Prototype__0515194205_generate.glb', gltf => {
+gltfLoader.load('renders/Meshy_AI_Open_Wheel_Prototype__0515194205_generate.glb', gltf => {
   console.log('[3D] GLB loaded:', gltf);
   const model = gltf.scene;
 
@@ -3765,7 +3777,7 @@ new GLTFLoader().load('renders/Meshy_AI_Open_Wheel_Prototype__0515194205_generat
 }, undefined, err => console.error('[3D] GLB load error:', err));
 
 // ── Load Sprocket ──
-new GLTFLoader().load('renders/Sprocket.glb', gltf => {
+gltfLoader.load('renders/Sprocket.glb', gltf => {
   const sprocket = gltf.scene;
 
   sprocket.traverse(child => {
@@ -3792,7 +3804,7 @@ new GLTFLoader().load('renders/Sprocket.glb', gltf => {
 }, undefined, err => console.error('[3D] Sprocket load error:', err));
 
 // ── Load Rivian ──
-new GLTFLoader().load('renders/rivian-r1s.glb', gltf => {
+gltfLoader.load('renders/rivian-r1s.glb', gltf => {
   const rivian = gltf.scene;
 
   rivian.traverse(child => {
@@ -3827,7 +3839,7 @@ new GLTFLoader().load('renders/rivian-r1s.glb', gltf => {
   // glue + featured blend. The GLB ships no materials, so the default
   // standard material takes the flat colour directly; opacity is driven per
   // frame at a fraction of the SUV's (see the fade block in the loop).
-  new GLTFLoader().load('renders/Rivian-rear-wall.glb', g => {
+  gltfLoader.load('renders/Rivian-rear-wall.glb', g => {
     const wall = g.scene;
     wall.traverse(child => {
       if (!child.isMesh) return;
@@ -3903,7 +3915,7 @@ new GLTFLoader().load('renders/rivian-r1s.glb', gltf => {
 // load: triangles whose centroid falls in the module's local-space region
 // (rear half, above the rear wheel — measured from the mesh) become a
 // separate mesh on a pivot that detaches when clicked in the featured view.
-new GLTFLoader().load('renders/scooter.glb', gltf => {
+gltfLoader.load('renders/scooter.glb', gltf => {
   const scooter = gltf.scene;
 
   let fused = null;
@@ -4034,7 +4046,7 @@ new GLTFLoader().load('renders/scooter.glb', gltf => {
 
 // ── Load Z-axis printer — background prop, deeper in the scene behind the
 // scooter (screen-X ∝ x−z keeps it on the left; smaller x+z pushes it back) ──
-new GLTFLoader().load('renders/z-axis-printer.glb', gltf => {
+gltfLoader.load('renders/z-axis-printer.glb', gltf => {
   const printer = gltf.scene;
 
   // NOTE: the model is kept INTACT — an earlier iteration cut the A-frame
@@ -4247,7 +4259,7 @@ new GLTFLoader().load('renders/z-axis-printer.glb', gltf => {
 // the car and the SUV (screen-X ∝ x−z puts x−z ≈ 4.4 short of the Rivian's
 // 5.6; x+z ≈ 1.0 keeps it shallow, so scooter-style co-rotation holds
 // without ground glue) ──
-new GLTFLoader().load('renders/steering.glb', gltf => {
+gltfLoader.load('renders/steering.glb', gltf => {
   const steering = gltf.scene;
 
   // The GLB ships no materials — keep the untouched glTF default, exactly
