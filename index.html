@@ -9,6 +9,23 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
+  <!-- Start the heavy fetches at t=0. Without these the GLB downloads only
+       begin once three.js has arrived from the CDN (~2s stall on a typical
+       connection): HTML → three.module.js → module script runs → loads.
+       crossorigin="anonymous" is REQUIRED even on the same-origin GLBs:
+       three's FileLoader uses fetch(mode cors, credentials same-origin),
+       and a preload with any other credentials mode is ignored → the file
+       downloads twice. -->
+  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js" />
+  <link rel="preload" as="fetch" crossorigin="anonymous" href="renders/Meshy_AI_Open_Wheel_Prototype__0515194205_generate.glb" />
+  <link rel="preload" as="fetch" crossorigin="anonymous" href="renders/Sprocket.glb" />
+  <link rel="preload" as="fetch" crossorigin="anonymous" href="renders/rivian-r1s.glb" />
+  <link rel="preload" as="fetch" crossorigin="anonymous" href="renders/Rivian-rear-wall.glb" />
+  <link rel="preload" as="fetch" crossorigin="anonymous" href="renders/scooter.glb" />
+  <link rel="preload" as="fetch" crossorigin="anonymous" href="renders/z-axis-printer.glb" />
+  <link rel="preload" as="fetch" crossorigin="anonymous" href="renders/steering.glb" />
+  <link rel="preload" as="fetch" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/libs/draco/draco_decoder.wasm" />
+
   <style>
     /* ─────────────────────────────────────────
        RESET & BASE
