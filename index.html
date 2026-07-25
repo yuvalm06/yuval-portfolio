@@ -109,6 +109,12 @@
       padding: 18px 22px;
     }
 
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
     .logo-ym {
       display: flex;
       align-items: baseline;
@@ -121,6 +127,23 @@
       user-select: none;
       white-space: nowrap;
       flex-shrink: 0;
+    }
+
+    .wip-tag {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #C97B72;
+      background: rgba(201, 123, 114, 0.08);
+      border: 1px solid rgba(201, 123, 114, 0.35);
+      border-radius: 999px;
+      padding: 4px 10px;
+      white-space: nowrap;
+      user-select: none;
+      flex-shrink: 0;
+      align-self: center;
     }
 
     .logo-expand {
@@ -244,6 +267,7 @@
     .nav-footer {
       margin-top: auto;
       display: flex;
+      align-items: center;
       gap: 24px;
     }
 
@@ -256,6 +280,24 @@
     }
 
     .nav-footer a:hover { color: rgba(255,255,255,0.6); }
+
+    .nav-footer .resume-btn {
+      margin-left: auto;
+      font-size: 13px;
+      font-weight: 600;
+      color: #1A1916;
+      background: #EEECEA;
+      padding: 12px 26px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+      transition: opacity 0.15s, transform 0.15s;
+    }
+
+    .nav-footer .resume-btn:hover {
+      color: #1A1916;
+      opacity: 0.85;
+      transform: translateY(-1px);
+    }
 
     /* ─────────────────────────────────────────
        DISTANCE FOG
@@ -905,9 +947,7 @@
       font-size: 12px;
       font-weight: 400;
       color: var(--ink-mid);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      line-height: 1.4;
     }
 
     .exp-date {
@@ -929,12 +969,16 @@
       overflow: hidden;
     }
 
-    /* Drop an <img> inside .about-image-slot to fill this area */
-    .about-image-slot img {
-      width: 100%;
-      height: 100%;
+    /* Drop an <img class="about-photo"> inside .about-image-slot — sized as a
+       modest portrait rather than a full-bleed fill */
+    .about-photo {
+      width: min(220px, 42%);
+      aspect-ratio: 3 / 4;
       object-fit: cover;
       display: block;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      box-shadow: 0 10px 24px rgba(26,25,22,0.10);
     }
 
     .about-image-hint {
@@ -976,7 +1020,7 @@
 
     .skills-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       width: 100%;
       gap: 1px;
       background: var(--border);
@@ -1121,6 +1165,10 @@
       }
       body { overflow: auto; }
       html, body { overflow: auto; }
+
+      .skills-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
     }
 
     /* ── Sprocket detail panel ── */
@@ -1321,6 +1369,33 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--ink-light);
+    }
+    .pp-wip-stamp {
+      display: none;
+      position: absolute;
+      inset: 0;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .project-panel.is-wip .pp-wip-stamp {
+      display: flex;
+    }
+    .project-panel.is-wip .pp-fig {
+      display: none;
+    }
+    .pp-wip-stamp span {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      background: rgba(238,236,234,0.94);
+      border: 1px dashed rgba(26,25,22,0.28);
+      border-radius: 2px;
+      padding: 6px 12px;
+      transform: rotate(-6deg);
     }
 
     /* ── Hover callout tag (rest view) ── */
@@ -1902,7 +1977,10 @@
   <!-- ───────── NAV ───────── -->
   <nav class="nav">
 
-    <div class="logo-ym"><span>Y</span><span class="logo-expand">uval  </span><span>M</span><span class="logo-expand">unz</span></div>
+    <div class="nav-left">
+      <div class="logo-ym"><span>Y</span><span class="logo-expand">uval  </span><span>M</span><span class="logo-expand">unz</span></div>
+      <div class="wip-tag">Under Construction</div>
+    </div>
 
     <div class="nav-right">
       <button class="nav-menu-btn" id="menuBtn" aria-label="Open menu">
@@ -1928,9 +2006,8 @@
       <li><a href="#">Contact <span>Reach out</span></a></li>
     </ul>
     <div class="nav-footer">
-      <a href="#">GitHub</a>
-      <a href="#">LinkedIn</a>
-      <a href="#">Resume</a>
+      <a href="https://linkedin.com/in/yuval-munz" target="_blank" rel="noopener">LinkedIn</a>
+      <a class="resume-btn" href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a>
     </div>
   </div>
 
@@ -2007,24 +2084,19 @@
               <span class="exp-date">Mar 2026–Present</span>
             </div>
             <div class="exp-row">
-              <span class="exp-org">Pursr</span>
-              <span class="exp-role">Founding Engineer</span>
-              <span class="exp-date">Apr 2026–Present</span>
+              <span class="exp-org">TBD</span>
+              <span class="exp-role">Founding Engineer (exploring solutions for students and engineers)</span>
+              <span class="exp-date">Mar 2026–Present</span>
             </div>
             <div class="exp-row">
-              <span class="exp-org">Queen's Formula SAE Racing</span>
+              <span class="exp-org">Queen's Racing Formula SAE Team</span>
               <span class="exp-role">Powertrain Engineer &amp; Sprockets Lead</span>
               <span class="exp-date">Sep 2025–Present</span>
             </div>
             <div class="exp-row">
-              <span class="exp-org">Queen's Additive Manufacturing Club</span>
-              <span class="exp-role">Mechanical Lead</span>
+              <span class="exp-org">Queen's Additive Manufacturing Team</span>
+              <span class="exp-role">Mechanical Operations Lead</span>
               <span class="exp-date">Dec 2025–Present</span>
-            </div>
-            <div class="exp-row">
-              <span class="exp-org">Campus Cravings</span>
-              <span class="exp-role">Founder &amp; Operator</span>
-              <span class="exp-date">Sep 2025–Present</span>
             </div>
           </div>
 
@@ -2032,36 +2104,32 @@
           <div class="about-section">
             <div class="about-section-label">Previous Roles</div>
             <div class="exp-row">
-              <span class="exp-org">Queen's Formula SAE Racing</span>
+              <span class="exp-org">Queen's Racing Formula SAE Team</span>
               <span class="exp-role">Powertrain Engineer</span>
               <span class="exp-date">Sep 2024–Jan 2026</span>
             </div>
             <div class="exp-row">
               <span class="exp-org">Green Air LTD</span>
-              <span class="exp-role">Mechanical Project Assistant Intern</span>
+              <span class="exp-role">Mechanical Field Projects Assistant Intern</span>
               <span class="exp-date">May–Aug 2025</span>
             </div>
             <div class="exp-row">
               <span class="exp-org">CMiC</span>
-              <span class="exp-role">IT Support Intern</span>
-              <span class="exp-date">May–Sep 2024</span>
+              <span class="exp-role">IT Analyst Intern</span>
+              <span class="exp-date">May–Aug 2024</span>
             </div>
             <div class="exp-row">
               <span class="exp-org">3D Factory</span>
               <span class="exp-role">3D Printing &amp; Fabrication Intern</span>
-              <span class="exp-date">Nov 2023–May 2024</span>
+              <span class="exp-date">Jan–May 2024</span>
             </div>
           </div>
 
         </div>
 
-        <!-- Right: image slot — drop an <img src="..."> inside to fill it -->
+        <!-- Right: image slot -->
         <div class="about-image-slot">
-          <!-- <img src="your-photo.jpg" alt="Yuval Munz" /> -->
-          <div class="about-image-hint">
-            <svg viewBox="0 0 28 28"><rect x="2" y="4" width="24" height="20" rx="2"/><circle cx="10" cy="12" r="3"/><polyline points="2 22 9 15 13 19 18 13 26 22"/></svg>
-            Photo goes here
-          </div>
+          <img class="about-photo" src="assets/yuval.jpeg" alt="Yuval Munz" />
         </div>
 
       </div>
@@ -2076,44 +2144,46 @@
         <div class="page-label">Skills</div>
         <h1 class="page-heading">What I work with.</h1>
 
-        <!-- 3-column skills grid — add / remove columns and tags freely -->
+        <!-- 4-column skills grid — add / remove columns and tags freely -->
         <div class="skills-grid">
 
           <div class="skills-col">
-            <div class="skills-col-label">
-              <!-- Column heading, e.g. "Design", "Hardware", "Software" -->
-              <span class="placeholder-text">Category one</span>
-            </div>
+            <div class="skills-col-label">Design &amp; CAD</div>
             <div class="skills-tags">
-              <!-- Replace each .skill-tag with your actual skills -->
-              <span class="skill-tag placeholder-text">Skill</span>
-              <span class="skill-tag placeholder-text">Skill</span>
-              <span class="skill-tag placeholder-text">Skill</span>
-              <span class="skill-tag placeholder-text">Skill</span>
+              <span class="skill-tag">SolidWorks</span>
+              <span class="skill-tag">CATIA</span>
+              <span class="skill-tag">GD&amp;T</span>
+              <span class="skill-tag">Topology Optimization</span>
             </div>
           </div>
 
           <div class="skills-col">
-            <div class="skills-col-label">
-              <span class="placeholder-text">Category two</span>
-            </div>
+            <div class="skills-col-label">Analysis &amp; Simulation</div>
             <div class="skills-tags">
-              <span class="skill-tag placeholder-text">Skill</span>
-              <span class="skill-tag placeholder-text">Skill</span>
-              <span class="skill-tag placeholder-text">Skill</span>
-              <span class="skill-tag placeholder-text">Skill</span>
+              <span class="skill-tag">Ansys FEA</span>
+              <span class="skill-tag">MATLAB</span>
+              <span class="skill-tag">NumPy</span>
+              <span class="skill-tag">Thermal Analysis</span>
             </div>
           </div>
 
           <div class="skills-col">
-            <div class="skills-col-label">
-              <span class="placeholder-text">Category three</span>
-            </div>
+            <div class="skills-col-label">Manufacturing &amp; Automation</div>
             <div class="skills-tags">
-              <span class="skill-tag placeholder-text">Skill</span>
-              <span class="skill-tag placeholder-text">Skill</span>
-              <span class="skill-tag placeholder-text">Skill</span>
-              <span class="skill-tag placeholder-text">Skill</span>
+              <span class="skill-tag">Additive Manufacturing</span>
+              <span class="skill-tag">DFMEA / DFM</span>
+              <span class="skill-tag">Python</span>
+              <span class="skill-tag">API Automation</span>
+            </div>
+          </div>
+
+          <div class="skills-col">
+            <div class="skills-col-label">Software &amp; AI</div>
+            <div class="skills-tags">
+              <span class="skill-tag">Full-Stack Development</span>
+              <span class="skill-tag">AI-Assisted Workflows</span>
+              <span class="skill-tag">Process Automation</span>
+              <span class="skill-tag">Product Design (Figma)</span>
             </div>
           </div>
 
@@ -2128,7 +2198,7 @@
               <span class="cert-meta">Dassault Systèmes · Oct 2025 · C-4FZLM267EN</span>
             </div>
             <div class="cert-right">
-              <a class="cert-link" href="#" target="_blank" rel="noopener">
+              <a class="cert-link" href="https://drive.google.com/file/d/13qAPPtGrgk2VHhlaGVSHWxDbv_jL-6Ki/view?usp=sharing" target="_blank" rel="noopener">
                 See Certificate
                 <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M2 8L8 2M4 2h4v4"/></svg>
               </a>
@@ -2147,16 +2217,16 @@
   <!-- ───────── SPROCKET DETAIL PANEL ───────── -->
   <div class="sprocket-panel" id="sprocketPanel">
     <i class="tick tl"></i><i class="tick tr"></i><i class="tick bl"></i><i class="tick br"></i>
-    <div class="sp-title">Sprocket Assembly</div>
+    <div class="sp-title">Sprocket Topology &amp; Mass Reduction</div>
     <ul class="sp-points">
-      <li>Here is where project details will go</li>
-      <li>Here is where project details will go</li>
-      <li>Here is where project details will go</li>
+      <li>Topology-optimized to cut mass under FEA-verified load cases</li>
+      <li>Iterated from CATIA/SolidWorks geometry through Ansys FEA</li>
+      <li>Refined into machined, competition-ready geometry</li>
     </ul>
     <div class="sp-images">
-      <div class="sp-img-slot"></div>
-      <div class="sp-img-slot"></div>
-      <div class="sp-img-slot"></div>
+      <div class="sp-img-slot" style="background-image:url('renders/sprocket-topology-1.jpg');background-size:cover;background-position:center;"></div>
+      <div class="sp-img-slot" style="background-image:url('renders/sprocket-topology-2.jpg');background-size:cover;background-position:center;"></div>
+      <div class="sp-img-slot" style="background-image:url('renders/sprocket-topology-3.jpg');background-size:cover;background-position:center;"></div>
     </div>
   </div>
 
@@ -2173,8 +2243,11 @@
       <li>Filler point two</li>
       <li>Filler point three</li>
     </ul>
-    <div class="pp-img-slot" id="ppImg"><span class="pp-fig">Fig. 01</span></div>
-    <div class="pp-meta"><span>Rev A · 2026</span><span>YM Works</span></div>
+    <div class="pp-img-slot" id="ppImg">
+      <span class="pp-fig" id="ppFig">Fig. 01</span>
+      <div class="pp-wip-stamp"><span>Work in Progress</span></div>
+    </div>
+    <div class="pp-meta"><span id="ppMetaRev">Rev A · 2026</span><span id="ppMetaTag">YM Works</span></div>
   </div>
 
   <!-- Dimension line under the featured model -->
@@ -2471,39 +2544,39 @@
     const DIGITAL_INFO = [
       { title: 'Pursr Platform', meta: 'TypeScript · React · Node',
         logo: 'PR', rev: 'B', year: '2026', status: 'Active',
-        desc: 'Filler: two or three sentences on what Pursr is, the problem it goes after, and what you own end-to-end as founding engineer.',
+        desc: 'Full-stack product built as founding engineer — owning the architecture and data model end-to-end, from first commit to shipped features.',
         figs: ['Product UI', 'System architecture'], figImg: [null, null],
-        points: ['Filler: core product architecture and data model',
-                 'Filler: features shipped as founding engineer',
-                 'Filler: link the live app or repo here'] },
+        points: ['Core product architecture and data model',
+                 'Features shipped end-to-end as founding engineer',
+                 'TypeScript across the React frontend and Node backend'] },
       { title: 'Campus Cravings OS', meta: 'Next.js · Stripe · Sheets',
         logo: 'CC', rev: 'C', year: '2025', status: 'Active',
-        desc: 'Filler: the story of Campus Cravings — what you built to run it, how orders flow through it, and what it does per week.',
-        figs: ['Ordering flow', 'Ops dashboard'], figImg: [null, null],
-        points: ['Filler: ordering flow and menu tooling',
-                 'Filler: ops dashboards and delivery logistics',
-                 'Filler: growth and revenue notes'] },
+        desc: 'SMS-based late-night food delivery, built and run from scratch — live inventory, Stripe payments, and delivery routing wired into one system.',
+        figs: ['Menu', 'Order automation'], figImg: ['renders/campus-cravings-menu.jpg', 'renders/campus-cravings-workflow.jpg'],
+        points: ['SMS ordering flow with live inventory',
+                 'Stripe payments and delivery routing',
+                 'Twilio and Make.com automations running the ops'] },
       { title: 'Automation Pipelines', meta: 'Workato · REST APIs',
         logo: 'AP', rev: 'A', year: '2026', status: 'Active',
-        desc: 'Filler: the automation work at Workato — which workflows you wired together, what they replaced, and the hours they hand back.',
+        desc: 'Workflow automation as a Product Intern at Workato — building and testing recipes on the platform that powers the work itself.',
         figs: ['Recipe graph', 'Integration map'], figImg: [null, null],
-        points: ['Filler: workflow automations built at Workato',
-                 'Filler: integration recipes and internal tooling',
-                 'Filler: what they replaced and the time saved'] },
+        points: ['Workflow recipes built on the Workato platform',
+                 'REST API integrations between internal tools',
+                 'Product-side testing and internal tooling'] },
       { title: 'Portfolio Engine', meta: 'Three.js · Canvas 2D',
         logo: 'PE', rev: 'D', year: '2026', status: 'Shipped',
-        desc: 'Filler: this site — one HTML file, a hand-rolled perspective dot grid, a WebGL scene glued to it, and the camera math that keeps them in lockstep.',
+        desc: 'This site — one HTML file, a hand-rolled perspective dot grid, a WebGL scene glued to it, and the camera math that keeps them in lockstep.',
         figs: ['Dot grid projection', 'Zoom camera path'], figImg: [null, null],
-        points: ['Filler: single-file site — dot grid + WebGL scene',
-                 'Filler: custom projection math, camera matching',
-                 'Filler: this page is part of the exhibit'] },
+        points: ['Single-file site — dot grid + WebGL scene',
+                 'Custom projection math, camera matching',
+                 'This page is part of the exhibit'] },
       { title: 'Drivetrain Calc Sheets', meta: 'MATLAB · Excel',
         logo: 'DC', rev: 'E', year: '2025', status: 'Docs',
-        desc: 'Filler: the FSAE paper trail — powertrain models, sprocket load cases, and the gearing studies behind the parts on page one.',
-        figs: ['Gearing study', 'Load case sheet'], figImg: [null, null],
-        points: ['Filler: FSAE powertrain models and calc documents',
-                 'Filler: sprocket load cases and gearing studies',
-                 'Filler: exported drawings and revision history'] },
+        desc: 'The FSAE paper trail — gear ratios, chain sizing, and motor torque curves tuned against lap simulation data.',
+        figs: ['Gearing study', 'Load case sheet'], figImg: ['renders/drivetrain-lapsim.jpg', 'renders/sprocket-topology-2.jpg'],
+        points: ['Gear ratio and chain sizing studies',
+                 'Motor torque curves checked against lap simulation',
+                 'Sprocket load cases backing the topology-optimized part'] },
     ];
 
     const rows = document.querySelectorAll('.manifest-row');
@@ -3534,67 +3607,66 @@ const STEERING_POS   = { x: 2.7, z: -1.7 };  // right of the car, in front of th
 let featured = 'car';
 
 // Per-project copy for the zoomed info panel and the identity caption.
-// Filler text — replace with real project stories.
 const PROJECT_INFO = {
   car: {
     index: '01', tag: 'Project 01', title: 'Open-Wheel Prototype',
     points: [
-      'Filler: tube-frame chassis machined and welded in-house',
-      'Filler: custom uprights, hubs, and drivetrain packaging',
-      'Filler: click the sprocket to see the drive assembly'
+      'Drivetrain design and optimization for Queen\'s FSAE Electric',
+      'Gear ratio, chain, and sprocket analysis for torque, speed, and efficiency',
+      'Click the sprocket to see the topology-optimized sprocket study'
     ],
     layer: 'Build 1.0 — Open-Wheel Prototype',
-    desc: 'Filler description of the open-wheel<br>prototype and what went into it.',
+    desc: 'Drivetrain architecture for Queen\'s FSAE<br>Electric, modeled and validated in SolidWorks.',
     dim: { l: 28, w: 44, y: 69, label: 'L 3020 MM' },
-    img: null
+    img: 'renders/drivetrain-powertrain.jpg'
   },
   rivian: {
-    index: '02', tag: 'Project 02', title: 'Rivian R1S Study',
+    index: '02', tag: 'Project 02', title: 'Rivian R1S — Camp Mode',
     points: [
-      'Filler: full-scale SUV surface and stance study',
-      'Filler: liftgate mechanism and rear cargo layout',
-      'Filler: wheel and tire packaging exploration'
+      'Thermal partition to zone HVAC to the sleeping area',
+      'First-principles model of steady-state cabin power draw',
+      'Python model comparing full-cabin vs. partitioned load'
     ],
-    layer: 'Build 1.0 — Rivian R1S Study',
-    desc: 'Filler description of the R1S study<br>and the questions it explored.',
+    layer: 'Build 1.0 — Rivian R1S Camp Mode',
+    desc: 'A thermal partition concept for Camp Mode —<br>conditioning the sleeping area, not the whole cabin.',
     dim: { l: 36, w: 28, y: 73, label: 'W 2015 MM' },
-    img: 'renders/2026-Rivian-R1S-rear-quarter-boot-open-Carwow.avif'
+    img: 'renders/rivian-thermal-partition.jpg'
   },
   scooter: {
-    index: '03', tag: 'Project 03', title: 'Cargo Scooter',
+    index: '03', tag: 'Project 03', title: 'E-Scooter Concept Platform',
     points: [
-      'Filler: welded cargo rack sized for a milk crate',
-      'Filler: battery box and controller integration',
-      'Filler: click the seat to lift off the cargo module'
+      'Modular platform built around structural integrity and safety',
+      'Load-path and DFMEA-driven structural geometry',
+      'Click the seat to lift off the cargo module'
     ],
-    layer: 'Build 1.0 — Cargo Scooter',
-    desc: 'Filler description of the cargo scooter<br>and how it came together.',
+    layer: 'Build 1.0 — E-Scooter Concept Platform',
+    desc: 'Modular electric scooter concept, designed<br>around load paths and structural safety.',
     dim: { l: 34, w: 32, y: 66, label: 'L 1420 MM' },
-    img: null
+    img: 'renders/scooter-concept.jpg'
   },
   printer: {
     index: '04', tag: 'Project 04', title: 'Z-Axis Printer',
     points: [
-      'Filler: motion platform and gantry design',
-      'Filler: extruder carriage and Z-axis drive',
-      'Filler: frame stiffness and print-bed leveling'
+      'Write-up in progress',
+      'Updates coming soon'
     ],
     layer: 'Build 1.0 — Z-Axis Printer',
-    desc: 'Filler description of the printer build<br>and what it can produce.',
+    desc: 'Work in progress — updates coming soon.',
     dim: { l: 30, w: 30, y: 68, label: 'W 480 MM' },
-    img: null
+    img: null,
+    wip: true
   },
   steering: {
-    index: '05', tag: 'Project 05', title: 'Steering Wheel',
+    index: '05', tag: 'Project 05', title: 'Baja Steering Wheel System',
     points: [
-      'Filler: rim profile and grip ergonomics study',
-      'Filler: spoke layout and quick-release hub',
-      'Filler: control and paddle packaging'
+      'Competition-ready Baja steering assembly',
+      'Rim and spoke geometry iterated against ergonomics and load requirements',
+      'Validated to competition structural requirements'
     ],
-    layer: 'Build 1.0 — Steering Wheel',
-    desc: 'Filler description of the steering wheel<br>and its design decisions.',
+    layer: 'Build 1.0 — Baja Steering Wheel System',
+    desc: 'Baja steering wheel, iterated until it met<br>competition ergonomics and load requirements.',
     dim: { l: 36, w: 28, y: 70, label: 'Ø 350 MM' },
-    img: null
+    img: 'renders/baja-steering-cad.jpg'
   }
 };
 
@@ -3604,6 +3676,8 @@ const ppIndex      = document.getElementById('ppIndex');
 const ppTitle      = document.getElementById('ppTitle');
 const ppPoints     = document.getElementById('ppPoints');
 const ppImg        = document.getElementById('ppImg');
+const ppMetaRev    = document.getElementById('ppMetaRev');
+const ppMetaTag    = document.getElementById('ppMetaTag');
 const dimLine      = document.getElementById('dimLine');
 const dimLabel     = document.getElementById('dimLabel');
 const hoverTag     = document.getElementById('hoverTag');
@@ -3641,6 +3715,9 @@ function fillProjectPanel(name) {
   ppImg.style.backgroundSize     = info.img ? 'cover' : '';
   ppImg.style.backgroundPosition = info.img ? 'center' : '';
   dimLabel.textContent = info.dim.label;
+  projectPanel.classList.toggle('is-wip', !!info.wip);
+  ppMetaRev.textContent = info.wip ? 'Status · WIP' : 'Rev A · 2026';
+  ppMetaTag.textContent = info.wip ? 'Coming Soon' : 'YM Works';
 }
 fillProjectPanel(featured);
 
@@ -4574,6 +4651,7 @@ card.addEventListener('click', e => {
     const sprocketHit = raycaster.intersectObjects(sprocketHitbox, false).length > 0;
     if (sprocketHit) {
       sprocketOpen = true;
+      detailO = 0;   // snap the "Detail A" hover circle off instantly on click
       return;
     }
   }
@@ -4614,6 +4692,7 @@ card.addEventListener('click', e => {
     }
   } else if (!sprocketOpen) {
     zoomDir = -1;
+    detailO = 0;   // snap the "Detail A" hover circle off instantly on click
     if (sprocketHovered) { sprocketHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
     if (seatHovered)     { seatHovered = false;     outlineYellow.selectedObjects = []; card.style.cursor = ''; }
   }
