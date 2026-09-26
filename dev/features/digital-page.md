@@ -52,7 +52,13 @@ axes, but the projects are *files*:
 - Other triggers: section-nav arrows (only when `_cycleFeatured` declines,
   i.e. not zoomed on page 1), nav overlay **Projects** / **Digital** links,
   Escape (flips home when no overlay was open; at the intro it picks
-  Hands-On).
+  Hands-On), and the ←/→ keys (they press the section-nav buttons).
+- **Keyboard:** the intro halves, edge tabs, and register rows are divs with
+  `role="button" tabindex="0"`; a delegated keydown in the main script turns
+  Enter / Space into a click. Closed pages, the dismissed intro, and hidden
+  tabs get `visibility: hidden` (delayed by their slide) so Tab never lands
+  on something off-screen — the digital page is still fully laid out while
+  hidden, so the stack's build-time measurements are unaffected.
 
 ## Module integration (Three.js script)
 
@@ -76,7 +82,12 @@ JITTER = [...]                  // per-sheet ox/oz offset + tiny yaw rotation
 Row `i` (File 01 at top of the register) maps to sheet `n−1−i` (top of the
 pile). Faces: top `#F7F6F4`, +x side `#D8D6D0`, +z side `#C6C4BE` — the
 CLAUDE.md face-shading ramp. ViewBox is fitted with `svg.getBBox()` after
-building, so geometry changes never need manual viewBox math.
+building, so geometry changes never need manual viewBox math — by
+`fitStack()`, which does nothing until the stack is actually rendered (the
+column is `display: none` below 900px, where getBBox and the layout rects
+are all 0). It runs at build time, from a ResizeObserver on the column (so a
+page loaded narrow — an iPad in portrait — fits the first time it widens),
+and again before each sheet stands up.
 
 ### Printed sheet logos
 
@@ -112,18 +123,22 @@ things at once:
    every element each frame between the iso pile pose (`M`, includes jitter)
    and a flat front view `F(x, z)` (`FRONT_S = 58` units per local unit —
    sized against the doc panel). The front view is anchored at the **centre
-   of the right column** (0.48 height), measured from live layout rects at
-   build time and converted to viewBox units — the standing sheet owns the
-   column, overflowing the fitted viewBox (`overflow: visible`).
+   of the right column** (0.48 height), measured from live layout rects and
+   converted to viewBox units — re-measured by `fitStack()` on every open and
+   column resize (it used to be measured once at build time, which read 0×0
+   on narrow screens and produced NaN geometry). The standing sheet owns the
+   column, overflowing the fitted viewBox (`overflow: visible`). Where the
+   column is hidden, the doc opens without the sheet morph.
    Transition polish:
    - **Arc**: `FRONT_ARC * sin(π·t)` vertical offset on all geometry — the
      sheet rises as it's picked up, settles as it lands (both endpoints 0).
-   - **Face tracking**: face content is authored in front-view coords, and a
-     per-frame matrix `Blend ∘ F⁻¹` (blend of two affine maps is affine,
-     built from the iso basis stored per sheet in `sheet.basis`) maps that
-     space through the current blend — the printed contents ride the paper
-     through the whole turn instead of fading in detached. Fade starts at
-     t 0.35.
+   - **Face tracking**: face content is authored in front-view units with
+     the sheet's corner at the origin (`FA(x, z) = S·(x, z)`, so it never
+     depends on the moving anchor), and a per-frame matrix (blend of two
+     affine maps is affine, built from the iso basis stored per sheet in
+     `sheet.basis`) maps that space through the current blend — the printed
+     contents ride the paper through the whole turn instead of fading in
+     detached. Fade starts at t 0.35.
    - **Shadow**: `.sheet.front` gets a `drop-shadow` (transitioned via CSS)
      as it lifts.
    Side faces collapse (F ignores height) and fade; ruled placeholder lines
@@ -144,7 +159,9 @@ clicks) except `#sheetStack` (click closes). Siblings in the pile fade to
 
 Close paths: ✕ button, scrim click, stack click, Escape (closes the doc
 first, flips home on the next press), and `flipTo(0)` (calls
-`window._closeFileDoc()`). `window._fileDocOpen` is the shared state flag.
+`window._closeFileDoc()`). `window._fileDocOpen` is the shared state flag;
+`openFile` is a no-op while it is set (a focused row under the scrim can
+still receive Enter).
 While open, the sheet note reads `YM · Build 2.0 · File NN`.
 
 ## Gotchas
@@ -154,5 +171,8 @@ While open, the sheet note reads `YM · Build 2.0 · File NN`.
   `digitalT` instead.
 - The manifest row stagger uses a `--d` custom property per
   `nth-child` so the hover `background` transition keeps `0s` delay.
-- Content is filler (`Filler:` points, guessed stacks) — swap in
-  `DIGITAL_INFO` (first script) + the manifest rows in the markup.
+- Content lives in `DIGITAL_INFO` (first script) + the manifest rows in the
+  markup — keep the two in sync (the resume has fuller Pursr / Campus
+  Cravings stories than the register does).
+- Phones (≤640px) show only No. / Name / Status in the register; type,
+  stack, and year are in the opened file.

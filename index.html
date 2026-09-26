@@ -4,6 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Yuval Munz — Portfolio</title>
+  <meta name="description" content="Yuval Munz — Mechanical Engineering at Queen's University. Formula SAE drivetrain and sprocket design, product and thermal concepts, and the software and automation that connect them." />
+  <meta name="theme-color" content="#1A1916" />
+
+  <!-- Link previews (LinkedIn, Slack, iMessage, X): scrapers need absolute URLs -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://yuval-portfolio-five.vercel.app/" />
+  <meta property="og:title" content="Yuval Munz — Portfolio" />
+  <meta property="og:description" content="Mechanical Engineering at Queen's University. Formula SAE drivetrain, product and thermal design, and full-stack automation." />
+  <meta property="og:image" content="https://yuval-portfolio-five.vercel.app/assets/og-image.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="Five engineering projects — an open-wheel race car, a Rivian R1S, an e-scooter, a belt 3D printer, and a Baja steering wheel — on an isometric dot grid." />
+  <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231A1916'/%3E%3Ctext x='32' y='42' font-family='Helvetica,Arial,sans-serif' font-size='26' font-weight='700' letter-spacing='-1' fill='%23EEECEA' text-anchor='middle'%3EYM%3C/text%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -207,11 +220,16 @@
       flex-direction: column;
       padding: 24px;
       transform: translateY(-100%);
-      transition: transform 0.45s cubic-bezier(0.76, 0, 0.24, 1);
+      visibility: hidden;   /* closed: out of the tab order too */
+      transition: transform 0.45s cubic-bezier(0.76, 0, 0.24, 1), visibility 0s linear 0.45s;
       border-radius: 14px;
     }
 
-    .nav-overlay.open { transform: translateY(0); }
+    .nav-overlay.open {
+      transform: translateY(0);
+      visibility: visible;
+      transition: transform 0.45s cubic-bezier(0.76, 0, 0.24, 1);
+    }
 
     .nav-overlay-top {
       display: flex;
@@ -404,6 +422,10 @@
     /* choosing a side swipes the whole door toward the other one */
     .split-intro.exit-left  { transform: translateX(-100%); pointer-events: none; }
     .split-intro.exit-right { transform: translateX(100%);  pointer-events: none; }
+    .split-intro.exit-left, .split-intro.exit-right {
+      visibility: hidden;      /* gone for good once the swipe lands */
+      transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1), visibility 0s linear 0.65s;
+    }
 
     .split-intro::after {   /* grain, same as the card */
       content: '';
@@ -454,7 +476,8 @@
       pointer-events: none;
     }
 
-    .split-half:hover { background: #E5E3DF; }   /* grey highlight */
+    .split-half:hover,
+    .split-half:focus-visible { background: #E5E3DF; }   /* grey highlight */
 
     .split-label {
       font-family: var(--mono);
@@ -526,9 +549,20 @@
     /* hidden state slides into its edge */
     .edge-tab.left.hidden-tab  { transform: translateY(-50%) translateX(-100%); opacity: 0; pointer-events: none; }
     .edge-tab.right.hidden-tab { transform: translateY(-50%) translateX(100%);  opacity: 0; pointer-events: none; }
+    .edge-tab.hidden-tab {
+      visibility: hidden;      /* out of the tab order once slid away */
+      transition:
+        background 0.2s,
+        transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+        opacity 0.35s ease,
+        visibility 0s linear 0.5s;
+    }
 
     /* yield to the opened file document on the digital page */
-    .digital-page.file-open ~ .edge-tab { opacity: 0; pointer-events: none; }
+    .digital-page.file-open ~ .edge-tab { opacity: 0; pointer-events: none; visibility: hidden; }
+
+    /* keyboard focus on the div-based controls (intro halves, tabs, rows) */
+    [role="button"]:focus-visible { outline: 1px solid var(--ink-mid); outline-offset: -3px; }
 
     /* ─────────────────────────────────────────
        SECTION NAV (bottom-right corner tiny text)
@@ -635,12 +669,15 @@
       justify-content: flex-end;
       padding: 28px 24px;
       transform: translateY(100%);
-      transition: transform 0.48s cubic-bezier(0.76, 0, 0.24, 1);
+      visibility: hidden;   /* closed: out of the tab order too */
+      transition: transform 0.48s cubic-bezier(0.76, 0, 0.24, 1), visibility 0s linear 0.48s;
       pointer-events: none;
     }
 
     .contact-page.open {
       transform: translateY(0);
+      visibility: visible;
+      transition: transform 0.48s cubic-bezier(0.76, 0, 0.24, 1);
       pointer-events: auto;
     }
 
@@ -770,13 +807,16 @@
       border-radius: 14px;
       background: var(--bg);
       transform: translateY(100%);
-      transition: transform 0.48s cubic-bezier(0.76, 0, 0.24, 1);
+      visibility: hidden;   /* closed: out of the tab order too */
+      transition: transform 0.48s cubic-bezier(0.76, 0, 0.24, 1), visibility 0s linear 0.48s;
       pointer-events: none;
       overflow: hidden;
     }
 
     .page-overlay.open {
       transform: translateY(0);
+      visibility: visible;
+      transition: transform 0.48s cubic-bezier(0.76, 0, 0.24, 1);
       pointer-events: auto;
     }
 
@@ -1013,10 +1053,14 @@
     .skills-layout {
       display: flex;
       flex-direction: column;
-      justify-content: flex-end;
       padding: 28px 24px;
       height: 100%;
+      overflow-y: auto;        /* short windows scroll instead of clipping the heading */
+      scrollbar-width: none;
     }
+
+    .skills-layout::-webkit-scrollbar { display: none; }
+    .skills-layout > :first-child { margin-top: auto; }   /* bottom-aligned when it fits */
 
     .skills-grid {
       display: grid;
@@ -1176,7 +1220,8 @@
       position: absolute;
       right: 60px;
       top: 50%;
-      transform: translateY(-50%) translateX(24px);
+      translate: 0 -50%;     /* centring lives here; the rAF loop drives transform */
+      transform: translateX(24px);
       width: 620px;
       background: rgba(238,236,234,0.97);
       border: 1px solid rgba(26,25,22,0.14);
@@ -1189,7 +1234,7 @@
     }
     .sprocket-panel.open {
       opacity: 1;
-      transform: translateY(-50%) translateX(0);
+      transform: translateX(0);
       pointer-events: auto;
     }
     .sp-title {
@@ -1221,13 +1266,12 @@
       color: var(--ink-light);
     }
     .sp-images {
-      display: flex;
-      flex-direction: column;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 8px;
     }
     .sp-img-slot {
-      width: 100%;
-      height: 90px;
+      aspect-ratio: 4 / 3;   /* close to the FEA screenshots, shown whole */
       background: rgba(26,25,22,0.06);
       border-radius: 8px;
       border: 1px solid rgba(26,25,22,0.08);
@@ -1238,7 +1282,8 @@
       position: absolute;
       right: 60px;
       top: 50%;
-      transform: translateY(-50%) translateX(24px);
+      translate: 0 -50%;     /* centring lives here; the rAF loop drives transform */
+      transform: translateX(24px);
       width: 302px;
       background: rgba(238,236,234,0.97);
       border: 1px solid rgba(26,25,22,0.14);
@@ -1338,7 +1383,7 @@
     .pp-img-slot {
       position: relative;
       width: 100%;
-      height: 118px;
+      height: 132px;
       border-radius: 2px;
       border: 1px solid rgba(26,25,22,0.10);
       background:
@@ -1543,13 +1588,16 @@
       border-radius: 14px;
       background: var(--bg);
       transform: translateX(100%);
-      transition: transform 0.6s cubic-bezier(0.76, 0, 0.24, 1);
+      visibility: hidden;   /* closed: out of the tab order (still laid out) */
+      transition: transform 0.6s cubic-bezier(0.76, 0, 0.24, 1), visibility 0s linear 0.6s;
       pointer-events: none;
       overflow: hidden;
     }
 
     .digital-page.open {
       transform: translateX(0);
+      visibility: visible;
+      transition: transform 0.6s cubic-bezier(0.76, 0, 0.24, 1);
       pointer-events: auto;
     }
 
@@ -1939,12 +1987,20 @@
         repeating-linear-gradient(-45deg,
           rgba(26,25,22,0.045) 0px, rgba(26,25,22,0.045) 1px,
           transparent 1px, transparent 7px);
-      background-size: cover;
-      background-position: center;
       overflow: hidden;
     }
 
     .fd-fig .pp-fig { left: 5px; bottom: 4px; }
+
+    /* A slot holding a real figure shows the whole image on white (the
+       renders and screenshots have light backgrounds) — a cover crop cut
+       the FEA plots to thin strips and chopped the captions off */
+    .sp-img-slot.has-img, .pp-img-slot.has-img, .fd-fig.has-img {
+      background-color: #fff;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
 
 
     @media (max-width: 900px) {
@@ -1959,6 +2015,51 @@
         transform: translate(-50%, -44%) rotate(0.8deg) scale(0.96);
       }
       .file-doc.open { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+    }
+
+    /* ─────────────────────────────────────────
+       PHONES — pages reflow to one column; the 3D panels become compact
+       sheets under the nav instead of covering the featured model
+    ───────────────────────────────────────── */
+    @media (max-width: 640px) {
+      /* About: text first, then the portrait; each role reads org + date
+         over the title instead of three squeezed columns */
+      .about-layout { flex-direction: column; overflow-y: auto; scrollbar-width: none; }
+      .about-layout::-webkit-scrollbar { display: none; }
+      .about-text { flex: none; overflow: visible; padding: 28px 20px 24px; }
+      .about-image-slot {
+        flex: none;
+        border-left: none;
+        border-top: 1px solid var(--border);
+        padding: 28px 0 36px;
+      }
+      .about-photo { width: 150px; }
+      .exp-row  { grid-template-columns: 1fr auto; row-gap: 2px; column-gap: 12px; }
+      .exp-org  { grid-column: 1; grid-row: 1; white-space: normal; }
+      .exp-date { grid-column: 2; grid-row: 1; }
+      .exp-role { grid-column: 1 / -1; grid-row: 2; }
+
+      /* Skills: the certificate line wraps instead of overprinting */
+      .cert-row, .cert-info { flex-wrap: wrap; }
+      .cert-info { row-gap: 2px; }
+      .cert-name, .cert-meta { white-space: normal; }
+
+      /* Digital register: No. / Name / Status — the opened file has the rest */
+      .manifest-head, .manifest-row { grid-template-columns: 24px 1fr auto; gap: 10px; }
+      .manifest-head span:nth-child(3), .manifest-head span:nth-child(4),
+      .manifest-head span:nth-child(5),
+      .m-type, .m-stack, .m-year { display: none; }
+
+      /* 3D page: the panels sit under the nav, clear of the featured model */
+      .project-panel, .sprocket-panel { top: 84px; left: 12px; right: 12px; width: auto; translate: none; }
+      .project-panel .pp-img-slot, .project-panel .pp-meta { display: none; }
+      .sprocket-panel { padding: 18px 16px 16px; }
+    }
+
+    /* Touch screens have no hover to light the menu links up */
+    @media (hover: none) {
+      .nav-links li a { color: rgba(255,255,255,0.8); }
+      .nav-footer a   { color: rgba(255,255,255,0.6); }
     }
   </style>
 </head>
@@ -1996,7 +2097,7 @@
   <!-- ───────── FULL-SCREEN NAV OVERLAY ───────── -->
   <div class="nav-overlay" id="navOverlay">
     <div class="nav-overlay-top">
-      <button class="nav-close-btn" id="closeBtn">&#x2715;</button>
+      <button class="nav-close-btn" id="closeBtn" aria-label="Close menu">&#x2715;</button>
     </div>
     <ul class="nav-links">
       <li><a href="#">Projects <span>Build 1.0</span></a></li>
@@ -2014,12 +2115,12 @@
   <!-- ───────── RACE GAME — steering-wheel easter egg ───────── -->
   <div class="race-page" id="racePage">
     <canvas id="raceCanvas"></canvas>
-    <button class="contact-back" id="raceClose" style="z-index:2;">&#x2715;</button>
+    <button class="contact-back" id="raceClose" style="z-index:2;" aria-label="Exit game">&#x2715;</button>
   </div>
 
   <!-- ───────── CONTACT PAGE ───────── -->
   <div class="contact-page" id="contactPage">
-    <button class="contact-back" id="contactBack">&#x2715;</button>
+    <button class="contact-back" id="contactBack" aria-label="Close">&#x2715;</button>
 
     <div class="contact-status">
       <div class="contact-status-dot"></div>
@@ -2052,7 +2153,7 @@
 
   <!-- ───────── ABOUT PAGE ───────── -->
   <div class="page-overlay" id="aboutPage">
-    <button class="page-close-btn" id="aboutBack">&#x2715;</button>
+    <button class="page-close-btn" id="aboutBack" aria-label="Close">&#x2715;</button>
     <div class="page-overlay-inner">
       <div class="about-layout">
 
@@ -2138,7 +2239,7 @@
 
   <!-- ───────── SKILLS PAGE ───────── -->
   <div class="page-overlay" id="skillsPage">
-    <button class="page-close-btn" id="skillsBack">&#x2715;</button>
+    <button class="page-close-btn" id="skillsBack" aria-label="Close">&#x2715;</button>
     <div class="page-overlay-inner">
       <div class="skills-layout">
         <div class="page-label">Skills</div>
@@ -2224,9 +2325,9 @@
       <li>Refined into machined, competition-ready geometry</li>
     </ul>
     <div class="sp-images">
-      <div class="sp-img-slot" style="background-image:url('renders/sprocket-topology-1.jpg');background-size:cover;background-position:center;"></div>
-      <div class="sp-img-slot" style="background-image:url('renders/sprocket-topology-2.jpg');background-size:cover;background-position:center;"></div>
-      <div class="sp-img-slot" style="background-image:url('renders/sprocket-topology-3.jpg');background-size:cover;background-position:center;"></div>
+      <div class="sp-img-slot has-img" style="background-image:url('renders/sprocket-topology-1.jpg');"></div>
+      <div class="sp-img-slot has-img" style="background-image:url('renders/sprocket-topology-2.jpg');"></div>
+      <div class="sp-img-slot has-img" style="background-image:url('renders/sprocket-topology-3.jpg');"></div>
     </div>
   </div>
 
@@ -2284,7 +2385,7 @@
           <div class="manifest-head">
             <span>No.</span><span>Name</span><span>Type</span><span>Stack</span><span>Year</span><span>Status</span>
           </div>
-          <div class="manifest-row" data-i="0">
+          <div class="manifest-row" data-i="0" role="button" tabindex="0">
             <span class="m-no">01</span>
             <span class="m-name">Pursr Platform</span>
             <span class="m-type">Full-stack product</span>
@@ -2292,7 +2393,7 @@
             <span class="m-year">2026</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
-          <div class="manifest-row" data-i="1">
+          <div class="manifest-row" data-i="1" role="button" tabindex="0">
             <span class="m-no">02</span>
             <span class="m-name">Campus Cravings OS</span>
             <span class="m-type">Ops &amp; ordering</span>
@@ -2300,7 +2401,7 @@
             <span class="m-year">2025</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
-          <div class="manifest-row" data-i="2">
+          <div class="manifest-row" data-i="2" role="button" tabindex="0">
             <span class="m-no">03</span>
             <span class="m-name">Automation Pipelines</span>
             <span class="m-type">Workflow infra</span>
@@ -2308,7 +2409,7 @@
             <span class="m-year">2026</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
-          <div class="manifest-row" data-i="3">
+          <div class="manifest-row" data-i="3" role="button" tabindex="0">
             <span class="m-no">04</span>
             <span class="m-name">Portfolio Engine</span>
             <span class="m-type">Single-file WebGL</span>
@@ -2316,7 +2417,7 @@
             <span class="m-year">2026</span>
             <span class="m-status"><i></i>Shipped</span>
           </div>
-          <div class="manifest-row" data-i="4">
+          <div class="manifest-row" data-i="4" role="button" tabindex="0">
             <span class="m-no">05</span>
             <span class="m-name">Drivetrain Calc Sheets</span>
             <span class="m-type">Engineering docs</span>
@@ -2384,12 +2485,12 @@
 
   <!-- ───────── SPLIT INTRO (front door: pick a world) ───────── -->
   <div class="split-intro" id="splitIntro">
-    <div class="split-half left" id="splitLeft">
+    <div class="split-half left" id="splitLeft" role="button" tabindex="0">
       <div class="split-label">Build 1.0</div>
       <h2 class="split-title">Hands-On.</h2>
       <p class="split-desc">Machines — designed, machined, assembled.</p>
     </div>
-    <div class="split-half right" id="splitRight">
+    <div class="split-half right" id="splitRight" role="button" tabindex="0">
       <div class="split-label">Build 2.0</div>
       <h2 class="split-title">Digital.</h2>
       <p class="split-desc">Software, documents, and systems.</p>
@@ -2397,8 +2498,8 @@
   </div>
 
   <!-- ───────── EDGE TABS (flip handles to the other world) ───────── -->
-  <div class="edge-tab left hidden-tab" id="tabLeft"><span>Hands-On</span></div>
-  <div class="edge-tab right hidden-tab" id="tabRight"><span>Digital</span></div>
+  <div class="edge-tab left hidden-tab" id="tabLeft" role="button" tabindex="0"><span>Hands-On</span></div>
+  <div class="edge-tab right hidden-tab" id="tabRight" role="button" tabindex="0"><span>Digital</span></div>
 
   <!-- ───────── SECTION PREV / NEXT ───────── -->
   <div class="section-nav">
@@ -2459,19 +2560,43 @@
   document.getElementById('aboutBack').addEventListener('click', closeAllPages);
   document.getElementById('skillsBack').addEventListener('click', closeAllPages);
 
-  // Close on Escape: overlays first, then flip back to the physical page
+  const overlayOpen = () => navOverlay.classList.contains('open') ||
+    Object.values(pages).some(p => p.classList.contains('open'));
+
+  // Close on Escape: overlays first, then step out of the 3D view (detail
+  // view, then the featured zoom), then flip back to the physical page.
+  // Left / right arrows mirror the section-nav buttons.
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
       if (window._raceOpen) { window._closeRace(); return; }
-      const hadOverlay = navOverlay.classList.contains('open') ||
-        Object.values(pages).some(p => p.classList.contains('open'));
+      const hadOverlay = overlayOpen();
       navOverlay.classList.remove('open');
       closeAllPages();
       if (hadOverlay) return;
       if (window._fileDocOpen) { window._closeFileDoc(); return; }
+      if (!window._digitalOpen && window._stepBack && window._stepBack()) return;
       flipTo(0);
+    } else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && !e.repeat &&
+               !window._raceOpen && !window._fileDocOpen && !overlayOpen() &&
+               !e.altKey && !e.ctrlKey && !e.metaKey) {
+      (e.key === 'ArrowLeft' ? prevBtn : nextBtn).click();
     }
   });
+
+  // Keyboard access for the div-based controls (intro halves, edge tabs,
+  // register rows): Enter / Space activate them like a click
+  document.addEventListener('keydown', e => {
+    if ((e.key === 'Enter' || e.key === ' ') && !window._raceOpen &&
+        e.target.matches && e.target.matches('[role="button"]')) {
+      e.preventDefault();
+      e.target.click();
+    }
+  });
+
+  // What is hiding the 3D scene: 'page' (the menu, an opaque page, or the
+  // race), 'intro' (the front door), or '' — the module script skips hover
+  // raycasts under either, and stops drawing once a page has covered it.
+  window._sceneCover = () => window._raceOpen || overlayOpen() ? 'page' : introUp ? 'intro' : '';
 
   // ── Page flip: 0 = hands-on (3D scene), 1 = digital work.
   //    The split intro is the front door; the edge tabs are the handles. ──
@@ -2745,17 +2870,17 @@
       lg.el.setAttribute('transform',
         `matrix(${m[0].toFixed(3)} ${m[1].toFixed(3)} ${m[2].toFixed(3)} ${m[3].toFixed(3)} ${a.x.toFixed(1)} ${a.y.toFixed(1)})`);
 
-      // Face content is authored in front-view coordinates; map that space
-      // through the current blend (blend of two affine maps is affine) so
-      // the printed contents ride the paper through the whole turn.
+      // Face content is authored in front-view units with the sheet's corner
+      // at the origin (FA); map that space through the current blend (blend
+      // of two affine maps is affine) so the printed contents ride the paper
+      // through the whole turn. Authoring at the origin keeps the content
+      // independent of the front-view anchor, which moves with the layout.
       const bs = sheet.basis, S = FRONT_S;
       const f0x = frontCX - S * SHEET_W / 2, f0y = frontCY - S * SHEET_D / 2;
       const ma = ((1 - t) * bs.Ux + t * S) / S, mb = ((1 - t) * bs.Uy) / S;
       const mc = ((1 - t) * bs.Vx) / S,         md = ((1 - t) * bs.Vy + t * S) / S;
-      const b0x = (1 - t) * bs.Ox + t * f0x;
-      const b0y = (1 - t) * bs.Oy + t * f0y + arcY;
-      const me = b0x - (ma * f0x + mc * f0y);
-      const mf = b0y - (mb * f0x + md * f0y);
+      const me = (1 - t) * bs.Ox + t * f0x;
+      const mf = (1 - t) * bs.Oy + t * f0y + arcY;
       sheet.face.setAttribute('transform',
         `matrix(${ma.toFixed(4)} ${mb.toFixed(4)} ${mc.toFixed(4)} ${md.toFixed(4)} ${me.toFixed(2)} ${mf.toFixed(2)})`);
       sheet.face.setAttribute('opacity', Math.max(0, (t - 0.35) / 0.5).toFixed(3));
@@ -2766,24 +2891,37 @@
     // the CENTRE OF THE RIGHT COLUMN (not the pile) — the standing sheet is
     // much taller than the pile and should own the column, sized against the
     // doc panel on the left. Measured from live layout, converted to viewBox
-    // units (the page is translated off-screen but fully laid out).
-    const bb = svg.getBBox();
-    const vbX = bb.x - 34, vbY = bb.y - 20, vbW = bb.width + 68, vbH = bb.height + 40;
-    svg.setAttribute('viewBox', `${vbX.toFixed(0)} ${vbY.toFixed(0)} ${vbW.toFixed(0)} ${vbH.toFixed(0)}`);
-    {
+    // units (the page is translated off-screen but fully laid out). Below
+    // 900px the column is display:none and measures 0 — so the viewBox is
+    // fitted the first time the stack is actually rendered, and the anchor
+    // is re-measured whenever a sheet stands up or the column resizes.
+    let vb = null;
+    function fitStack() {
+      if (!vb) {
+        let bb = null;
+        try { bb = svg.getBBox(); } catch (e) { /* not rendered */ }
+        if (!bb || !bb.width) return false;
+        vb = { x: bb.x - 34, y: bb.y - 20, w: bb.width + 68, h: bb.height + 40 };
+        svg.setAttribute('viewBox', `${vb.x.toFixed(0)} ${vb.y.toFixed(0)} ${vb.w.toFixed(0)} ${vb.h.toFixed(0)}`);
+      }
       const svgR = svg.getBoundingClientRect();
+      if (!svgR.width) return false;
       const colR = svg.parentElement.getBoundingClientRect();
-      const pxPerUnit = svgR.width / vbW;
-      frontCX = vbX + (colR.left + colR.width / 2 - svgR.left) / pxPerUnit;
-      frontCY = vbY + (colR.top + colR.height * 0.48 - svgR.top) / pxPerUnit;
+      const pxPerUnit = svgR.width / vb.w;
+      frontCX = vb.x + (colR.left + colR.width / 2 - svgR.left) / pxPerUnit;
+      frontCY = vb.y + (colR.top + colR.height * 0.48 - svgR.top) / pxPerUnit;
+      return true;
     }
+    fitStack();
 
-    // build each sheet's face content (static front-view coordinates — it is
-    // invisible until the morph is nearly done, so it never needs to blend)
+    // build each sheet's face content (static front-view units, sheet corner
+    // at the origin — it is invisible until the morph is nearly done, so it
+    // never needs to blend)
+    const FA = (x, z) => ({ x: x * FRONT_S, y: z * FRONT_S });
     SHEETS.forEach(sheet => {
       const info = sheet.info;
       const txt = (x, z, attrs, content) => {
-        const p = F(x, z);
+        const p = FA(x, z);
         const t = el('text', Object.assign({ x: p.x.toFixed(1), y: p.y.toFixed(1) }, attrs));
         t.textContent = content;
         sheet.face.appendChild(t);
@@ -2803,7 +2941,7 @@
       });
       // two figure slots
       [0, 1].forEach(k => {
-        const x0 = 0.7 + k * 2.18, p = F(x0, 4.95);
+        const x0 = 0.7 + k * 2.18, p = FA(x0, 4.95);
         sheet.face.appendChild(el('rect', {
           x: p.x.toFixed(1), y: p.y.toFixed(1),
           width: (2.02 * FRONT_S).toFixed(1), height: (1.55 * FRONT_S).toFixed(1),
@@ -2863,14 +3001,18 @@
     const fd = id => document.getElementById(id);
 
     function openFile(i) {
+      if (window._fileDocOpen) return;
       setActive(i);
       const info = DIGITAL_INFO[i];
       const no   = String(i + 1).padStart(2, '0');
       const sheet = SHEETS[n - 1 - i];
-      svg.appendChild(sheet.g);           // paint the standing sheet on top
-      sheet.g.classList.add('front');
+      // the sheet stands up only where the stack column is shown
+      if (fitStack()) {
+        svg.appendChild(sheet.g);         // paint the standing sheet on top
+        sheet.g.classList.add('front');
+        tweenFront(sheet, 1, 620);
+      }
       digitalPage.classList.add('file-open');
-      tweenFront(sheet, 1, 620);
       fd('fdLogo').textContent   = info.logo;
       fd('fdNo').textContent     = no;
       fd('fdRev').textContent    = info.rev;
@@ -2881,7 +3023,9 @@
       fd('fdDesc').textContent   = info.desc;
       fd('fdPoints').innerHTML   = info.points.map(p => `<li>${p}</li>`).join('');
       ['fdFig1', 'fdFig2'].forEach((id, k) => {
-        fd(id).style.backgroundImage = info.figImg && info.figImg[k] ? `url(${info.figImg[k]})` : '';
+        const img = info.figImg && info.figImg[k];
+        fd(id).style.backgroundImage = img ? `url(${img})` : '';
+        fd(id).classList.toggle('has-img', !!img);
         fd(id + 'Cap').textContent   = `Fig. 0${k + 1} — ${info.figs[k]}`;
       });
       fileDoc.scrollTop = 0;
@@ -2905,10 +3049,19 @@
     }
     window._closeFileDoc = closeFile;
 
-    rows.forEach((r, i) => r.addEventListener('click', () => openFile(i)));
+    rows.forEach((r, i) => {
+      r.addEventListener('click', () => openFile(i));
+      r.addEventListener('focus', () => setActive(i));
+    });
     svg.addEventListener('click', () => window._fileDocOpen ? closeFile() : openFile(activeIdx));
     fileScrim.addEventListener('click', closeFile);
     document.getElementById('fileClose').addEventListener('click', closeFile);
+
+    // keep the stack fitted — the first time a narrow layout widens — and a
+    // standing sheet anchored to its column through resizes
+    new ResizeObserver(() => {
+      if (fitStack() && frontSheet && frontSheet.t === 1) renderSheet(frontSheet, 1);
+    }).observe(svg.parentElement);
   })();
 
   // ── Perspective Ground Plane Dot Grid ────────────────────────────────────
@@ -2994,6 +3147,19 @@
       const SV_TILT  = 0.10;          // nearly horizontal → ground appears flat
       const SV_CY    = H * 0.6255;    // where gz=0 (world origin) maps under this camera
 
+      raf = requestAnimationFrame(draw);
+
+      // Expose live camera state for the Three.js scene to consume each frame.
+      window._dotCam.hSkew  = hSkew;
+      window._dotCam.tilt   = tilt;
+      window._dotCam.vShift = vShift;
+      window._dotCam.mx     = mx;
+      window._dotCam.my     = my;
+
+      // Fully hidden behind an opaque page (flag set by the module loop): the
+      // camera lerps above keep running, the dot redraw is skipped
+      if (window._dotCam.hidden) return;
+
       ctx.fillStyle = BG;
       ctx.fillRect(0, 0, W, H);
 
@@ -3048,15 +3214,6 @@
         ctx.fillStyle = `rgba(${DOT_RGB},${alpha.toFixed(3)})`;
         ctx.fill();
       }
-
-      raf = requestAnimationFrame(draw);
-
-      // Expose live camera state for the Three.js scene to consume each frame.
-      window._dotCam.hSkew  = hSkew;
-      window._dotCam.tilt   = tilt;
-      window._dotCam.vShift = vShift;
-      window._dotCam.mx     = mx;
-      window._dotCam.my     = my;
     }
 
     window._dotCam = { hSkew: -0.09, tilt: 1, vShift: 0 };
@@ -3711,9 +3868,8 @@ function fillProjectPanel(name) {
   ppIndex.textContent = info.index;
   ppTitle.textContent = info.title;
   ppPoints.innerHTML  = info.points.map(p => `<li>${p}</li>`).join('');
-  ppImg.style.backgroundImage    = info.img ? `url(${info.img})` : '';
-  ppImg.style.backgroundSize     = info.img ? 'cover' : '';
-  ppImg.style.backgroundPosition = info.img ? 'center' : '';
+  ppImg.style.backgroundImage = info.img ? `url(${info.img})` : '';
+  ppImg.classList.toggle('has-img', !!info.img);
   dimLabel.textContent = info.dim.label;
   projectPanel.classList.toggle('is-wip', !!info.wip);
   ppMetaRev.textContent = info.wip ? 'Status · WIP' : 'Rev A · 2026';
@@ -4600,6 +4756,7 @@ const ZOOM_DIST = 8.0;   // close distance — perspective kicks in here
 let zoomT   = 0;     // 0 = isometric, 1 = zoomed side view
 let zoomDir = 0;     // +1 = zooming in, -1 = zooming out
 let prevTime = performance.now();
+let pageCoverT = 0;  // seconds an opaque page / the menu has covered the scene
 const sprocketPanel = document.getElementById('sprocketPanel');
 
 // While a project is featured, the section-nav arrows cycle to the next /
@@ -4607,9 +4764,13 @@ const sprocketPanel = document.getElementById('sprocketPanel');
 let pendingFeature = null;
 const FEATURE_ORDER = ['scooter', 'printer', 'car', 'steering', 'rivian'];
 window._cycleFeatured = dir => {
-  if (zoomT < 0.5 || pendingFeature) return false;
+  // At rest (or heading back to it) the arrows flip pages instead. A press
+  // during a bounce, or while a zoom is still coming in, moves the target on —
+  // it used to fall through to the page flip, so a quick double-click on
+  // "next" landed on the digital page.
+  if (!pendingFeature && zoomDir !== 1 && zoomT < 0.5) return false;
   pendingFeature = FEATURE_ORDER[
-    (FEATURE_ORDER.indexOf(featured) + dir + FEATURE_ORDER.length) % FEATURE_ORDER.length];
+    (FEATURE_ORDER.indexOf(pendingFeature || featured) + dir + FEATURE_ORDER.length) % FEATURE_ORDER.length];
   sprocketOpen = false;
   seatOpen = false;
   zoomDir = -1;
@@ -4625,10 +4786,29 @@ window._zoomOutAll = () => {
   seatOpen = false;
 };
 
+// Escape key: one step back out of the 3D view, like a click — an open
+// detail view (sprocket / seat module) closes first, then the featured zoom
+// (or an arrow-cycling bounce) heads back to rest. False when already there.
+window._stepBack = () => {
+  if (sprocketOpen) { sprocketOpen = false; return true; }
+  if (seatOpen)     { seatOpen = false; return true; }
+  if (zoomT > 0 && (zoomDir !== -1 || pendingFeature)) {
+    zoomDir = -1;
+    pendingFeature = null;
+    detailO = 0;   // snap the "Detail A" hover circle off, same as a click
+    return true;
+  }
+  return false;
+};
+
 // Click: zoom in on model, open sprocket, or zoom out
 card.addEventListener('click', e => {
   if (window._digitalOpen) return;   // clicks belong to the digital page
   if (window._raceOpen) return;      // clicks belong to the race easter egg
+  // Clicks on the menu and the opaque pages bubble up to the card too; they
+  // must never raycast the hidden scene behind them (a click on the About
+  // page used to zoom whichever model sat under the pointer)
+  if (e.target.closest('.nav-menu-btn, .nav-overlay, .page-overlay, .contact-page, .race-page, .split-intro, .section-nav, .edge-tab')) return;
   if (!modelMeshes.length) return;
   const r = card.getBoundingClientRect();
   mousePt.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
@@ -4693,8 +4873,8 @@ card.addEventListener('click', e => {
   } else if (!sprocketOpen) {
     zoomDir = -1;
     detailO = 0;   // snap the "Detail A" hover circle off instantly on click
-    if (sprocketHovered) { sprocketHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
-    if (seatHovered)     { seatHovered = false;     outlineYellow.selectedObjects = []; card.style.cursor = ''; }
+    if (sprocketHovered) { sprocketHovered = false; outlineYellow.selectedObjects = []; }
+    if (seatHovered)     { seatHovered = false;     outlineYellow.selectedObjects = []; }
   }
 });
 
@@ -4727,6 +4907,12 @@ function loop() {
 
   // Share zoom progress with the dot grid so it can reproject its own camera.
   const c = window._dotCam || { hSkew: -0.09, tilt: 1, vShift: 0 };
+
+  // Intro, menu, and opaque pages hide the scene: no hover raycasts under
+  // them, and no drawing once a page has fully slid in (pageCoverT, below)
+  const cover        = window._sceneCover ? window._sceneCover() : '';
+  const sceneCovered = cover !== '';
+  pageCoverT = cover === 'page' ? pageCoverT + dt : 0;
 
   // Blend between mouse-driven isometric and locked side-view. A project can
   // override the zoom elevation via FEATURE_POSE[..].el (printer: higher
@@ -4783,7 +4969,7 @@ function loop() {
   const panelT  = Math.max(0, Math.min(1, (openEase - 0.35) / 0.65));
   const panelIn = panelT * panelT * (3 - 2 * panelT);
   sprocketPanel.style.opacity = panelIn;
-  sprocketPanel.style.transform = `translateY(-50%) translateX(${(1 - panelIn) * 24}px)`;
+  sprocketPanel.style.transform = `translateX(${(1 - panelIn) * 24}px)`;
   sprocketPanel.style.pointerEvents = sprocketOpen || panelIn > 0.5 ? 'auto' : 'none';
 
   // Project info panel: slides in as the featured zoom completes. On the car
@@ -4792,7 +4978,7 @@ function loop() {
   const ppIn = Math.max(0, (ease - 0.6) / 0.4)
              * Math.max(0, 1 - Math.max(openEase, seatOpenEase) * 2.5);
   projectPanel.style.opacity = ppIn;
-  projectPanel.style.transform = `translateY(-50%) translateX(${(1 - ppIn) * 24}px)`;
+  projectPanel.style.transform = `translateX(${(1 - ppIn) * 24}px)`;
   projectPanel.classList.toggle('in', ppIn > 0.4);
 
   // Dimension line under the featured model (per-project geometry)
@@ -5199,17 +5385,18 @@ function loop() {
   // Skip raycasting during transitions — it's expensive and not needed while moving
   if (transitioning) {
     if (isHovered)       { isHovered = false; outlinePass.selectedObjects = []; outlineGrey.selectedObjects = []; }
-    if (sprocketHovered) { sprocketHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
+    if (sprocketHovered) { sprocketHovered = false; outlineYellow.selectedObjects = []; }
     if (rearWallHovered) { rearWallHovered = false; outlineYellow.selectedObjects = []; }
-    if (seatHovered)     { seatHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
-    if (greenBtnHovered) { greenBtnHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
-    if (rivianHovered)   { rivianHovered = false; card.style.cursor = ''; }
-    if (scooterHovered)  { scooterHovered = false; card.style.cursor = ''; }
+    if (seatHovered)     { seatHovered = false; outlineYellow.selectedObjects = []; }
+    if (greenBtnHovered) { greenBtnHovered = false; outlineYellow.selectedObjects = []; }
+    if (rivianHovered)   { rivianHovered = false; }
+    if (scooterHovered)  { scooterHovered = false; }
   }
 
-  // Hover detection (only at rest, and never under the digital page —
-  // raycaster is expensive on complex mesh)
-  if (!transitioning && !window._digitalOpen && c.mx > -999) {
+  // Hover detection (only at rest, and never under the digital page or the
+  // intro / menu / opaque pages — raycaster is expensive on complex mesh,
+  // and the pointer cursor would show through those layers)
+  if (!transitioning && !window._digitalOpen && !sceneCovered && c.mx > -999) {
     const rect = card.getBoundingClientRect();
     mousePt.set((c.mx / rect.width) * 2 - 1, -(c.my / rect.height) * 2 + 1);
     raycaster.setFromCamera(mousePt, camera);
@@ -5221,7 +5408,6 @@ function loop() {
     if (sprocketHit !== sprocketHovered) {
       sprocketHovered = sprocketHit;
       outlineYellow.selectedObjects = sprocketHovered ? sprocketMeshes : [];
-      card.style.cursor = sprocketHovered ? 'pointer' : '';
     }
 
     // Rear-wall hover — only active when zoomed on the Rivian; same yellow
@@ -5243,7 +5429,6 @@ function loop() {
     if (seatHit !== seatHovered) {
       seatHovered = seatHit;
       outlineYellow.selectedObjects = seatHovered ? seatMeshes : [];
-      card.style.cursor = seatHovered ? 'pointer' : '';
     }
 
     // Green-button hover — only when zoomed on the steering wheel; pointer
@@ -5255,7 +5440,6 @@ function loop() {
     if (btnHit !== greenBtnHovered) {
       greenBtnHovered = btnHit;
       outlineYellow.selectedObjects = greenBtnHovered ? greenBtnMeshes : [];
-      card.style.cursor = greenBtnHovered ? 'pointer' : '';
     }
 
     // Car body hover (only when not over sprocket, and not faded out)
@@ -5275,7 +5459,6 @@ function loop() {
       : false;
     if (rivianHit !== rivianHovered) {
       rivianHovered = rivianHit;
-      card.style.cursor = rivianHovered ? 'pointer' : '';
     }
 
     // Scooter hover (rest view only)
@@ -5284,7 +5467,6 @@ function loop() {
       : false;
     if (scooterHit !== scooterHovered) {
       scooterHovered = scooterHit;
-      card.style.cursor = scooterHovered ? 'pointer' : '';
     }
 
     // Printer hover (rest view only)
@@ -5293,7 +5475,6 @@ function loop() {
       : false;
     if (printerHit !== printerHovered) {
       printerHovered = printerHit;
-      card.style.cursor = printerHovered ? 'pointer' : '';
     }
 
     // Steering hover (rest view only)
@@ -5302,19 +5483,28 @@ function loop() {
       : false;
     if (steeringHit !== steeringHovered) {
       steeringHovered = steeringHit;
-      card.style.cursor = steeringHovered ? 'pointer' : '';
     }
   } else {
     if (isHovered)      { isHovered = false; outlinePass.selectedObjects = []; outlineGrey.selectedObjects = []; }
-    if (sprocketHovered) { sprocketHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
+    if (sprocketHovered) { sprocketHovered = false; outlineYellow.selectedObjects = []; }
     if (rearWallHovered) { rearWallHovered = false; outlineYellow.selectedObjects = []; }
-    if (seatHovered)     { seatHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
-    if (greenBtnHovered) { greenBtnHovered = false; outlineYellow.selectedObjects = []; card.style.cursor = ''; }
-    if (rivianHovered)   { rivianHovered = false; card.style.cursor = ''; }
-    if (scooterHovered)  { scooterHovered = false; card.style.cursor = ''; }
-    if (printerHovered)  { printerHovered = false; card.style.cursor = ''; }
-    if (steeringHovered) { steeringHovered = false; card.style.cursor = ''; }
+    if (seatHovered)     { seatHovered = false; outlineYellow.selectedObjects = []; }
+    if (greenBtnHovered) { greenBtnHovered = false; outlineYellow.selectedObjects = []; }
+    if (rivianHovered)   { rivianHovered = false; }
+    if (scooterHovered)  { scooterHovered = false; }
+    if (printerHovered)  { printerHovered = false; }
+    if (steeringHovered) { steeringHovered = false; }
   }
+
+  // One pointer cursor for every clickable hover, derived once per frame.
+  // (Each channel used to write card.style.cursor itself, so moving straight
+  // from one model onto a neighbour could leave the default cursor showing.)
+  // The rear wall stays default — clicking it just zooms out. The car counts
+  // only at rest; zoomed, its outline is a highlight, not a link.
+  const pointer = sprocketHovered || seatHovered || greenBtnHovered || rivianHovered ||
+                  scooterHovered || printerHovered || steeringHovered || (isHovered && ease < 0.05);
+  const cursor = pointer ? 'pointer' : '';
+  if (card.style.cursor !== cursor) card.style.cursor = cursor;
 
   // Hover callout tag: a mono spec label that trails the cursor over a model
   const hoverName = rivianHovered ? 'rivian' : scooterHovered ? 'scooter'
@@ -5392,7 +5582,15 @@ function loop() {
     if (m.visible) m.material.opacity = carFade;
   }
 
-  composer.render();
+  // Nothing to draw once an opaque layer fully hides the scene: the digital
+  // page after its flip lands, or the menu / a page / the race after its
+  // slide-in (0.6 s outlasts the longest, 0.48 s). Everything above keeps
+  // running, so the first frame back is current. Never skipped under the
+  // intro — rendering there compiles shaders and uploads the models before
+  // the reveal, instead of hitching the swipe.
+  const hidden = (window._digitalOpen && digitalT === 1) || pageCoverT > 0.6;
+  if (window._dotCam) window._dotCam.hidden = hidden;   // the dot grid skips too
+  if (!hidden) composer.render();
 }
 loop();
 

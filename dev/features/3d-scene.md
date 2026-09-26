@@ -573,13 +573,23 @@ then runs for any of them. Arrow cycling order: `FEATURE_ORDER = ['scooter',
 
 Each featured zoom shows a right-side info panel (`#projectPanel`, styled
 like the sprocket panel but 300px) with tag / title / bullets / image slot.
-Copy lives in the `PROJECT_INFO` map (currently FILLER TEXT — replace with
-real project stories). The panel is populated on click (`fillProjectPanel`)
+Copy lives in the `PROJECT_INFO` map (the printer's entry is still a WIP
+stub with `wip: true`). The panel is populated on click (`fillProjectPanel`)
 and driven from the RAF loop:
 
 - opacity/slide-in ramps over ease 0.6 → 1.0, and is multiplied by
   `(1 - openEase)` so the car's panel yields to the sprocket detail panel.
 - `pointer-events: none` — clicks pass through it and zoom back out.
+- **Centring lives in CSS `translate: 0 -50%`**; the loop writes only
+  `transform: translateX(..)` (same for `#sprocketPanel`). That split is what
+  lets the phone layout (≤640px) re-anchor both panels as compact sheets
+  under the nav (`top: 84px; translate: none`, figure + meta hidden) instead
+  of covering the featured model. Don't fold translateY back into the inline
+  transform.
+- **Figures:** a slot holding a real image gets `.has-img` (toggled in
+  `fillProjectPanel`, the digital doc, static on the sprocket slots): whole
+  image, `contain` on white. A `cover` crop cut the FEA plots to 6:1 strips
+  and chopped the burned-in captions off the Rivian/scooter figures.
 
 The identity caption (bottom-left `.identity-meta`) crossfades to the
 featured project's `layer`/`desc` copy: its opacity is `|ease - 0.5| * 2`
@@ -597,7 +607,7 @@ headlines and body copy.
 - **Spec-sheet panel:** corner tick marks (`.tick`, reused on the sprocket
   panel and card frame), mono tag + ghost index numeral header, ruled title,
   numbered rows (CSS counter `pp-row`), figure slot with diagonal hatch
-  placeholder ("Fig. 01"; Rivian shows the real press photo), and a
+  placeholder ("Fig. 01", replaced by `PROJECT_INFO[..].img` where set), and a
   "REV A · 2026 / YM WORKS" meta footer. Rows stagger in via transition-delays
   when the RAF loop toggles `.in` at ppIn > 0.4.
 - **Dimension line** (`#dimLine`): drawing-style dimension with end ticks and
@@ -614,5 +624,41 @@ headlines and body copy.
 - **Arrow cycling:** while zoomed, the section-nav arrows call
   `window._cycleFeatured(dir)` (module) — zoom out, swap feature at rest,
   zoom back in (`pendingFeature` bounce). Button handlers stopPropagation so
-  the card's zoom-out click doesn't also fire; at rest they still cycle the
-  page dots.
+  the card's zoom-out click doesn't also fire; at rest they flip between the
+  two root pages. A press during a bounce (or while a zoom is still coming
+  in) advances `pendingFeature` instead of declining — declining fell through
+  to the page flip, so a quick double-click on "next" landed on the digital
+  page. The ←/→ keys press the same buttons (not on key auto-repeat; ignored
+  while a page, the menu, a file, or the race is open).
+
+---
+
+## Covered-scene gating + keyboard (Sept 2026)
+
+The menu, About / Skills / Contact, the race page, and the split intro all
+live INSIDE `.card`, so their clicks bubble to the card's scene click
+handler, and the per-frame hover raycast kept running underneath them.
+Clicking a menu link, the About photo, or a skill tag over a model zoomed
+that hidden model (measured: ease 0.41–0.59 behind the page; 0 now).
+
+- **Clicks:** the card handler returns early when `e.target.closest(...)`
+  is the menu button, the menu, a page overlay, the race page, the intro,
+  the section-nav, or an edge tab. The sprocket panel is deliberately NOT in
+  the list — a click on it still closes the detail view.
+- **Hover:** `window._sceneCover()` (main script) returns `'page'` (menu /
+  page / race), `'intro'`, or `''`; hover raycasts only run when it is `''`.
+- **Cursor:** derived ONCE per frame from the union of hover flags, at the
+  end of the hover block. Each channel used to write `card.style.cursor`
+  itself, so moving straight from one model's hitbox onto a neighbour (e.g.
+  steering → Rivian) could leave the default cursor over a clickable model.
+  The car now gets the pointer at rest too (it had only the outline); the
+  rear wall stays default (clicking it just zooms out).
+- **Render pause:** once the digital page has landed (`digitalT === 1`) or
+  a page/menu/race has covered the scene for 0.6 s (`pageCoverT`), the loop
+  skips `composer.render()` and sets `_dotCam.hidden` so the dot grid skips
+  its redraw. All state updates keep running, so the first frame back is
+  current. Never paused under the intro — rendering there compiles shaders
+  and uploads the models before the reveal instead of hitching the swipe.
+- **Escape:** menu/page → file doc → `window._stepBack()` (closes an open
+  sprocket / seat detail view, then zooms out of the featured project,
+  cancelling an arrow-cycling bounce) → `flipTo(0)`.

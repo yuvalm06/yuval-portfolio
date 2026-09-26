@@ -155,3 +155,7 @@ Shadow system (3 layers):
 - Do not change `PERSP`, `GS`, `CX`, `CY` constants without re-deriving all SVG object positions
 - Do not add CSS `transition` to elements whose style is driven per-frame by the rAF loops
   (identity/hint opacity, panels, dim line, hover tag) — the lerp handles smoothing
+- Do not add a page or overlay inside `.card` without adding it to the click guard at the
+  top of the card click handler and to `window._sceneCover()` — its clicks bubble to the
+  3D raycast and would zoom whatever model sits under the pointer
+  (see "Covered-scene gating" in `dev/features/3d-scene.md`)

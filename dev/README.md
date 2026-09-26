@@ -35,3 +35,13 @@ Note: `/tmp` gets wiped on reboot — if the module is missing, either reinstall
 Chrome directly, which works without any install:
 `"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" --headless --disable-gpu --screenshot=out.png --window-size=W,H --force-device-scale-factor=2 <url>`
 Server runs at port 3000 via `npx serve` from project root.
+
+### Headless testing notes (Sept 2026, cloud sandbox)
+
+- Playwright + Chromium are preinstalled there; `cdn.jsdelivr.net` may be blocked by
+  the sandbox network policy — `npm install three@0.165.0` somewhere and
+  `context.route('https://cdn.jsdelivr.net/npm/three@0.165.0/**', ...)` to the local copy.
+- Software WebGL (SwiftShader) runs the full scene at ~0.5–0.7 fps. CSS transitions and
+  the rAF state only advance between those long frames, so fixed sleeps lie: wait on
+  state instead (`window._dotCam.zoomEase`, `document.elementFromPoint` landing inside
+  the page you just opened) before clicking or asserting.
