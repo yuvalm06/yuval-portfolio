@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Yuval Munz — Portfolio</title>
-  <meta name="description" content="Yuval Munz — Mechanical Engineering at Queen's University. Formula SAE drivetrain and sprocket design, product and thermal concepts, and the software and automation that connect them." />
+  <title>Yuval Munz — Mechanical Engineer · Systems Optimization</title>
+  <meta name="description" content="Yuval Munz — mechanical engineer focused on systems optimization. Queen's University Mechanical Engineering, Class of 2028: Formula SAE drivetrain and sprocket design, thermal and structural analysis, and the automation around them." />
   <meta name="theme-color" content="#1A1916" />
 
   <!-- Link previews (LinkedIn, Slack, iMessage, X): scrapers need absolute URLs -->
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://yuval-portfolio-five.vercel.app/" />
-  <meta property="og:title" content="Yuval Munz — Portfolio" />
-  <meta property="og:description" content="Mechanical Engineering at Queen's University. Formula SAE drivetrain, product and thermal design, and full-stack automation." />
-  <meta property="og:image" content="https://yuval-portfolio-five.vercel.app/assets/og-image.jpg" />
+  <meta property="og:url" content="https://yuvalmunz.com/" />
+  <meta property="og:title" content="Yuval Munz — Mechanical Engineer · Systems Optimization" />
+  <meta property="og:description" content="Formula SAE drivetrain and sprocket design, thermal and structural analysis, and the automation around them — Queen's University Mechanical Engineering." />
+  <meta property="og:image" content="https://yuvalmunz.com/assets/og-image.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
   <meta property="og:image:alt" content="Five engineering projects — an open-wheel race car, a Rivian R1S, an e-scooter, a belt 3D printer, and a Baja steering wheel — on an isometric dot grid." />
@@ -22,22 +22,51 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
 
-  <!-- Start the heavy fetches at t=0. Without these the GLB downloads only
-       begin once three.js has arrived from the CDN (~2s stall on a typical
-       connection): HTML → three.module.js → module script runs → loads.
-       crossorigin="anonymous" is REQUIRED even on the same-origin GLBs:
-       three's FileLoader uses fetch(mode cors, credentials same-origin),
-       and a preload with any other credentials mode is ignored → the file
-       downloads twice. -->
-  <link rel="modulepreload" href="https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js" />
-  <link rel="preload" as="fetch" crossorigin="anonymous" href="renders/Meshy_AI_Open_Wheel_Prototype__0515194205_generate.glb" />
-  <link rel="preload" as="fetch" crossorigin="anonymous" href="renders/Sprocket.glb" />
-  <link rel="preload" as="fetch" crossorigin="anonymous" href="renders/rivian-r1s.glb" />
-  <link rel="preload" as="fetch" crossorigin="anonymous" href="renders/Rivian-rear-wall.glb" />
-  <link rel="preload" as="fetch" crossorigin="anonymous" href="renders/scooter.glb" />
-  <link rel="preload" as="fetch" crossorigin="anonymous" href="renders/z-axis-printer.glb" />
-  <link rel="preload" as="fetch" crossorigin="anonymous" href="renders/steering.glb" />
-  <link rel="preload" as="fetch" crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/libs/draco/draco_decoder.wasm" />
+  <script type="importmap">
+  {
+    "imports": {
+      "three":          "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
+      "three/addons/":  "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
+    }
+  }
+  </script>
+
+  <!-- Layout mode, decided ONCE before anything loads (rotating or resizing
+       later keeps it). Phones and portrait tablets get the compact layout
+       (html.compact): the 3D scene is cropped at portrait aspect and far too
+       heavy for a phone, so there it never starts — no three.js, no models.
+       Everything else gets the desktop scene. -->
+  <script>
+    (function () {
+      var compact = matchMedia('(max-width: 640px), (pointer: coarse) and (orientation: portrait), ' +
+                               '(pointer: coarse) and (max-height: 500px)').matches;
+      document.documentElement.classList.toggle('compact', compact);
+      if (compact) return;
+      // Desktop: start the heavy fetches at t=0. Without these the GLB
+      // downloads only begin once three.js has arrived from the CDN (~2s
+      // stall on a typical connection): HTML → three.module.js → module
+      // script runs → loads. crossorigin="anonymous" is REQUIRED even on the
+      // same-origin GLBs: three's FileLoader uses fetch(mode cors,
+      // credentials same-origin), and a preload with any other credentials
+      // mode is ignored → the file downloads twice. The import map above must
+      // come first so the addon modulepreloads can resolve 'three'.
+      var CDN = 'https://cdn.jsdelivr.net/npm/three@0.165.0/';
+      var add = function (rel, href, as) {
+        var l = document.createElement('link');
+        l.rel = rel; l.href = href;
+        if (as) { l.as = as; l.crossOrigin = 'anonymous'; }
+        document.head.appendChild(l);
+      };
+      add('modulepreload', CDN + 'build/three.module.js');
+      ['loaders/GLTFLoader.js', 'loaders/DRACOLoader.js', 'postprocessing/EffectComposer.js',
+       'postprocessing/RenderPass.js', 'postprocessing/OutlinePass.js', 'postprocessing/OutputPass.js']
+        .forEach(function (m) { add('modulepreload', CDN + 'examples/jsm/' + m); });
+      ['Meshy_AI_Open_Wheel_Prototype__0515194205_generate', 'Sprocket', 'rivian-r1s',
+       'Rivian-rear-wall', 'scooter', 'z-axis-printer', 'steering']
+        .forEach(function (g) { add('preload', 'renders/' + g + '.glb', 'fetch'); });
+      add('preload', CDN + 'examples/jsm/libs/draco/draco_decoder.wasm', 'fetch');
+    })();
+  </script>
 
   <style>
     /* ─────────────────────────────────────────
@@ -120,21 +149,24 @@
       align-items: center;
       justify-content: space-between;
       padding: 18px 22px;
+      pointer-events: none;   /* the empty strip passes clicks through (a tall
+                                 file doc's ✕ can sit under it)… */
     }
+    .nav > * { pointer-events: auto; }   /* …the name and menu button still take them */
 
     .nav-left {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 16px;
+      min-width: 0;
     }
 
     .logo-ym {
-      display: flex;
-      align-items: baseline;
       font-family: var(--font);
       font-size: 38px;
       font-weight: 700;
       letter-spacing: -0.02em;
+      line-height: 1;
       color: var(--ink);
       cursor: default;
       user-select: none;
@@ -142,35 +174,17 @@
       flex-shrink: 0;
     }
 
-    .wip-tag {
+    /* role line beside the name — the spec-sheet mono voice */
+    .nav-role {
       font-family: var(--mono);
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
       text-transform: uppercase;
-      color: #C97B72;
-      background: rgba(201, 123, 114, 0.08);
-      border: 1px solid rgba(201, 123, 114, 0.35);
-      border-radius: 999px;
-      padding: 4px 10px;
+      color: var(--ink-mid);
       white-space: nowrap;
       user-select: none;
-      flex-shrink: 0;
-      align-self: center;
-    }
-
-    .logo-expand {
-      display: inline-block;
-      overflow: hidden;
-      max-width: 0;
-      opacity: 0;
-      transition: max-width 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease;
-      white-space: pre;
-    }
-
-    .logo-ym:hover .logo-expand {
-      max-width: 100px;
-      opacity: 1;
+      padding-top: 3px;
     }
 
     .nav-right {
@@ -1061,10 +1075,13 @@
 
     .skills-layout::-webkit-scrollbar { display: none; }
     .skills-layout > :first-child { margin-top: auto; }   /* bottom-aligned when it fits */
+    /* keep natural heights so a tall grid scrolls — overflow:hidden on the
+       grid would otherwise let flexbox squash it and clip the last tags */
+    .skills-layout > * { flex-shrink: 0; }
 
     .skills-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(5, 1fr);
       width: 100%;
       gap: 1px;
       background: var(--border);
@@ -1372,6 +1389,7 @@
     .project-panel.in .pp-points li:nth-child(1)  { transition-delay: 0.10s; }
     .project-panel.in .pp-points li:nth-child(2)  { transition-delay: 0.16s; }
     .project-panel.in .pp-points li:nth-child(3)  { transition-delay: 0.22s; }
+    .project-panel.in .pp-points li:nth-child(4)  { transition-delay: 0.26s; }
     .project-panel.in .pp-img-slot                { transition-delay: 0.30s; }
     .project-panel.in .pp-meta                    { transition-delay: 0.38s; }
     .project-panel.in .pp-head, .project-panel.in .pp-title,
@@ -2004,6 +2022,10 @@
 
 
     @media (max-width: 900px) {
+      .skills-grid   { grid-template-columns: repeat(3, 1fr); }
+      /* a short last row stretches to the edge instead of leaving a grey hole */
+      .skills-col:last-child:nth-child(3n+1) { grid-column: 1 / -1; }
+      .skills-col:last-child:nth-child(3n+2) { grid-column: span 2; }
       .digital-right { display: none; }
       .digital-left  { flex: 1; }
       .split-intro   { flex-direction: column; }
@@ -2039,7 +2061,11 @@
       .exp-date { grid-column: 2; grid-row: 1; }
       .exp-role { grid-column: 1 / -1; grid-row: 2; }
 
-      /* Skills: the certificate line wraps instead of overprinting */
+      /* Skills: two columns (restated after the 900px rule); the certificate
+         line wraps instead of overprinting */
+      .skills-grid { grid-template-columns: repeat(2, 1fr); }
+      .skills-col:last-child:nth-child(n) { grid-column: auto; }        /* undo the 3-col spans */
+      .skills-col:last-child:nth-child(odd) { grid-column: 1 / -1; }
       .cert-row, .cert-info { flex-wrap: wrap; }
       .cert-info { row-gap: 2px; }
       .cert-name, .cert-meta { white-space: normal; }
@@ -2061,6 +2087,239 @@
       .nav-links li a { color: rgba(255,255,255,0.8); }
       .nav-footer a   { color: rgba(255,255,255,0.6); }
     }
+
+    /* Narrow screens: the role line stacks under the name */
+    @media (max-width: 640px) {
+      .nav       { padding: 14px 16px; align-items: flex-start; }
+      .nav-left  { flex-direction: column; align-items: flex-start; gap: 5px; }
+      .logo-ym   { font-size: 27px; }
+      .nav-role  { font-size: 8.5px; letter-spacing: 0.12em; padding-top: 0; }
+    }
+
+    /* ─────────────────────────────────────────
+       COMPACT LAYOUT — phones and portrait tablets (html.compact, decided once
+       in <head>). The 3D scene never starts: the Hands-On page is a scrollable
+       stack of project sheets over the dot grid, and a Hands-On | Digital
+       switch replaces the edge tabs. Every rule is scoped to html.compact, so
+       the desktop layout never matches any of them.
+    ───────────────────────────────────────── */
+    .m-projects, .mode-switch { display: none; }
+
+    html.compact { --nav-h: 78px; }
+    html.compact, html.compact body { overflow: hidden; }
+
+    /* the card IS the screen (dvh follows mobile browser toolbars) */
+    html.compact .card {
+      width: 100vw;
+      height: 100vh;
+      height: 100dvh;
+      max-width: none;
+      max-height: none;
+      border-radius: 0;
+    }
+
+    /* chrome that only means something over the 3D scene */
+    html.compact .identity, html.compact .scene-hint, html.compact .frame-marks,
+    html.compact .section-nav, html.compact .edge-tab, html.compact .dim-line,
+    html.compact .hover-tag, html.compact .detail-callout,
+    html.compact .project-panel, html.compact .sprocket-panel { display: none; }
+
+    /* Hands-On: the project sheets scroll under the nav line, never behind it */
+    html.compact .m-projects {
+      display: block;
+      position: absolute;
+      top: var(--nav-h);
+      left: 0; right: 0; bottom: 0;
+      z-index: 12;                 /* over the dot grid, under the digital page (16) */
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      padding: 0 16px 104px;       /* room to scroll the last sheet clear of the switch */
+      scrollbar-width: none;
+    }
+    html.compact .m-projects::-webkit-scrollbar { display: none; }
+
+    html.compact .m-head { max-width: 560px; margin: 0 auto; padding: 10px 0 18px; }
+    html.compact .m-sub {
+      font-size: 12.5px;
+      color: var(--ink-light);
+      line-height: 1.55;
+      margin-top: 8px;
+      max-width: 330px;
+    }
+
+    /* sticky sheet index — tap to jump, current sheet highlighted */
+    html.compact .m-index {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      display: flex;
+      gap: 5px;
+      margin: 0 -16px 14px;
+      padding: 9px 16px 10px;
+      background: rgba(238,236,234,0.92);
+      -webkit-backdrop-filter: blur(8px);
+              backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+    html.compact .m-index::-webkit-scrollbar { display: none; }
+    @media (min-width: 592px) {    /* index spans the sheet column on wide compact screens */
+      html.compact .m-index { justify-content: center; }
+    }
+    html.compact .m-index button {
+      flex: none;
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      background: rgba(220,218,213,0.7);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      padding: 6px 10px 5px;
+      cursor: pointer;
+    }
+    html.compact .m-index button b { font-weight: 500; color: var(--ink-light); margin-right: 5px; }
+    html.compact .m-index button[aria-current="true"] { background: var(--ink); color: #fff; border-color: transparent; }
+    html.compact .m-index button[aria-current="true"] b { color: rgba(255,255,255,0.55); }
+
+    /* one spec sheet per project — the desktop panel's language */
+    html.compact .m-card {
+      position: relative;
+      max-width: 560px;
+      margin: 0 auto 16px;
+      padding: 18px 16px 12px;
+      background: rgba(238,236,234,0.95);
+      border: 1px solid rgba(26,25,22,0.14);
+      border-radius: 3px;
+      scroll-margin-top: 58px;     /* a jump lands just below the sticky index */
+    }
+    /* the desktop panel hides its rows for a staggered reveal; sheets show all */
+    html.compact .m-card .pp-head, html.compact .m-card .pp-title,
+    html.compact .m-card .pp-points li, html.compact .m-card .pp-img-slot,
+    html.compact .m-card .pp-meta { opacity: 1; transform: none; }
+    html.compact .m-card .pp-title { margin-top: 2px; }
+
+    html.compact .m-hero {             /* the model, rendered from its featured view */
+      display: block;
+      width: calc(100% + 32px);
+      height: auto;
+      margin: 8px -16px 12px;
+      background: var(--bg);
+    }
+    html.compact .m-fig { margin: 4px 0 2px; }
+    html.compact .m-fig img, html.compact .m-detail-imgs img {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #fff;
+      border: 1px solid rgba(26,25,22,0.10);
+      border-radius: 2px;
+    }
+    html.compact .m-fig img { max-height: 300px; object-fit: contain; }
+    html.compact .m-fig .pp-fig {        /* caption under the figure, not over it */
+      position: static;
+      display: inline-block;
+      margin-top: 6px;
+      padding: 0;
+      background: none;
+    }
+    html.compact .m-wip { height: 88px; }
+    html.compact .m-wip .pp-wip-stamp { display: flex; }
+
+    html.compact .m-detail {           /* the car's "Detail A" sprocket study */
+      margin-top: 14px;
+      padding-top: 12px;
+      border-top: 1px dashed rgba(26,25,22,0.24);
+    }
+    html.compact .m-detail-title {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+      color: var(--ink);
+      margin: 4px 0 10px;
+    }
+    html.compact .m-detail-imgs {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+      margin-bottom: 4px;
+    }
+    html.compact .m-detail-imgs img { aspect-ratio: 4 / 3; object-fit: contain; }
+
+    /* Hands-On | Digital switch, bottom centre (hidden while a file is open) */
+    html.compact .mode-switch.up {
+      display: flex;
+      position: absolute;
+      left: 50%;
+      bottom: max(20px, env(safe-area-inset-bottom));
+      transform: translateX(-50%);
+      z-index: 21;
+      gap: 2px;
+      padding: 4px;
+      background: rgba(26,25,22,0.92);
+      border-radius: 999px;
+      box-shadow: 0 8px 24px rgba(26,25,22,0.20);
+    }
+    html.compact .mode-switch button {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.62);
+      background: transparent;
+      border: 0;
+      border-radius: 999px;
+      padding: 10px 18px 9px;
+      cursor: pointer;
+    }
+    html.compact .mode-switch button[aria-pressed="true"] { background: var(--bg); color: var(--ink); }
+    html.compact .digital-page.file-open ~ .mode-switch { display: none; }
+
+    /* Digital: the register column scrolls; no edge tab to clear */
+    html.compact .digital-inner { padding: var(--nav-h) 16px 0; gap: 24px; }
+    html.compact .digital-left {
+      min-height: 0;
+      overflow-y: auto;
+      padding-bottom: 104px;
+      scrollbar-width: none;
+    }
+    html.compact .digital-left::-webkit-scrollbar { display: none; }
+    html.compact .manifest-head, html.compact .manifest-row { padding-left: 10px; }
+    /* an open file sits below the nav line instead of centring behind it —
+       on a landscape phone the nav would cover its title block and ✕ */
+    html.compact .file-doc {
+      top: calc(var(--nav-h) + 6px);
+      max-height: calc(100% - var(--nav-h) - 22px);
+      transform: translateY(12px) rotate(0.8deg) scale(0.96);
+    }
+    html.compact .file-doc.open { transform: none; }
+    @media (max-width: 900px) {    /* centred horizontally here (see the 900px rules) */
+      html.compact .file-doc      { transform: translate(-50%, 12px) rotate(0.8deg) scale(0.96); }
+      html.compact .file-doc.open { transform: translateX(-50%); }
+    }
+
+    /* About: one column on every compact screen — text, then the portrait */
+    html.compact .about-layout { flex-direction: column; overflow-y: auto; scrollbar-width: none; }
+    html.compact .about-layout::-webkit-scrollbar { display: none; }
+    html.compact .about-text { flex: none; overflow: visible; padding: 28px 20px 24px; }
+    html.compact .about-image-slot {
+      flex: none;
+      border-left: none;
+      border-top: 1px solid var(--border);
+      padding: 28px 0 36px;
+    }
+    html.compact .about-photo { width: 150px; }
+    html.compact .exp-row  { grid-template-columns: 1fr auto; row-gap: 2px; column-gap: 12px; }
+    html.compact .exp-org  { grid-column: 1; grid-row: 1; white-space: normal; }
+    html.compact .exp-date { grid-column: 2; grid-row: 1; }
+    html.compact .exp-role { grid-column: 1 / -1; grid-row: 2; }
+    @media (max-width: 640px) {
+      html.compact { --nav-h: 72px; }
+    }
   </style>
 </head>
 <body>
@@ -2073,14 +2332,18 @@
   <!-- ── DISTANCE FOG ── -->
   <div class="distance-fog" aria-hidden="true"></div>
 
+  <!-- ── COMPACT HANDS-ON PAGE (html.compact only): project sheets built from
+       PROJECT_INFO by the main script, in place of the 3D scene ── -->
+  <div class="m-projects" id="mProjects"></div>
+
   <!-- ── GRAIN OVERLAY & VIGNETTE via ::before & ::after ── -->
 
   <!-- ───────── NAV ───────── -->
   <nav class="nav">
 
     <div class="nav-left">
-      <div class="logo-ym"><span>Y</span><span class="logo-expand">uval  </span><span>M</span><span class="logo-expand">unz</span></div>
-      <div class="wip-tag">Under Construction</div>
+      <div class="logo-ym">Yuval Munz</div>
+      <div class="nav-role">Mechanical Engineer · Systems Optimization</div>
     </div>
 
     <div class="nav-right">
@@ -2107,7 +2370,7 @@
       <li><a href="#">Contact <span>Reach out</span></a></li>
     </ul>
     <div class="nav-footer">
-      <a href="https://linkedin.com/in/yuval-munz" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://www.linkedin.com/in/yuvalmunz/" target="_blank" rel="noopener">LinkedIn</a>
       <a class="resume-btn" href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a>
     </div>
   </div>
@@ -2134,7 +2397,7 @@
         <svg viewBox="0 0 14 14"><rect x="1" y="2.5" width="12" height="9" rx="1.5"/><polyline points="1 3.5 7 8 13 3.5"/></svg>
         yuvalmunz@gmail.com
       </a>
-      <a class="contact-link" href="https://linkedin.com/in/yuval-munz" target="_blank" rel="noopener">
+      <a class="contact-link" href="https://www.linkedin.com/in/yuvalmunz/" target="_blank" rel="noopener">
         <svg viewBox="0 0 14 14"><rect x="1" y="1" width="12" height="12" rx="2"/><line x1="4" y1="5.5" x2="4" y2="10"/><line x1="4" y1="3" x2="4" y2="3.5"/><path d="M7 10V7.5A1.5 1.5 0 0 1 10 7.5V10"/><line x1="7" y1="5.5" x2="7" y2="6"/></svg>
         LinkedIn
       </a>
@@ -2146,7 +2409,7 @@
 
     <div class="contact-divider"></div>
     <p class="contact-sub">
-      Currently building mechatronic systems and generative tools.<br>
+      Currently: powertrain at Queen's Formula SAE, product at Workato.<br>
       Open to roles at the intersection of hardware and software.
     </p>
   </div>
@@ -2163,7 +2426,7 @@
           <div class="about-header">
             <div class="page-label">About</div>
             <h1 class="page-heading">Yuval Munz.</h1>
-            <p class="about-bio">I build across hardware, performance systems, and automation infrastructure. My work spans drivetrain optimization, structural analysis, thermal concepts, and building full-stack systems from scratch. I'm interested in engineering that connects physical design, modeling, and scalable execution.</p>
+            <p class="about-bio">I enter unfamiliar systems, work out how they run, and find where small design decisions create friction, wasted effort, or missed opportunity. I break those systems down, question the assumptions behind them, and build the more efficient version.</p>
           </div>
 
           <!-- Education -->
@@ -2172,7 +2435,7 @@
             <div class="exp-row">
               <span class="exp-org">Queen's University</span>
               <span class="exp-role">BASc Mechanical Engineering</span>
-              <span class="exp-date">2024–Present</span>
+              <span class="exp-date">Class of 2028</span>
             </div>
           </div>
 
@@ -2180,19 +2443,24 @@
           <div class="about-section">
             <div class="about-section-label">Current Roles</div>
             <div class="exp-row">
+              <span class="exp-org">Queen's Formula SAE Racing Team</span>
+              <span class="exp-role">Powertrain Engineer, Gear Reduction &amp; Sprockets Lead</span>
+              <span class="exp-date">Sep 2024–Present</span>
+            </div>
+            <div class="exp-row">
               <span class="exp-org">Workato</span>
               <span class="exp-role">Product Intern</span>
               <span class="exp-date">Mar 2026–Present</span>
             </div>
             <div class="exp-row">
-              <span class="exp-org">TBD</span>
-              <span class="exp-role">Founding Engineer (exploring solutions for students and engineers)</span>
-              <span class="exp-date">Mar 2026–Present</span>
+              <span class="exp-org">Pursr</span>
+              <span class="exp-role">Technical Co-Founder &amp; CTO</span>
+              <span class="exp-date">Apr 2026–Present</span>
             </div>
             <div class="exp-row">
-              <span class="exp-org">Queen's Racing Formula SAE Team</span>
-              <span class="exp-role">Powertrain Engineer &amp; Sprockets Lead</span>
-              <span class="exp-date">Sep 2025–Present</span>
+              <span class="exp-org">Actiograph</span>
+              <span class="exp-role">Founding Engineer &amp; CTO</span>
+              <span class="exp-date">Apr 2026–Present</span>
             </div>
             <div class="exp-row">
               <span class="exp-org">Queen's Additive Manufacturing Team</span>
@@ -2205,24 +2473,19 @@
           <div class="about-section">
             <div class="about-section-label">Previous Roles</div>
             <div class="exp-row">
-              <span class="exp-org">Queen's Racing Formula SAE Team</span>
-              <span class="exp-role">Powertrain Engineer</span>
-              <span class="exp-date">Sep 2024–Jan 2026</span>
-            </div>
-            <div class="exp-row">
               <span class="exp-org">Green Air LTD</span>
-              <span class="exp-role">Mechanical Field Projects Assistant Intern</span>
+              <span class="exp-role">Mechanical Project Assistant Intern</span>
               <span class="exp-date">May–Aug 2025</span>
             </div>
             <div class="exp-row">
               <span class="exp-org">CMiC</span>
-              <span class="exp-role">IT Analyst Intern</span>
-              <span class="exp-date">May–Aug 2024</span>
+              <span class="exp-role">IT Support Intern</span>
+              <span class="exp-date">May–Sep 2024</span>
             </div>
             <div class="exp-row">
               <span class="exp-org">3D Factory</span>
               <span class="exp-role">3D Printing &amp; Fabrication Intern</span>
-              <span class="exp-date">Jan–May 2024</span>
+              <span class="exp-date">Nov 2023–May 2024</span>
             </div>
           </div>
 
@@ -2245,46 +2508,56 @@
         <div class="page-label">Skills</div>
         <h1 class="page-heading">What I work with.</h1>
 
-        <!-- 4-column skills grid — add / remove columns and tags freely -->
+        <!-- Skills grid — one column per category; add / remove columns and tags freely -->
         <div class="skills-grid">
 
           <div class="skills-col">
-            <div class="skills-col-label">Design &amp; CAD</div>
+            <div class="skills-col-label">CAD &amp; Simulation</div>
             <div class="skills-tags">
               <span class="skill-tag">SolidWorks</span>
-              <span class="skill-tag">CATIA</span>
-              <span class="skill-tag">GD&amp;T</span>
-              <span class="skill-tag">Topology Optimization</span>
+              <span class="skill-tag">Simulation FEA</span>
+              <span class="skill-tag">Static Structural Analysis</span>
+              <span class="skill-tag">Load Case Definition</span>
+              <span class="skill-tag">Topology &amp; Mass Optimization</span>
             </div>
           </div>
 
           <div class="skills-col">
-            <div class="skills-col-label">Analysis &amp; Simulation</div>
+            <div class="skills-col-label">Analysis &amp; Modelling</div>
             <div class="skills-tags">
-              <span class="skill-tag">Ansys FEA</span>
-              <span class="skill-tag">MATLAB</span>
-              <span class="skill-tag">NumPy</span>
-              <span class="skill-tag">Thermal Analysis</span>
+              <span class="skill-tag">MATLAB (Lap Sim, Drivetrain)</span>
+              <span class="skill-tag">Python (Thermal Modelling)</span>
+              <span class="skill-tag">Excel Modelling</span>
+              <span class="skill-tag">First-Principles Hand Calcs</span>
             </div>
           </div>
 
           <div class="skills-col">
-            <div class="skills-col-label">Manufacturing &amp; Automation</div>
+            <div class="skills-col-label">Design &amp; Manufacturing</div>
             <div class="skills-tags">
-              <span class="skill-tag">Additive Manufacturing</span>
-              <span class="skill-tag">DFMEA / DFM</span>
+              <span class="skill-tag">Material Selection (7075-T6, Steels)</span>
+              <span class="skill-tag">DFM for Waterjet</span>
+              <span class="skill-tag">3D Printing &amp; Rapid Prototyping</span>
+              <span class="skill-tag">Ergonomic Design</span>
+            </div>
+          </div>
+
+          <div class="skills-col">
+            <div class="skills-col-label">Powertrain</div>
+            <div class="skills-tags">
+              <span class="skill-tag">Chain &amp; Sprocket Drives</span>
+              <span class="skill-tag">Gear Ratio Optimization</span>
+              <span class="skill-tag">EV Powertrains (EMRAX 188 HV)</span>
+            </div>
+          </div>
+
+          <div class="skills-col">
+            <div class="skills-col-label">Software &amp; Automation</div>
+            <div class="skills-tags">
               <span class="skill-tag">Python</span>
-              <span class="skill-tag">API Automation</span>
-            </div>
-          </div>
-
-          <div class="skills-col">
-            <div class="skills-col-label">Software &amp; AI</div>
-            <div class="skills-tags">
-              <span class="skill-tag">Full-Stack Development</span>
-              <span class="skill-tag">AI-Assisted Workflows</span>
-              <span class="skill-tag">Process Automation</span>
-              <span class="skill-tag">Product Design (Figma)</span>
+              <span class="skill-tag">Workato</span>
+              <span class="skill-tag">Agentic Workflow Design</span>
+              <span class="skill-tag">LLM &amp; API Integration (Slack, Jira)</span>
             </div>
           </div>
 
@@ -2318,17 +2591,10 @@
   <!-- ───────── SPROCKET DETAIL PANEL ───────── -->
   <div class="sprocket-panel" id="sprocketPanel">
     <i class="tick tl"></i><i class="tick tr"></i><i class="tick bl"></i><i class="tick br"></i>
-    <div class="sp-title">Sprocket Topology &amp; Mass Reduction</div>
-    <ul class="sp-points">
-      <li>Topology-optimized to cut mass under FEA-verified load cases</li>
-      <li>Iterated from CATIA/SolidWorks geometry through Ansys FEA</li>
-      <li>Refined into machined, competition-ready geometry</li>
-    </ul>
-    <div class="sp-images">
-      <div class="sp-img-slot has-img" style="background-image:url('renders/sprocket-topology-1.jpg');"></div>
-      <div class="sp-img-slot has-img" style="background-image:url('renders/sprocket-topology-2.jpg');"></div>
-      <div class="sp-img-slot has-img" style="background-image:url('renders/sprocket-topology-3.jpg');"></div>
-    </div>
+    <!-- filled from PROJECT_INFO.car.detail (main script) -->
+    <div class="sp-title"></div>
+    <ul class="sp-points"></ul>
+    <div class="sp-images"></div>
   </div>
 
   <!-- ───────── PROJECT INFO PANEL (featured zoom view) ───────── -->
@@ -2387,9 +2653,9 @@
           </div>
           <div class="manifest-row" data-i="0" role="button" tabindex="0">
             <span class="m-no">01</span>
-            <span class="m-name">Pursr Platform</span>
-            <span class="m-type">Full-stack product</span>
-            <span class="m-stack">TypeScript · React · Node</span>
+            <span class="m-name">Pursr</span>
+            <span class="m-type">SR&amp;ED evidence platform</span>
+            <span class="m-stack">Next.js · Supabase · Anthropic API</span>
             <span class="m-year">2026</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
@@ -2397,15 +2663,15 @@
             <span class="m-no">02</span>
             <span class="m-name">Campus Cravings OS</span>
             <span class="m-type">Ops &amp; ordering</span>
-            <span class="m-stack">Next.js · Stripe · Sheets</span>
+            <span class="m-stack">Twilio · Make.com · Stripe</span>
             <span class="m-year">2025</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
           <div class="manifest-row" data-i="2" role="button" tabindex="0">
             <span class="m-no">03</span>
-            <span class="m-name">Automation Pipelines</span>
-            <span class="m-type">Workflow infra</span>
-            <span class="m-stack">Workato · REST APIs</span>
+            <span class="m-name">Genie Support Agent</span>
+            <span class="m-type">Agentic workflow</span>
+            <span class="m-stack">Workato · Slack · Jira</span>
             <span class="m-year">2026</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
@@ -2419,11 +2685,11 @@
           </div>
           <div class="manifest-row" data-i="4" role="button" tabindex="0">
             <span class="m-no">05</span>
-            <span class="m-name">Drivetrain Calc Sheets</span>
-            <span class="m-type">Engineering docs</span>
-            <span class="m-stack">MATLAB · Excel</span>
-            <span class="m-year">2025</span>
-            <span class="m-status"><i></i>Docs</span>
+            <span class="m-name">Drivetrain Lap Simulation</span>
+            <span class="m-type">Engineering model</span>
+            <span class="m-stack">MATLAB · OpenLAP · Excel</span>
+            <span class="m-year">2026</span>
+            <span class="m-status live"><i></i>Active</span>
           </div>
         </div>
       </div>
@@ -2501,6 +2767,12 @@
   <div class="edge-tab left hidden-tab" id="tabLeft" role="button" tabindex="0"><span>Hands-On</span></div>
   <div class="edge-tab right hidden-tab" id="tabRight" role="button" tabindex="0"><span>Digital</span></div>
 
+  <!-- ───────── MODE SWITCH (html.compact only — replaces the edge tabs) ───────── -->
+  <div class="mode-switch" id="modeSwitch" role="group" aria-label="Section">
+    <button type="button" aria-pressed="true">Hands-On</button>
+    <button type="button" aria-pressed="false">Digital</button>
+  </div>
+
   <!-- ───────── SECTION PREV / NEXT ───────── -->
   <div class="section-nav">
     <button class="section-btn" aria-label="Previous section">
@@ -2514,6 +2786,189 @@
 </div><!-- /.card -->
 
 <script>
+  // ── Project copy — ONE copy for both layouts ─────────────────────────────
+  // The desktop 3D scene reads it for the featured-zoom panel, identity
+  // caption, hover tag, and dimension line; the compact (phone / portrait
+  // tablet) layout builds its project sheets from it. Content follows the
+  // master resume.
+  //   points  content bullets (both layouts)
+  //   hint    desktop-only interaction line, appended in the 3D panel
+  //   detail  a deeper study: the desktop sprocket panel + a section of the
+  //           compact card
+  //   hero    compact-card render of the 3D model (renders/mobile/)
+  window.PROJECT_INFO = {
+    car: {
+      index: '01', tag: 'Project 01', title: 'Formula SAE Drivetrain',
+      points: [
+        '58:12 (4.83:1) #530 chain final drive on an EMRAX 188 HV motor (100 Nm, 1000–8000 RPM)',
+        'Chain tension sized from peak motor torque and validated in SolidWorks FEA on 7075-T6',
+        'Fixed a chain-wear mode: 110 links on a 55T sprocket divide evenly, so every tooth met the same two rollers — moved to 56T'
+      ],
+      hint: 'Click the sprocket to see the sprocket mass-optimization study',
+      layer: 'Build 1.0 — Formula SAE Drivetrain',
+      desc: 'Chain and sprocket final drive for Queen\'s<br>Formula SAE, validated in SolidWorks FEA.',
+      dim: { l: 28, w: 44, y: 69, label: 'L 3020 MM' },
+      img: 'renders/drivetrain-powertrain.jpg', imgCap: 'Powertrain — front and rear views',
+      hero: 'renders/mobile/car.jpg',
+      detail: {
+        tag: 'Detail A', title: 'Sprocket Topology & Mass Optimization',
+        points: [
+          'Cut rear sprocket mass 30% (520 g → 364 g) with waterjet cutouts in 7075-T6',
+          'Peak deflection held to 0.159 mm under a 2,700 N chain load',
+          'SolidWorks topology tools couldn\'t hold rotational symmetry across the 6-bolt pattern, so the method was inverted: 3 cutout patterns benchmarked over 12 FEA iterations at a fixed mass budget'
+        ],
+        imgs: ['renders/sprocket-topology-1.jpg', 'renders/sprocket-topology-2.jpg', 'renders/sprocket-topology-3.jpg']
+      }
+    },
+    rivian: {
+      index: '02', tag: 'Project 02', title: 'Rivian R1S — Cabin Zoning',
+      points: [
+        'Camp Mode conditions the whole cabin while occupants use only the rear ~60%',
+        'Steady-state heat-loss model in Python (Q = U·A·ΔT): an estimated 40% cut in HVAC draw by conditioning the rear zone alone',
+        'Insulated partition specified on thermal conductivity and mass, with concept renders of the zoned cabin'
+      ],
+      layer: 'Build 1.0 — Rivian R1S Cabin Zoning',
+      desc: 'Condition the sleeping zone, not the whole<br>cabin — an estimated 40% less HVAC draw.',
+      dim: { l: 36, w: 28, y: 73, label: 'W 2015 MM' },
+      img: 'renders/rivian-thermal-partition.jpg', imgCap: 'Thermal partition — concept render',
+      hero: 'renders/mobile/rivian.jpg'
+    },
+    scooter: {
+      index: '03', tag: 'Project 03', title: 'E-Scooter Concept Platform',
+      points: [
+        'Modular platform: the rear seat and cargo rack detach as one module',
+        'Load-path and DFMEA-driven structural geometry',
+        'Frame structure, joint interfaces, and materials chosen for durability'
+      ],
+      hint: 'Click the seat to lift off the cargo module',
+      layer: 'Build 1.0 — E-Scooter Concept Platform',
+      desc: 'Modular electric scooter concept, designed<br>around load paths and structural safety.',
+      dim: { l: 34, w: 32, y: 66, label: 'L 1420 MM' },
+      img: 'renders/scooter-concept.jpg', imgCap: 'Concept render',
+      hero: 'renders/mobile/scooter.jpg'
+    },
+    printer: {
+      index: '04', tag: 'Project 04', title: 'Infinite Z-Axis Printer',
+      points: [
+        'Belt printer for continuous, unbounded print height',
+        'In development with the Queen\'s Additive Manufacturing Team'
+      ],
+      layer: 'Build 1.0 — Infinite Z-Axis Printer',
+      desc: 'Belt printer for unbounded print height —<br>in development, write-up coming soon.',
+      dim: { l: 30, w: 30, y: 68, label: 'W 480 MM' },
+      img: null,
+      hero: 'renders/mobile/printer.jpg',
+      wip: true
+    },
+    steering: {
+      index: '05', tag: 'Project 05', title: 'Baja SAE Steering Wheel',
+      points: [
+        'Steel off-road wheel designed from driver requirements, grips molded to interviewed drivers\' hand profiles',
+        'FEA under two load cases: axial load at the bolt pattern and asymmetric, opposed-hand steering input',
+        'Printed prototype for fit and ergonomic review ahead of steel manufacture'
+      ],
+      layer: 'Build 1.0 — Baja SAE Steering Wheel',
+      desc: 'Off-road wheel shaped from drivers\' hand<br>profiles, validated under two FEA load cases.',
+      dim: { l: 36, w: 28, y: 70, label: 'Ø 350 MM' },
+      img: 'renders/baja-steering-cad.jpg', imgCap: 'CAD model',
+      hero: 'renders/mobile/steering.jpg'
+    }
+  };
+
+  // Desktop sprocket detail panel, filled from the car's `detail`
+  {
+    const d = PROJECT_INFO.car.detail, sp = document.getElementById('sprocketPanel');
+    sp.querySelector('.sp-title').textContent = d.title;
+    sp.querySelector('.sp-points').innerHTML = d.points.map(p => `<li>${p}</li>`).join('');
+    sp.querySelector('.sp-images').innerHTML = d.imgs
+      .map(u => `<div class="sp-img-slot has-img" style="background-image:url('${u}')"></div>`).join('');
+  }
+
+  // ── Compact layout (html.compact — phones / portrait tablets, decided in
+  //    <head>): the Hands-On page is a scrollable stack of project sheets
+  //    instead of the 3D scene, with a sticky 01–05 index ──
+  const COMPACT = document.documentElement.classList.contains('compact');
+  if (COMPACT) {
+    const list  = document.getElementById('mProjects');
+    const ORDER = ['car', 'rivian', 'scooter', 'printer', 'steering'];
+    const SHORT = { car: 'FSAE', rivian: 'Rivian', scooter: 'Scooter', printer: 'Printer', steering: 'Steering' };
+    // Natural image sizes: width/height reserve the space before the lazy
+    // images arrive, so a jump from the index lands on the right sheet
+    // (hero renders are all 760×490)
+    const SIZE = {
+      'renders/drivetrain-powertrain.jpg':    [1000, 337],
+      'renders/rivian-thermal-partition.jpg': [924, 1000],
+      'renders/scooter-concept.jpg':          [1000, 1000],
+      'renders/baja-steering-cad.jpg':        [1000, 683],
+      'renders/sprocket-topology-1.jpg':      [1000, 881],
+      'renders/sprocket-topology-2.jpg':      [1000, 671],
+      'renders/sprocket-topology-3.jpg':      [1000, 670],
+    };
+    const esc = t => String(t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;');
+    const img = (src, alt, cls) => {
+      const [w, h] = SIZE[src] || [760, 490];
+      return `<img class="${cls}" src="${src}" alt="${esc(alt)}" width="${w}" height="${h}" loading="lazy" decoding="async">`;
+    };
+    const rowsOf = arr => `<ul class="pp-points">${arr.map(t => `<li>${esc(t)}</li>`).join('')}</ul>`;
+
+    list.innerHTML = `
+      <header class="m-head">
+        <div class="page-label">Build 1.0</div>
+        <h1 class="page-heading">Hands-On.</h1>
+        <p class="m-sub">Physical builds — designed, machined, and assembled from first principles.</p>
+      </header>
+      <nav class="m-index" aria-label="Projects">${ORDER.map(k =>
+        `<button type="button" data-k="${k}"><b>${PROJECT_INFO[k].index}</b>${SHORT[k]}</button>`).join('')}</nav>
+      ${ORDER.map(k => {
+        const p = PROJECT_INFO[k], d = p.detail;
+        return `
+      <article class="m-card" id="m-${k}">
+        <i class="tick tl"></i><i class="tick tr"></i><i class="tick bl"></i><i class="tick br"></i>
+        <div class="pp-head"><div class="pp-tag">${p.tag}</div><div class="pp-index">${p.index}</div></div>
+        ${img(p.hero, `${p.title} — 3D model`, 'm-hero')}
+        <h2 class="pp-title">${esc(p.title)}</h2>
+        ${rowsOf(p.points)}
+        ${p.img ? `<figure class="m-fig">${img(p.img, p.imgCap || p.title, '')}
+          <figcaption class="pp-fig">Fig. 01 — ${esc(p.imgCap || '')}</figcaption></figure>` : ''}
+        ${p.wip ? `<div class="pp-img-slot m-wip"><div class="pp-wip-stamp"><span>Work in Progress</span></div></div>` : ''}
+        ${d ? `<section class="m-detail">
+          <div class="pp-tag">${d.tag}</div>
+          <h3 class="m-detail-title">${esc(d.title)}</h3>
+          ${rowsOf(d.points)}
+          <div class="m-detail-imgs">${d.imgs.map((u, i) => img(u, `${d.title} — FEA study ${i + 1}`, '')).join('')}</div>
+        </section>` : ''}
+        <div class="pp-meta"><span>${p.dim.label}</span><span>${p.wip ? 'Status · WIP' : 'Rev A · 2026'}</span></div>
+      </article>`;
+      }).join('')}`;
+
+    // Index: tap to jump; the chip for the sheet under the index lights up
+    const index = list.querySelector('.m-index');
+    const chips = [...index.querySelectorAll('button')];
+    const cards = ORDER.map(k => document.getElementById('m-' + k));
+    // Scroll the list itself: scrollIntoView would also align the sheet in
+    // every scrollable ancestor — including the full-screen card, which then
+    // slides the nav off the top
+    chips.forEach((b, i) => b.addEventListener('click', () =>
+      list.scrollTo({ top: cards[i].offsetTop - index.offsetHeight - 12, behavior: 'smooth' })));
+    // …and keep the card pinned if anything else (focus moves) scrolls it
+    const cardEl = document.getElementById('card');
+    cardEl.addEventListener('scroll', () => { cardEl.scrollTop = 0; cardEl.scrollLeft = 0; });
+    let cur = -1, ticking = false;
+    const mark = () => {
+      ticking = false;
+      const edge = index.getBoundingClientRect().bottom + 24;
+      let n = 0;
+      cards.forEach((c, i) => { if (c.getBoundingClientRect().top <= edge) n = i; });
+      if (list.scrollTop + list.clientHeight >= list.scrollHeight - 2) n = cards.length - 1;
+      if (n === cur) return;
+      cur = n;
+      chips.forEach((b, i) => b.setAttribute('aria-current', String(i === n)));
+      index.scrollTo({ left: chips[n].offsetLeft - (index.clientWidth - chips[n].offsetWidth) / 2, behavior: 'smooth' });
+    };
+    list.addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(mark); } }, { passive: true });
+    mark();
+  }
+
   // ── Menu toggle ──
   const menuBtn    = document.getElementById('menuBtn');
   const closeBtn   = document.getElementById('closeBtn');
@@ -2605,6 +3060,8 @@
   const splitIntro  = document.getElementById('splitIntro');
   const tabLeft     = document.getElementById('tabLeft');
   const tabRight    = document.getElementById('tabRight');
+  const modeSwitch  = document.getElementById('modeSwitch');   // compact only
+  const modeBtns    = [...modeSwitch.querySelectorAll('button')];
   let currentPage   = 0;
   let introUp       = true;
 
@@ -2615,10 +3072,13 @@
     splitIntro.classList.add(chosen === 1 ? 'exit-left' : 'exit-right');
   }
 
-  // exactly one tab is out at a time: the handle to the OTHER world
+  // exactly one tab is out at a time: the handle to the OTHER world. The
+  // compact layout's Hands-On | Digital switch mirrors the same state.
   function updateTabs() {
     tabRight.classList.toggle('hidden-tab', introUp || currentPage === 1);
     tabLeft.classList.toggle('hidden-tab',  introUp || currentPage === 0);
+    modeSwitch.classList.toggle('up', !introUp);
+    modeBtns.forEach((b, i) => b.setAttribute('aria-pressed', String(i === currentPage)));
   }
 
   function flipTo(i) {
@@ -2642,6 +3102,7 @@
   document.getElementById('splitRight').addEventListener('click', e => { e.stopPropagation(); flipTo(1); });
   tabLeft.addEventListener('click',  e => { e.stopPropagation(); flipTo(0); });
   tabRight.addEventListener('click', e => { e.stopPropagation(); flipTo(1); });
+  modeBtns.forEach((b, i) => b.addEventListener('click', e => { e.stopPropagation(); flipTo(i); }));
 
   // ── Section nav arrows: cycle featured projects while zoomed on the
   //    physical page; otherwise flip between the two root pages ──
@@ -2667,27 +3128,29 @@
     // figs: captions for the two figure slots in the opened document;
     // figImg: optional [url, url] to fill those slots with real screenshots.
     const DIGITAL_INFO = [
-      { title: 'Pursr Platform', meta: 'TypeScript · React · Node',
+      { title: 'Pursr', meta: 'Next.js · Supabase · Anthropic API',
         logo: 'PR', rev: 'B', year: '2026', status: 'Active',
-        desc: 'Full-stack product built as founding engineer — owning the architecture and data model end-to-end, from first commit to shipped features.',
+        desc: 'SR&ED evidence infrastructure for Canadian manufacturing SMEs. Claims are usually reconstructed from memory months after the engineering happens; Pursr captures contemporaneous, audit-ready evidence at the point of work instead. Technical Co-Founder & CTO.',
         figs: ['Product UI', 'System architecture'], figImg: [null, null],
-        points: ['Core product architecture and data model',
-                 'Features shipped end-to-end as founding engineer',
-                 'TypeScript across the React frontend and Node backend'] },
-      { title: 'Campus Cravings OS', meta: 'Next.js · Stripe · Sheets',
+        points: ['Audit-ready SR&ED evidence captured as the work happens',
+                 'CNC machine data scoped on read-only MTConnect over FOCAS — plant IT won\'t grant write access',
+                 'Consultant-first tenancy (firm → client → project), validated with a Toronto SR&ED firm',
+                 'Slack round-trip: a documentation gap becomes a prompted question, and the reply lands as structured evidence'] },
+      { title: 'Campus Cravings OS', meta: 'Twilio · Make.com · Stripe',
         logo: 'CC', rev: 'C', year: '2025', status: 'Active',
         desc: 'SMS-based late-night food delivery, built and run from scratch — live inventory, Stripe payments, and delivery routing wired into one system.',
         figs: ['Menu', 'Order automation'], figImg: ['renders/campus-cravings-menu.jpg', 'renders/campus-cravings-workflow.jpg'],
         points: ['SMS ordering flow with live inventory',
                  'Stripe payments and delivery routing',
                  'Twilio and Make.com automations running the ops'] },
-      { title: 'Automation Pipelines', meta: 'Workato · REST APIs',
-        logo: 'AP', rev: 'A', year: '2026', status: 'Active',
-        desc: 'Workflow automation as a Product Intern at Workato — building and testing recipes on the platform that powers the work itself.',
-        figs: ['Recipe graph', 'Integration map'], figImg: [null, null],
-        points: ['Workflow recipes built on the Workato platform',
-                 'REST API integrations between internal tools',
-                 'Product-side testing and internal tooling'] },
+      { title: 'Genie Support Agent', meta: 'Workato · Slack · Jira',
+        logo: 'GA', rev: 'A', year: '2026', status: 'Active',
+        desc: 'Product Intern at Workato: a Genie agent in Slack that triaged support load during the AIRO beta, and is still running after GA.',
+        figs: ['Agent skill routing', 'Knowledge-base loop'], figImg: [null, null],
+        points: ['Routes channel messages across four skills: questions, bug capture, Jira tickets, and knowledge-base answers',
+                 'Self-updating knowledge base: unanswered questions escalate to the team and their replies fold back in',
+                 'Deflected ~30 daily requesters off a 4-person product team',
+                 'Also stood up an in-house animation pipeline — 20 demo videos on Workato\'s YouTube'] },
       { title: 'Portfolio Engine', meta: 'Three.js · Canvas 2D',
         logo: 'PE', rev: 'D', year: '2026', status: 'Shipped',
         desc: 'This site — one HTML file, a hand-rolled perspective dot grid, a WebGL scene glued to it, and the camera math that keeps them in lockstep.',
@@ -2695,13 +3158,13 @@
         points: ['Single-file site — dot grid + WebGL scene',
                  'Custom projection math, camera matching',
                  'This page is part of the exhibit'] },
-      { title: 'Drivetrain Calc Sheets', meta: 'MATLAB · Excel',
-        logo: 'DC', rev: 'E', year: '2025', status: 'Docs',
-        desc: 'The FSAE paper trail — gear ratios, chain sizing, and motor torque curves tuned against lap simulation data.',
-        figs: ['Gearing study', 'Load case sheet'], figImg: ['renders/drivetrain-lapsim.jpg', 'renders/sprocket-topology-2.jpg'],
-        points: ['Gear ratio and chain sizing studies',
-                 'Motor torque curves checked against lap simulation',
-                 'Sprocket load cases backing the topology-optimized part'] },
+      { title: 'Drivetrain Lap Simulation', meta: 'MATLAB · OpenLAP · Excel',
+        logo: 'LS', rev: 'E', year: '2026', status: 'Active',
+        desc: 'Choosing the final drive by lap time: a MATLAB lap simulation (OpenLAP) sweeping ratios across the EMRAX 188 HV torque curve to quantify the acceleration vs top-speed trade-off.',
+        figs: ['Lap time vs final drive', 'Load case sheet'], figImg: ['renders/drivetrain-lapsim.jpg', 'renders/sprocket-topology-2.jpg'],
+        points: ['Final drive ratios swept across the EMRAX 188 HV torque curve',
+                 'Lap time as the objective — acceleration vs top speed, quantified',
+                 'Chain and sprocket load cases (2,700 N) behind the 7075-T6 sprocket study'] },
     ];
 
     const rows = document.querySelectorAll('.manifest-row');
@@ -3088,6 +3551,7 @@
     let vShift = 0.0;      // vertical position — camera physically moves up/down
     let dpr = 1, W, H, CX, CY;
     let t   = 0, last = null, raf;
+    let coverT = 0;        // compact layout: seconds an opaque page has covered the grid
     let pts = [];
 
     function build () {
@@ -3119,7 +3583,8 @@
     }
 
     function draw (ts) {
-      if (last !== null) t += (ts - last) / 1000 * SPEED;
+      const dt = last !== null ? (ts - last) / 1000 : 0;
+      t += dt * SPEED;
       last = ts;
 
       // Horizontal — yaw only, camera position stays fixed (no CX shift).
@@ -3157,8 +3622,13 @@
       window._dotCam.my     = my;
 
       // Fully hidden behind an opaque page (flag set by the module loop): the
-      // camera lerps above keep running, the dot redraw is skipped
-      if (window._dotCam.hidden) return;
+      // camera lerps above keep running, the dot redraw is skipped. The
+      // compact layout has no module loop, so it times the cover here.
+      if (COMPACT) {
+        const covered = window._digitalOpen || (window._sceneCover && window._sceneCover() === 'page');
+        coverT = covered ? coverT + dt : 0;
+      }
+      if (window._dotCam.hidden || coverT > 0.7) return;
 
       ctx.fillStyle = BG;
       ctx.fillRect(0, 0, W, H);
@@ -3250,6 +3720,7 @@
 
     const card = document.getElementById('card');
     card.addEventListener('mousemove', e => {
+      if (COMPACT) return;   // touch: a tap's position would stick and skew the grid
       const r = card.getBoundingClientRect();
       mx = e.clientX - r.left;
       my = e.clientY - r.top;
@@ -3608,22 +4079,24 @@
 </script>
 
 <!-- ── Three.js WebGL scene ── -->
-<script type="importmap">
-{
-  "imports": {
-    "three":          "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js",
-    "three/addons/":  "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/"
-  }
-}
-</script>
 <script type="module">
-import * as THREE from 'three';
-import { GLTFLoader }     from 'three/addons/loaders/GLTFLoader.js';
-import { DRACOLoader }    from 'three/addons/loaders/DRACOLoader.js';
-import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
-import { RenderPass }     from 'three/addons/postprocessing/RenderPass.js';
-import { OutlinePass }    from 'three/addons/postprocessing/OutlinePass.js';
-import { OutputPass }     from 'three/addons/postprocessing/OutputPass.js';
+// Compact layout (html.compact, decided in <head>): the 3D scene never starts
+// on phones / portrait tablets — nothing below runs there, and three.js and
+// the models are never fetched. Awaiting a promise that never settles parks
+// this module for the life of the page. Hence dynamic imports: static ones
+// would be fetched before this line could run.
+if (document.documentElement.classList.contains('compact')) await new Promise(() => {});
+
+const [THREE, { GLTFLoader }, { DRACOLoader }, { EffectComposer }, { RenderPass },
+       { OutlinePass }, { OutputPass }] = await Promise.all([
+  import('three'),
+  import('three/addons/loaders/GLTFLoader.js'),
+  import('three/addons/loaders/DRACOLoader.js'),
+  import('three/addons/postprocessing/EffectComposer.js'),
+  import('three/addons/postprocessing/RenderPass.js'),
+  import('three/addons/postprocessing/OutlinePass.js'),
+  import('three/addons/postprocessing/OutputPass.js'),
+]);
 
 console.log('[3D] Three.js r' + THREE.REVISION + ' loaded');
 
@@ -3763,69 +4236,9 @@ const STEERING_POS   = { x: 2.7, z: -1.7 };  // right of the car, in front of th
 // the others fade out.
 let featured = 'car';
 
-// Per-project copy for the zoomed info panel and the identity caption.
-const PROJECT_INFO = {
-  car: {
-    index: '01', tag: 'Project 01', title: 'Open-Wheel Prototype',
-    points: [
-      'Drivetrain design and optimization for Queen\'s FSAE Electric',
-      'Gear ratio, chain, and sprocket analysis for torque, speed, and efficiency',
-      'Click the sprocket to see the topology-optimized sprocket study'
-    ],
-    layer: 'Build 1.0 — Open-Wheel Prototype',
-    desc: 'Drivetrain architecture for Queen\'s FSAE<br>Electric, modeled and validated in SolidWorks.',
-    dim: { l: 28, w: 44, y: 69, label: 'L 3020 MM' },
-    img: 'renders/drivetrain-powertrain.jpg'
-  },
-  rivian: {
-    index: '02', tag: 'Project 02', title: 'Rivian R1S — Camp Mode',
-    points: [
-      'Thermal partition to zone HVAC to the sleeping area',
-      'First-principles model of steady-state cabin power draw',
-      'Python model comparing full-cabin vs. partitioned load'
-    ],
-    layer: 'Build 1.0 — Rivian R1S Camp Mode',
-    desc: 'A thermal partition concept for Camp Mode —<br>conditioning the sleeping area, not the whole cabin.',
-    dim: { l: 36, w: 28, y: 73, label: 'W 2015 MM' },
-    img: 'renders/rivian-thermal-partition.jpg'
-  },
-  scooter: {
-    index: '03', tag: 'Project 03', title: 'E-Scooter Concept Platform',
-    points: [
-      'Modular platform built around structural integrity and safety',
-      'Load-path and DFMEA-driven structural geometry',
-      'Click the seat to lift off the cargo module'
-    ],
-    layer: 'Build 1.0 — E-Scooter Concept Platform',
-    desc: 'Modular electric scooter concept, designed<br>around load paths and structural safety.',
-    dim: { l: 34, w: 32, y: 66, label: 'L 1420 MM' },
-    img: 'renders/scooter-concept.jpg'
-  },
-  printer: {
-    index: '04', tag: 'Project 04', title: 'Z-Axis Printer',
-    points: [
-      'Write-up in progress',
-      'Updates coming soon'
-    ],
-    layer: 'Build 1.0 — Z-Axis Printer',
-    desc: 'Work in progress — updates coming soon.',
-    dim: { l: 30, w: 30, y: 68, label: 'W 480 MM' },
-    img: null,
-    wip: true
-  },
-  steering: {
-    index: '05', tag: 'Project 05', title: 'Baja Steering Wheel System',
-    points: [
-      'Competition-ready Baja steering assembly',
-      'Rim and spoke geometry iterated against ergonomics and load requirements',
-      'Validated to competition structural requirements'
-    ],
-    layer: 'Build 1.0 — Baja Steering Wheel System',
-    desc: 'Baja steering wheel, iterated until it met<br>competition ergonomics and load requirements.',
-    dim: { l: 36, w: 28, y: 70, label: 'Ø 350 MM' },
-    img: 'renders/baja-steering-cad.jpg'
-  }
-};
+// Per-project copy (panel, identity caption, hover tag, dimension line)
+// lives in the main script — one copy shared with the compact layout.
+const PROJECT_INFO = window.PROJECT_INFO;
 
 const projectPanel = document.getElementById('projectPanel');
 const ppTag        = document.getElementById('ppTag');
@@ -3867,7 +4280,8 @@ function fillProjectPanel(name) {
   ppTag.textContent   = info.tag;
   ppIndex.textContent = info.index;
   ppTitle.textContent = info.title;
-  ppPoints.innerHTML  = info.points.map(p => `<li>${p}</li>`).join('');
+  ppPoints.innerHTML  = info.points.concat(info.hint || [])
+    .map(p => `<li>${p}</li>`).join('');
   ppImg.style.backgroundImage = info.img ? `url(${info.img})` : '';
   ppImg.classList.toggle('has-img', !!info.img);
   dimLabel.textContent = info.dim.label;
@@ -4808,7 +5222,7 @@ card.addEventListener('click', e => {
   // Clicks on the menu and the opaque pages bubble up to the card too; they
   // must never raycast the hidden scene behind them (a click on the About
   // page used to zoom whichever model sat under the pointer)
-  if (e.target.closest('.nav-menu-btn, .nav-overlay, .page-overlay, .contact-page, .race-page, .split-intro, .section-nav, .edge-tab')) return;
+  if (e.target.closest('.nav-menu-btn, .nav-overlay, .page-overlay, .contact-page, .race-page, .split-intro, .section-nav, .edge-tab, .mode-switch, .m-projects')) return;
   if (!modelMeshes.length) return;
   const r = card.getBoundingClientRect();
   mousePt.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);

@@ -20,6 +20,7 @@ dev/
 - [zoom-animation.md](features/zoom-animation.md) — click-to-zoom into side-profile view
 - [digital-page.md](features/digital-page.md) — Build 2.0 flip page: file manifest + isometric sheet stack
 - [race-game.md](features/race-game.md) — easter egg: green steering-wheel button opens an A/D obstacle runner
+- [compact-layout.md](features/compact-layout.md) — phones / portrait tablets: project sheets instead of the 3D scene
 
 ## Lessons
 

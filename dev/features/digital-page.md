@@ -161,7 +161,9 @@ Close paths: ✕ button, scrim click, stack click, Escape (closes the doc
 first, flips home on the next press), and `flipTo(0)` (calls
 `window._closeFileDoc()`). `window._fileDocOpen` is the shared state flag;
 `openFile` is a no-op while it is set (a focused row under the scrim can
-still receive Enter).
+still receive Enter). The nav strip above the page is click-through
+(`pointer-events: none`, children opt back in), so a tall doc's ✕ is never
+blocked by the empty width of the nav.
 While open, the sheet note reads `YM · Build 2.0 · File NN`.
 
 ## Gotchas

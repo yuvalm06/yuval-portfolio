@@ -34,6 +34,11 @@ appears to sit on the same ground. Supports click-to-zoom into a side-profile vi
   import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 ```
 
+**Sept 2026:** the imports above are now DYNAMIC (`await Promise.all([import('three'), …])`)
+behind a first line that parks the module on the compact layout — see
+[compact-layout.md](compact-layout.md). The import map lives in `<head>`, and the
+desktop-only preloads are added by the mode script there.
+
 The renderer canvas is injected into `.card` via JS (not hardcoded in HTML):
 ```js
 cv.style.cssText = 'position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none;border-radius:14px;display:block;';
@@ -573,8 +578,11 @@ then runs for any of them. Arrow cycling order: `FEATURE_ORDER = ['scooter',
 
 Each featured zoom shows a right-side info panel (`#projectPanel`, styled
 like the sprocket panel but 300px) with tag / title / bullets / image slot.
-Copy lives in the `PROJECT_INFO` map (the printer's entry is still a WIP
-stub with `wip: true`). The panel is populated on click (`fillProjectPanel`)
+Copy lives in `window.PROJECT_INFO` at the top of the MAIN script (the
+module reads it) — one copy shared with the compact layout's sheets. Content
+bullets are `points`; a desktop-only interaction line ("Click the sprocket…")
+is `hint`, appended as the last row here and never shown on compact. The
+car's `detail` fills the sprocket panel. The panel is populated on click (`fillProjectPanel`)
 and driven from the RAF loop:
 
 - opacity/slide-in ramps over ease 0.6 → 1.0, and is multiplied by
