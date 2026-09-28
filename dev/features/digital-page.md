@@ -76,7 +76,9 @@ axes, but the projects are *files*:
 SHEET_W = 5.6, SHEET_D = 7.4   // sheet footprint in lattice units
 SHEET_T = 0.30                  // slab thickness (visible paper edge)
 STACK_STEP = 0.72               // vertical gap between sheets
-JITTER = [...]                  // per-sheet ox/oz offset + tiny yaw rotation
+JITTER = [...]                  // per-sheet ox/oz offset + tiny yaw rotation —
+                                // one entry per file (it wraps otherwise, and the
+                                // wrapped sheets line up exactly)
 ```
 
 Row `i` (File 01 at top of the register) maps to sheet `n−1−i` (top of the

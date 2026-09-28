@@ -1720,6 +1720,7 @@
     .manifest-row:nth-child(4) { --d: 0.22s; }
     .manifest-row:nth-child(5) { --d: 0.28s; }
     .manifest-row:nth-child(6) { --d: 0.34s; }
+    .manifest-row:nth-child(7) { --d: 0.40s; }
 
     .manifest-row:hover,
     .manifest-row.active { background: rgba(26,25,22,0.045); }
@@ -2069,6 +2070,11 @@
       .cert-row, .cert-info { flex-wrap: wrap; }
       .cert-info { row-gap: 2px; }
       .cert-name, .cert-meta { white-space: normal; }
+
+      /* Opened file: a tighter title-block strip, so "Active" isn't clipped */
+      .fd-logo   { width: 44px; font-size: 13px; }
+      .fd-cell   { padding: 6px 6px 5px; }
+      .fd-cell b { font-size: 10px; }
 
       /* Digital register: No. / Name / Status — the opened file has the rest */
       .manifest-head, .manifest-row { grid-template-columns: 24px 1fr auto; gap: 10px; }
@@ -2661,30 +2667,38 @@
           </div>
           <div class="manifest-row" data-i="1" role="button" tabindex="0">
             <span class="m-no">02</span>
+            <span class="m-name">Actiograph</span>
+            <span class="m-type">Pre-med application platform</span>
+            <span class="m-stack">React Native · Expo · Supabase</span>
+            <span class="m-year">2026</span>
+            <span class="m-status live"><i></i>Active</span>
+          </div>
+          <div class="manifest-row" data-i="2" role="button" tabindex="0">
+            <span class="m-no">03</span>
             <span class="m-name">Campus Cravings OS</span>
             <span class="m-type">Ops &amp; ordering</span>
             <span class="m-stack">Twilio · Make.com · Stripe</span>
             <span class="m-year">2025</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
-          <div class="manifest-row" data-i="2" role="button" tabindex="0">
-            <span class="m-no">03</span>
+          <div class="manifest-row" data-i="3" role="button" tabindex="0">
+            <span class="m-no">04</span>
             <span class="m-name">Genie Support Agent</span>
             <span class="m-type">Agentic workflow</span>
             <span class="m-stack">Workato · Slack · Jira</span>
             <span class="m-year">2026</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
-          <div class="manifest-row" data-i="3" role="button" tabindex="0">
-            <span class="m-no">04</span>
+          <div class="manifest-row" data-i="4" role="button" tabindex="0">
+            <span class="m-no">05</span>
             <span class="m-name">Portfolio Engine</span>
             <span class="m-type">Single-file WebGL</span>
             <span class="m-stack">Three.js · Canvas 2D</span>
             <span class="m-year">2026</span>
             <span class="m-status"><i></i>Shipped</span>
           </div>
-          <div class="manifest-row" data-i="4" role="button" tabindex="0">
-            <span class="m-no">05</span>
+          <div class="manifest-row" data-i="5" role="button" tabindex="0">
+            <span class="m-no">06</span>
             <span class="m-name">Drivetrain Lap Simulation</span>
             <span class="m-type">Engineering model</span>
             <span class="m-stack">MATLAB · OpenLAP · Excel</span>
@@ -3136,6 +3150,14 @@
                  'CNC machine data scoped on read-only MTConnect over FOCAS — plant IT won\'t grant write access',
                  'Consultant-first tenancy (firm → client → project), validated with a Toronto SR&ED firm',
                  'Slack round-trip: a documentation gap becomes a prompted question, and the reply lands as structured evidence'] },
+      { title: 'Actiograph', meta: 'React Native · Expo · Supabase',
+        logo: 'AG', rev: 'A', year: '2026', status: 'Active',
+        desc: 'Application-tracking platform for Canadian pre-med students. Applicants assemble their record months before applying, from experiences that span the prior five years; Actiograph captures each experience, reflection, and verifier contact as it happens. Founding Engineer & CTO.',
+        figs: ['Experience log', 'Launch landing page'], figImg: [null, null],
+        points: ['React Native app shipped to TestFlight — one structured record instead of scattered notes, spreadsheets, and documents',
+                 'Captures each experience, reflection, and verifier contact at the time it happens',
+                 'Structured testing with an advisory board of pre-med and medical students',
+                 'Prepared and submitted the DDQIC Ignite qualifying pitch at Queen\'s'] },
       { title: 'Campus Cravings OS', meta: 'Twilio · Make.com · Stripe',
         logo: 'CC', rev: 'C', year: '2025', status: 'Active',
         desc: 'SMS-based late-night food delivery, built and run from scratch — live inventory, Stripe payments, and delivery routing wired into one system.',
@@ -3185,6 +3207,7 @@
       { ox: -0.40, oz:  0.30, rot:  0.03 },
       { ox:  0.30, oz:  0.45, rot: -0.04 },
       { ox: -0.20, oz: -0.30, rot:  0.06 },
+      { ox:  0.35, oz: -0.15, rot: -0.03 },
     ];
 
     const el = (name, attrs) => {
