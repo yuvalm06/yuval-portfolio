@@ -9,7 +9,9 @@ scene as a one-project-at-a-time carousel: swipes truck the camera along a line 
 featured models, the dot ground scrolling under them, with the project panel docked
 as a sheet. See `dev/features/compact-layout.md`. Project copy lives in ONE place,
 `window.PROJECT_INFO` at the top of the main script — every project in one shape
-(team · role, Problem → Approach → Result, dates · status, the next step).
+(team · role, its own image first, Problem → Approach → Result, dates · status, the
+next step), strongest first: FSAE, steering wheel, Rivian, scooter, printer. Where a
+scene model is a stand-in rather than the project's own CAD, its `model` note says so.
 
 Every view has an address (`#fsae`, `#digital/pursr`, `#about` …) so browser Back
 steps out of a view and a project can be linked — the router at the end of the main
@@ -111,6 +113,8 @@ The 3D scene is a Three.js WebGL canvas injected by the module script — see
 scale, sit on ground). Draco-compress it first (`gltf-transform draco`) and
 load it through the shared `gltfLoader` — see the Draco section of
 `dev/lessons/glb-workflow.md`; raw Meshy exports are 10-15x too heavy to ship.
+A generated model (Meshy, a prop) is a stand-in: set the project's `model` note in
+`PROJECT_INFO` so the panel says so, and lead with the real CAD / FEA image (`img`).
 
 ### With SVG geometry (for simple shapes)
 All SVG objects must use the same projection:

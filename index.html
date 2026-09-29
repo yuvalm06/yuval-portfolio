@@ -194,6 +194,11 @@
       user-select: none;
     }
     .nav-role { align-self: end; }
+    a.nav-role {                /* who I am → About: the experience list, one click from the intro */
+      text-decoration: underline dotted rgba(26,25,22,0.35);
+      text-underline-offset: 3px;
+    }
+    a.nav-role:hover { color: var(--ink); text-decoration-style: solid; }
     .nav-note {
       align-self: start;
       display: flex;
@@ -1325,8 +1330,19 @@
       display: flex;
       flex-direction: column;
       gap: 6px;
-      margin-bottom: 12px;
     }
+    /* under the leading figure: where the scene's 3D model is only a stand-in */
+    .pp-model {
+      font-family: var(--mono);
+      font-size: 8.5px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      line-height: 1.5;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin: -6px 0 12px;
+    }
+    .pp-model:empty { display: none; }
     .pp-points li {
       font-size: 12px;
       color: var(--ink-mid);
@@ -1366,7 +1382,7 @@
     .pp-next:hover { text-decoration: underline; }
     html:not(.compact) .project-panel.in :is(.pp-points a, .pp-next) { pointer-events: auto; }
     /* staggered row reveal — .in is toggled from the RAF loop */
-    .project-panel :is(.pp-head, .pp-title, .pp-sub, .pp-points li, .pp-img-slot, .pp-meta, .pp-next) {
+    .project-panel :is(.pp-head, .pp-title, .pp-sub, .pp-img-slot, .pp-model, .pp-points li, .pp-meta, .pp-next) {
       opacity: 0;
       transform: translateY(6px);
       transition: opacity 0.35s ease, transform 0.35s ease;
@@ -1374,24 +1390,26 @@
     .project-panel.in .pp-head                    { transition-delay: 0.00s; }
     .project-panel.in .pp-title                   { transition-delay: 0.05s; }
     .project-panel.in .pp-sub                     { transition-delay: 0.07s; }
-    .project-panel.in .pp-points li:nth-child(1)  { transition-delay: 0.10s; }
-    .project-panel.in .pp-points li:nth-child(2)  { transition-delay: 0.16s; }
-    .project-panel.in .pp-points li:nth-child(3)  { transition-delay: 0.22s; }
-    .project-panel.in .pp-points li:nth-child(4)  { transition-delay: 0.26s; }
-    .project-panel.in .pp-points li:nth-child(5)  { transition-delay: 0.28s; }
-    .project-panel.in .pp-img-slot                { transition-delay: 0.30s; }
+    .project-panel.in .pp-img-slot                { transition-delay: 0.10s; }
+    .project-panel.in .pp-model                   { transition-delay: 0.13s; }
+    .project-panel.in .pp-points li:nth-child(1)  { transition-delay: 0.16s; }
+    .project-panel.in .pp-points li:nth-child(2)  { transition-delay: 0.21s; }
+    .project-panel.in .pp-points li:nth-child(3)  { transition-delay: 0.26s; }
+    .project-panel.in .pp-points li:nth-child(4)  { transition-delay: 0.30s; }
+    .project-panel.in .pp-points li:nth-child(5)  { transition-delay: 0.33s; }
     .project-panel.in .pp-meta                    { transition-delay: 0.38s; }
     .project-panel.in .pp-next                    { transition-delay: 0.42s; }
     .project-panel.in .pp-head, .project-panel.in .pp-title, .project-panel.in .pp-sub,
-    .project-panel.in .pp-points li, .project-panel.in .pp-img-slot,
+    .project-panel.in .pp-points li, .project-panel.in .pp-img-slot, .project-panel.in .pp-model,
     .project-panel.in .pp-meta, .project-panel.in .pp-next {
       opacity: 1;
       transform: translateY(0);
     }
-    .pp-img-slot {
+    .pp-img-slot {              /* the project's own image leads the rows */
       position: relative;
       width: 100%;
       height: 132px;
+      margin-bottom: 12px;
       border-radius: 2px;
       border: 1px solid rgba(26,25,22,0.10);
       background:
@@ -1404,8 +1422,10 @@
       .pp-img-slot { height: 96px; }
       .pp-points li { font-size: 11.5px; line-height: 1.45; }
     }
+    @media (max-height: 760px) { .pp-img-slot { height: 72px; } }
     @media (max-height: 700px) {   /* a laptop window under its browser bars: no room for the figure */
       .project-panel .pp-img-slot { display: none; }
+      .pp-model { margin-top: 0; }
     }
     .pp-fig {
       position: absolute;
@@ -2014,6 +2034,8 @@
       gap: 10px;
       margin-bottom: 6px;
     }
+    .fd-figs.one { grid-template-columns: 1fr; }
+    .fd-figs[hidden], .fd-fig[hidden] { display: none; }   /* no image yet: no empty box */
 
     /* where to go from a file: its Hands-On match, then the next file */
     .fd-links {
@@ -2468,7 +2490,7 @@
     html.compact .project-panel.in .pp-desc { opacity: 1; transform: none; }
     html.compact .project-panel.expanded .pp-desc { margin-bottom: 14px; }
     @media (orientation: portrait) {   /* (landscape shows everything) */
-      html.compact .project-panel:not(.expanded) :is(.pp-sub, .pp-points, .pp-img-slot, .pp-meta, .pp-next) { display: none; }
+      html.compact .project-panel:not(.expanded) :is(.pp-sub, .pp-points, .pp-img-slot, .pp-model, .pp-meta, .pp-next) { display: none; }
     }
     html.compact .project-panel.expanded .pp-img-slot { display: block; height: 176px; }
     html.compact .project-panel.expanded .pp-meta { display: flex; }
@@ -2634,7 +2656,7 @@
 
     <div class="nav-left">
       <div class="logo-ym">Yuval Munz</div>
-      <div class="nav-role">Mechanical Engineer · Systems Optimization</div>
+      <a class="nav-role" href="#about" title="About · experience">Mechanical Engineer · Systems Optimization</a>
       <div class="nav-note"><span class="nav-note-dot" aria-hidden="true"></span>Queen's '28 · Open to 2027 internships &amp; co-ops</div>
     </div>
 
@@ -2659,7 +2681,7 @@
     <ul class="nav-links">
       <li><a href="#">Hands-On <span>Engineering</span></a></li>
       <li><a href="#digital">Digital <span>Software</span></a></li>
-      <li><a href="#about">About <span>Me</span></a></li>
+      <li><a href="#about">About <span>Experience</span></a></li>
       <li><a href="#skills">Skills <span>Stack</span></a></li>
       <li><a href="#contact">Contact <span>Reach out</span></a></li>
     </ul>
@@ -2904,15 +2926,16 @@
       <div class="pp-title" id="ppTitle">Project title</div>
       <div class="pp-sub" id="ppSub"></div>
       <p class="pp-desc" id="ppDesc"></p>
+      <div class="pp-img-slot" id="ppImg">
+        <span class="pp-fig" id="ppFig">Fig. 01</span>
+        <div class="pp-wip-stamp"><span>Work in Progress</span></div>
+      </div>
+      <div class="pp-model" id="ppModel"></div>
       <ul class="pp-points" id="ppPoints">
         <li>Filler point one</li>
         <li>Filler point two</li>
         <li>Filler point three</li>
       </ul>
-      <div class="pp-img-slot" id="ppImg">
-        <span class="pp-fig" id="ppFig">Fig. 01</span>
-        <div class="pp-wip-stamp"><span>Work in Progress</span></div>
-      </div>
       <div class="pp-meta"><span id="ppWhen"></span><span id="ppStatus"></span></div>
       <a class="pp-next pp-rel" id="ppRelated" href="#digital" hidden>Related</a>
       <a class="pp-next" id="ppNext" href="#rivian">Next</a>
@@ -3043,7 +3066,7 @@
       <div class="fd-sub" id="fdSub">Stack</div>
       <p class="fd-desc" id="fdDesc">Description</p>
       <ul class="fd-points" id="fdPoints"></ul>
-      <div class="fd-figs">
+      <div class="fd-figs" id="fdFigs">
         <div class="fd-fig" id="fdFig1"><span class="pp-fig" id="fdFig1Cap">Fig. 01</span></div>
         <div class="fd-fig" id="fdFig2"><span class="pp-fig" id="fdFig2Cap">Fig. 02</span></div>
       </div>
@@ -3132,6 +3155,8 @@
   //           its Concept instead; a gap the resume doesn't cover is left out)
   //   hint    interaction line, a "Try" row ("Click" reads "Tap" on compact)
   //   related the matching Digital file: { title, slug (its address) }
+  //   model   set where the scene's 3D model is a stand-in, not the project's
+  //           own CAD — said under the figure, which leads with the real image
   //   desc    identity caption — also the compact sheet's summary line
   //   imgCap  figure caption on the compact sheet
   //   detail  a deeper study: the sprocket panel
@@ -3147,6 +3172,7 @@
       ],
       hint: 'Click the sprocket to see how it got 30% lighter',
       related: { title: 'Drivetrain Lap Simulation', slug: 'lap-sim' },
+      model: 'The 3D car is a stand-in, not the team\'s CAD',
       desc: 'Chain and sprocket final drive for Queen\'s<br>Formula SAE, validated in SolidWorks FEA.',
       dim: { l: 28, w: 44, y: 69, label: 'L 3020 MM' },
       img: 'renders/drivetrain-powertrain.jpg', imgCap: 'Powertrain — front and rear views',
@@ -3160,8 +3186,22 @@
         imgs: ['renders/sprocket-topology-1.jpg', 'renders/sprocket-topology-2.jpg', 'renders/sprocket-topology-3.jpg']
       }
     },
+    steering: {
+      index: '02', tag: 'Project 02', title: 'Baja SAE Steering Wheel', slug: 'steering',
+      sub: 'Baja SAE · CAD, FEA, ergonomic design',
+      when: 'Jan – Apr 2025', status: 'Prototyped',
+      rows: [
+        ['Problem', 'Keep the driver\'s grip on the wheel over rough terrain'],
+        ['Approach', 'Steel wheel designed from driver requirements, grips molded to interviewed drivers\' hand profiles; FEA under two load cases — axial load at the bolt pattern, and asymmetric, opposed-hand steering input'],
+        ['Result', 'A printed prototype for fit and ergonomic review, ahead of steel manufacture']
+      ],
+      model: 'The 3D wheel is a stand-in, not the CAD',
+      desc: 'Off-road wheel shaped from drivers\' hand<br>profiles, validated under two FEA load cases.',
+      dim: { l: 36, w: 28, y: 70, label: 'Ø 350 MM' },
+      img: 'renders/baja-steering-cad.jpg', imgCap: 'CAD model'
+    },
     rivian: {
-      index: '02', tag: 'Project 02', title: 'Rivian R1S — Cabin Zoning', slug: 'rivian',
+      index: '03', tag: 'Project 03', title: 'Rivian R1S — Cabin Zoning', slug: 'rivian',
       sub: 'Concept study · Python, thermal modelling, CAD',
       when: 'Oct 2025 – Jan 2026', status: 'Concept',
       rows: [
@@ -3169,12 +3209,13 @@
         ['Approach', 'Steady-state heat-loss model in Python (Q = U·A·ΔT) across the cabin surfaces; an insulated partition specified on thermal conductivity and mass'],
         ['Result', 'An estimated 40% cut in HVAC draw by conditioning the rear zone alone, with concept renders of the zoned cabin']
       ],
+      model: 'The 3D R1S is a stand-in model',
       desc: 'Condition the sleeping zone, not the whole<br>cabin — an estimated 40% less HVAC draw.',
       dim: { l: 36, w: 28, y: 73, label: 'W 2015 MM' },
       img: 'renders/rivian-thermal-partition.jpg', imgCap: 'Thermal partition — concept render'
     },
     scooter: {
-      index: '03', tag: 'Project 03', title: 'E-Scooter Concept Platform', slug: 'scooter',
+      index: '04', tag: 'Project 04', title: 'E-Scooter Concept Platform', slug: 'scooter',
       sub: 'Concept platform · load paths, DFMEA',
       status: 'Concept',
       rows: [
@@ -3187,30 +3228,18 @@
       img: 'renders/scooter-concept.jpg', imgCap: 'Concept render'
     },
     printer: {
-      index: '04', tag: 'Project 04', title: 'Infinite Z-Axis Printer', slug: 'printer',
+      index: '05', tag: 'Project 05', title: 'Infinite Z-Axis Printer', slug: 'printer',
       sub: 'Queen\'s Additive Manufacturing Team · Mechanical Operations Lead',
       status: 'In development',
       rows: [
         ['Concept', 'A belt printer for continuous, unbounded print height'],
         ['Status', 'In development with the team — write-up coming soon']
       ],
+      model: 'The 3D printer is a stand-in while the design is in development',
       desc: 'Belt printer for unbounded print height —<br>in development, write-up coming soon.',
       dim: { l: 30, w: 30, y: 68, label: 'W 480 MM' },
       img: null,
       wip: true
-    },
-    steering: {
-      index: '05', tag: 'Project 05', title: 'Baja SAE Steering Wheel', slug: 'steering',
-      sub: 'Baja SAE · CAD, FEA, ergonomic design',
-      when: 'Jan – Apr 2025', status: 'Prototyped',
-      rows: [
-        ['Problem', 'Keep the driver\'s grip on the wheel over rough terrain'],
-        ['Approach', 'Steel wheel designed from driver requirements, grips molded to interviewed drivers\' hand profiles; FEA under two load cases — axial load at the bolt pattern, and asymmetric, opposed-hand steering input'],
-        ['Result', 'A printed prototype for fit and ergonomic review, ahead of steel manufacture']
-      ],
-      desc: 'Off-road wheel shaped from drivers\' hand<br>profiles, validated under two FEA load cases.',
-      dim: { l: 36, w: 28, y: 70, label: 'Ø 350 MM' },
-      img: 'renders/baja-steering-cad.jpg', imgCap: 'CAD model'
     }
   };
 
@@ -3838,12 +3867,18 @@
       fd('fdSub').textContent    = info.meta;
       fd('fdDesc').textContent   = info.desc;
       fd('fdPoints').innerHTML   = info.points.map(p => `<li>${p}</li>`).join('');
+      // a figure slot shows once it has an image — no empty placeholder boxes
+      let figs = 0;
       ['fdFig1', 'fdFig2'].forEach((id, k) => {
         const img = info.figImg && info.figImg[k];
         fd(id).style.backgroundImage = img ? `url(${img})` : '';
         fd(id).classList.toggle('has-img', !!img);
+        fd(id).hidden = !img;
         fd(id + 'Cap').textContent   = `Fig. 0${k + 1} — ${info.figs[k]}`;
+        if (img) figs++;
       });
+      fd('fdFigs').hidden = !figs;
+      fd('fdFigs').classList.toggle('one', figs === 1);
       // where to go from here: the next file (after the last, the wrap-up)
       // and, where there is one, the matching Hands-On project
       const nx = DIGITAL_INFO[i + 1];
@@ -4931,6 +4966,7 @@ const ppWhen       = document.getElementById('ppWhen');
 const ppStatus     = document.getElementById('ppStatus');
 const ppNext       = document.getElementById('ppNext');
 const ppRelated    = document.getElementById('ppRelated');
+const ppModel      = document.getElementById('ppModel');
 const ppDesc       = document.getElementById('ppDesc');   // compact sheet only
 const ppBody       = document.getElementById('ppBody');   //   (and its copy wrapper)
 const ppFig        = document.getElementById('ppFig');
@@ -4972,6 +5008,7 @@ function fillProjectPanel(name) {
   ppIndex.textContent = info.index;
   ppTitle.textContent = info.title;
   ppSub.textContent   = info.sub || '';
+  ppModel.textContent = info.model || '';   // a stand-in 3D model says so
   // one shape: Problem → Approach → Result, then what to try (every row a
   // label + its line)
   ppPoints.innerHTML  = info.rows.concat(hint ? [['Try', hint]] : [])
@@ -4999,7 +5036,12 @@ function fillProjectPanel(name) {
   }
 }
 fillProjectPanel(featured);
-if (COMPACT) detailCallout.querySelector('.dc-label').textContent = 'Detail A — Tap to view';
+// the callout's label per part ("Click" reads "Tap" on compact)
+const dcLabel  = detailCallout.querySelector('.dc-label');
+const DC_LABEL = { car: 'Detail A — Click to view', scooter: 'Detail B — Click to lift off' };
+if (COMPACT) for (const k in DC_LABEL) DC_LABEL[k] = DC_LABEL[k].replace('Click', 'Tap');
+let dcShows = null;
+dcLabel.textContent = DC_LABEL.car;
 
 const FEATURE_POSE = {
   // yaw orients the featured view: rivian rear-on (looking into the open
@@ -6813,18 +6855,25 @@ function loop() {
     outlineYellow.selectedObjects = [];
   }
 
-  // Detail callout: dashed "Detail A" circle around the sprocket once the car
-  // zoom settles — the drawing convention for "this area has a blow-up view".
-  // Yields to the hover outline and to the open detail panel.
-  if (sprocketGroup && featured === 'car') {
+  // Detail callouts: a dashed circle marks the part with more to show, once
+  // the zoom settles — the drawing convention for "this area has a blow-up
+  // view": Detail A, the car's sprocket (its study), and Detail B, the
+  // scooter's seat module (it lifts off). Each yields to its hover outline
+  // and to its open detail.
+  const dcFor = featured === 'car' && sprocketGroup ? 'car'
+              : featured === 'scooter' && seatHitbox.length ? 'scooter' : null;
+  if (dcFor) {
     camera.updateMatrixWorld();
-    const sv = sprocketGroup.position.clone().project(camera);
+    const sv = (dcFor === 'car' ? sprocketGroup.position.clone()
+                                : seatHitbox[0].getWorldPosition(new THREE.Vector3())).project(camera);
     const rect = card.getBoundingClientRect();
     detailCallout.style.transform =
       `translate(${(sv.x + 1) / 2 * rect.width}px, ${(1 - sv.y) / 2 * rect.height}px)`;
+    if (dcFor !== dcShows) { dcShows = dcFor; dcLabel.textContent = DC_LABEL[dcFor]; }
   }
-  const detailTarget = (featured === 'car' ? ppIn * swapO : 0) *
-                       (1 - openEase) * (sprocketHovered ? 0 : 1);
+  const detailTarget = dcFor === 'car'     ? ppIn * swapO * (1 - openEase) * (sprocketHovered ? 0 : 1)
+                     : dcFor === 'scooter' ? ppIn * swapO * (1 - seatOpenEase) * (seatHovered ? 0 : 1)
+                     : 0;
   detailO += (detailTarget - detailO) * (1 - Math.exp(-10 * dt));
   detailCallout.style.opacity = detailO;
 

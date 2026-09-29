@@ -620,18 +620,29 @@ headlines and body copy.
 - **Spec-sheet panel:** corner tick marks (`.tick`, reused on the sprocket
   panel and card frame), mono tag + ghost index numeral header, ruled title,
   then ONE shape for every project (P1.1, `PROJECT_INFO`): a mono "who" line
-  (`sub`: team · role), labelled rows with run-in mono labels (`rows`:
-  Problem → Approach → Result — a concept states its Concept; a fact the
-  resume doesn't give is left out, not invented — then a `Try` row from
-  `hint`), the figure (hatch placeholder "Fig. 01" unless `img`), a footer of
-  real metadata (`when` · `status` — it replaced the decorative "REV A · 2026 /
-  YM WORKS"), and the links: `Related · …` (the matching Digital file) and the
-  named next step `Next · 02 Rivian R1S — Cabin Zoning` (after 05,
-  `Next · Wrap-up`) — see addresses.md. The panel is pointer-events: none (a
-  click anywhere zooms out); its links opt back in while it is `.in`. Rows
-  stagger in via transition-delays when the RAF loop toggles `.in` at
-  ppIn > 0.4. It must clear the top bar and the arrows at 1280×720: on
-  screens under 820px tall the figure is 96px and rows 11.5px.
+  (`sub`: team · role); the figure — the project's own CAD / render leads
+  (hatch placeholder "Fig. 01" unless `img`) — and under it, where the
+  scene's 3D model is only a stand-in, a mono note saying so (`model`, P2.3:
+  set where the repo documents the model as a generated prop); labelled rows
+  with run-in mono labels (`rows`: Problem → Approach → Result — a concept
+  states its Concept; a fact the resume doesn't give is left out, not
+  invented — then a `Try` row from `hint`); a footer of real metadata
+  (`when` · `status` — it replaced the decorative "REV A · 2026 / YM WORKS");
+  and the links: `Related · …` (the matching Digital file) and the named next
+  step `Next · 02 Baja SAE Steering Wheel` (after 05, `Next · Wrap-up`) — see
+  addresses.md. The panel is pointer-events: none (a click anywhere zooms
+  out); its links opt back in while it is `.in`. Rows stagger in via
+  transition-delays when the RAF loop toggles `.in` at ppIn > 0.4. It must
+  clear the top bar and the arrows on laptop windows: under 820px tall the
+  figure is 96px and rows 11.5px, under 760px the figure is 72px, under
+  700px (1280×720 or 1366×768 screens under their browser bars) it is
+  hidden.
+- **Detail callouts** (`#detailCallout`): a dashed circle + label marking
+  the part with more to show, once the zoom settles — Detail A on the car's
+  sprocket (its study), Detail B on the scooter's seat module (it lifts off,
+  P2.4). One element, re-anchored per frame to `sprocketGroup` or the seat
+  hit proxy; `DC_LABEL` holds the wording ("Tap" on compact). Each yields to
+  its hover outline and to its open detail.
 - **Dimension line** (`#dimLine`): drawing-style dimension with end ticks and
   a mono label under the featured model; geometry per project in
   `PROJECT_INFO[..].dim` = {l, w, y (percent), label}. Draws outward from

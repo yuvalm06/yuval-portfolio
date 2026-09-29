@@ -170,7 +170,9 @@ is one, the matching Hands-On project (`Related · Formula SAE Drivetrain`,
 `DIGITAL_INFO[..].slug`); `window._fileTarget()` tells the router which file is
 open or on its way. The title block is File / Year / Status: the decorative
 "Rev" letter is gone (the sheet faces print `FILE 01 · 2026 · ACTIVE` and
-`YUVAL MUNZ`), and the page label reads "Software & ventures".
+`YUVAL MUNZ`), and the page label reads "Software & ventures". A figure slot
+shows only once its file has an image (`figImg`); with none, the figure row
+is hidden rather than showing hatched placeholder boxes (P2.2).
 
 Close paths: ✕ button, scrim click, stack click, Escape (closes the doc
 first, flips home on the next press), and `flipTo(0)` (calls

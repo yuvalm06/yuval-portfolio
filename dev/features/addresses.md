@@ -23,7 +23,7 @@ Digital:   register → File 01 → … → File 06 → wrap-up (Hands-On · Res
 ```
 
 - Every project panel (and phone sheet) ends with its named next step —
-  `Next · 02 Rivian R1S — Cabin Zoning`; after the last one, `Next · Wrap-up`.
+  `Next · 02 Baja SAE Steering Wheel`; after the last one, `Next · Wrap-up`.
   The file docs do the same (`Next · File 02 Actiograph`).
 - The sequences have ends. Desktop arrows: → at rest starts at 01 (or carries
   on from the last project seen), ← from 01 returns to the overview, → past 05
@@ -93,7 +93,7 @@ doesn't know about is invisible to Back.
 - `_goProject(key)` on desktop: from rest it zooms in; heading out of that same
   project it re-zooms; from another project it bounces through rest
   (`pendingFeature`). On a phone before the opening zoom lands, it picks the
-  station the zoom lands on (a cold load of `#printer` opens on 04).
+  station the zoom lands on (a cold load of `#printer` opens on 05).
 - A cold load of `#end` on a phone shows the wrap-up before the opening zoom;
   the zoom (onto 05) plays once the card closes — the carousel waits while any
   cover is up.
