@@ -34,10 +34,11 @@ appears to sit on the same ground. Supports click-to-zoom into a side-profile vi
   import { OutlinePass } from 'three/addons/postprocessing/OutlinePass.js';
 ```
 
-**Sept 2026:** the imports above are now DYNAMIC (`await Promise.all([import('three'), …])`)
-behind a first line that parks the module on the compact layout — see
-[compact-layout.md](compact-layout.md). The import map lives in `<head>`, and the
-desktop-only preloads are added by the mode script there.
+**Sept 2026:** the import map lives in `<head>`, ahead of the mode script that adds
+the preloads (three.js, the addons, the GLBs, the Draco wasm). On the compact layout
+(phones) the scene runs as a carousel — see [compact-layout.md](compact-layout.md);
+there it preloads only the car + sprocket and the module queues the other GLBs
+behind them (`loadGLB` / `glbDone`).
 
 The renderer canvas is injected into `.card` via JS (not hardcoded in HTML):
 ```js
@@ -579,10 +580,10 @@ then runs for any of them. Arrow cycling order: `FEATURE_ORDER = ['scooter',
 Each featured zoom shows a right-side info panel (`#projectPanel`, styled
 like the sprocket panel but 300px) with tag / title / bullets / image slot.
 Copy lives in `window.PROJECT_INFO` at the top of the MAIN script (the
-module reads it) — one copy shared with the compact layout's sheets. Content
-bullets are `points`; a desktop-only interaction line ("Click the sprocket…")
-is `hint`, appended as the last row here and never shown on compact. The
-car's `detail` fills the sprocket panel. The panel is populated on click (`fillProjectPanel`)
+module reads it). Content bullets are `points`; the interaction line ("Click
+the sprocket…") is `hint`, appended as the last row ("Tap…" on compact, where
+this same panel is the docked sheet). The car's `detail` fills the sprocket
+panel. The panel is populated on click (`fillProjectPanel`)
 and driven from the RAF loop:
 
 - opacity/slide-in ramps over ease 0.6 → 1.0, and is multiplied by
@@ -590,10 +591,10 @@ and driven from the RAF loop:
 - `pointer-events: none` — clicks pass through it and zoom back out.
 - **Centring lives in CSS `translate: 0 -50%`**; the loop writes only
   `transform: translateX(..)` (same for `#sprocketPanel`). That split is what
-  lets the phone layout (≤640px) re-anchor both panels as compact sheets
-  under the nav (`top: 84px; translate: none`, figure + meta hidden) instead
-  of covering the featured model. Don't fold translateY back into the inline
-  transform.
+  lets other layouts re-anchor both panels (`translate: none`) — the compact
+  sheet docks at the bottom, and there the loop drives the copy wrapper
+  `.pp-body` instead of the panel's transform. Don't fold translateY back
+  into the inline transform.
 - **Figures:** a slot holding a real image gets `.has-img` (toggled in
   `fillProjectPanel`, the digital doc, static on the sprocket slots): whole
   image, `contain` on white. A `cover` crop cut the FEA plots to 6:1 strips

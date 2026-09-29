@@ -4,10 +4,11 @@ This is a single-file portfolio (`index.html`) built in the style of hut8.com.
 Everything lives in one file: HTML structure, CSS, and JavaScript.
 
 Two layouts, chosen once in `<head>`: the **desktop** 3D scene (everything below),
-and the **compact** layout for phones / portrait tablets (`html.compact`) — the 3D
-module never starts there; the Hands-On page is a scroll of project sheets. See
-`dev/features/compact-layout.md`. Project copy lives in ONE place,
-`window.PROJECT_INFO` at the top of the main script, read by both layouts.
+and the **compact** layout for phones / portrait tablets (`html.compact`) — the same
+scene as a one-project-at-a-time carousel: swipes truck the camera along a line of
+featured models, the dot ground scrolling under them, with the project panel docked
+as a sheet. See `dev/features/compact-layout.md`. Project copy lives in ONE place,
+`window.PROJECT_INFO` at the top of the main script.
 
 ---
 
@@ -29,7 +30,9 @@ card (rounded inset frame, #EEECEA background)
  │                          click swipes to that world (z 30, shown until a pick)
  ├── .edge-tab ×2         ← thin side handles to flip to the other world (z 21)
  ├── .section-nav         ← bottom-right prev/next (cycle projects / flip page)
- ├── .m-projects          ← compact only: Hands-On project sheets (z 12)
+ ├── .m-stage             ← compact only: the box the carousel frames the model
+ │                          into (the dot grid measures it) + loading note (z 14)
+ ├── .m-pager             ← compact only: ‹ project dots › (z 21)
  └── .mode-switch         ← compact only: Hands-On | Digital switch (z 21)
 ```
 
@@ -54,7 +57,8 @@ For lattice point (gx, gz):
   sy = drawCY + GS * 0.5 * tilt * D / denom
 ```
 
-- `CX = W * 0.50`, `CY = H * 0.55` — ground plane anchor (screen centre)
+- `CX = W * 0.50`, `CY = H * 0.55` — ground plane anchor (screen centre; plus the
+  compact view offset `offX`/`offY`, which is 0 on desktop)
 - `GS = 22` — base grid spacing in px
 - `PERSP = 0.011` — perspective strength (~25% compression at far edge)
 - Near dots (D > 0, bottom of screen): spacing expands
@@ -129,12 +133,11 @@ Shadow system (3 layers):
 2  → .distance-fog, .card::after (vignette)
 3  → WebGL canvas (inline style)
 10 → .card::before (grain)
-12 → .m-projects (compact only)
-14 → .dim-line, .detail-callout
+14 → .dim-line, .detail-callout, .m-stage (compact only)
 15 → .sprocket-panel, .project-panel
 16 → .digital-page (scrim z3 / doc z6 / raised stack column z5 inside it)
 20 → .identity, .frame-marks, .section-nav
-21 → .edge-tab, .mode-switch (compact only)
+21 → .edge-tab, .mode-switch + .m-pager (compact only)
 22 → .hover-tag
 30 → .split-intro
 35 → .nav
@@ -164,9 +167,13 @@ Shadow system (3 layers):
 - Do not change `PERSP`, `GS`, `CX`, `CY` constants without re-deriving all SVG object positions
 - Do not add CSS `transition` to elements whose style is driven per-frame by the rAF loops
   (identity/hint opacity, panels, dim line, hover tag) — the lerp handles smoothing
-- Do not assume the 3D module ran: on compact it never does, so every `window._…` hook it
-  defines is absent — guard calls from the main script (`window._x && window._x()`)
-- Do not duplicate project copy — edit `window.PROJECT_INFO` (main script); both layouts read it
+- Do not assume the 3D module has loaded: it runs after three.js arrives from the CDN, so
+  every `window._…` hook it defines can be absent — guard calls from the main script
+  (`window._x && window._x()`)
+- Do not hardcode the side-view dot constants again: `side()` scales them with the zoom
+  distance (compact frames its own, desktop stays exactly at ZD 8) — see
+  `dev/lessons/dot-grid-reprojection.md`
+- Do not duplicate project copy — edit `window.PROJECT_INFO` (main script)
 - Do not add a page or overlay inside `.card` without adding it to the click guard at the
   top of the card click handler and to `window._sceneCover()` — its clicks bubble to the
   3D raycast and would zoom whatever model sits under the pointer

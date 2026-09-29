@@ -81,6 +81,24 @@ Makes tuning constants an order of magnitude faster. See zoom-animation.md.
 
 ---
 
+### Another zoom distance: the compact carousel (Sept 2026)
+Phones frame the featured view at their own distance `ZD` (the camera backs off
+until the models fit a portrait stage) plus a view offset. Redoing the derivation
+for a general distance d, with the lattice unit held fixed in world units:
+
+- `SV_GS` and `SV_PERSP` both go as **1/d** → `70.3 · 8/ZD` and `(35.1/H) · 8/ZD`
+- `SV_CY`: the lookAt sits 0.5 above the origin, so the origin shows
+  `≈ (f/2)·(0.5/d)·H` below centre → `H · (0.6255 − 0.1255·(1 − 8/ZD))`
+  (written that way so ZD = 8 gives exactly 0.6255), plus `offY`
+- `SV_TILT = sin(el)/cos(el − φ)` ≈ sin(el) — compact lets it follow the live
+  zoom elevation (`0.10 · sin(el)/sin(0.10)`); desktop keeps 0.10
+- the carousel's truck (world x travel) in lattice units = `truckX · H / (2·tan14°·562.4)`
+  — the 3D camera's px per unit over SV_GS, independent of ZD
+
+`side()` computes them once per frame and `projectGround` reads the same values,
+so the Rivian / printer anchors can never drift from the drawn dots. At ZD 8
+with no offset every value is bit-identical to the old constants.
+
 ## Key insight
 
 The side-view projection constants (SV_GS, SV_PERSP, SV_CY) must match the
