@@ -22,14 +22,16 @@ card (rounded inset frame, #EEECEA background)
  ├── .digital-page        ← Build 2.0 page, flips in from the right (z 16)
  ├── .race-page           ← race-game easter egg overlay (z 45), opened by the
  │                          green button on the steering wheel's face
- ├── .nav                 ← top bar: logo left, hamburger right (z 35, above intro)
+ ├── .nav                 ← top bar (z 35): name + role line + status note left;
+ │                          Resume · Contact · menu button right
  ├── .nav-overlay         ← full-screen slide-up nav menu
  ├── .identity            ← bottom-left: icon | title | layer label | description
  ├── .frame-marks         ← drawing-frame corner ticks + sheet note
- ├── .split-intro         ← front door: two equal halves (Hands-On / Digital),
- │                          click swipes to that world (z 30, shown until a pick)
+ ├── .scene-labels        ← desktop: each project's number + name at its model
+ │                          at rest; click one to open it (z 14)
  ├── .edge-tab ×2         ← thin side handles to flip to the other world (z 21)
- ├── .section-nav         ← bottom-right prev/next (cycle projects / flip page)
+ ├── .section-nav         ← bottom-right prev/next: projects 01→05, or the files
+ │                          on Digital (never flips pages)
  ├── .m-stage             ← compact only: the box the carousel frames the model
  │                          into (the dot grid measures it) + loading note (z 14)
  ├── .m-pager             ← compact only: ‹ project dots › (z 21)
@@ -133,13 +135,11 @@ Shadow system (3 layers):
 2  → .distance-fog, .card::after (vignette)
 3  → WebGL canvas (inline style)
 10 → .card::before (grain)
-14 → .dim-line, .detail-callout, .m-stage (compact only)
+14 → .dim-line, .detail-callout, .scene-labels, .m-stage (compact only)
 15 → .sprocket-panel, .project-panel
 16 → .digital-page (scrim z3 / doc z6 / raised stack column z5 inside it)
 20 → .identity, .frame-marks, .section-nav
 21 → .edge-tab, .mode-switch + .m-pager (compact only)
-22 → .hover-tag
-30 → .split-intro
 35 → .nav
 40 → .contact-page, .page-overlay (about / skills)
 45 → .race-page (steering-wheel easter egg)
@@ -166,7 +166,7 @@ Shadow system (3 layers):
 - Do not add a JS framework — vanilla JS only
 - Do not change `PERSP`, `GS`, `CX`, `CY` constants without re-deriving all SVG object positions
 - Do not add CSS `transition` to elements whose style is driven per-frame by the rAF loops
-  (identity/hint opacity, panels, dim line, hover tag) — the lerp handles smoothing
+  (identity/hint opacity, panels, dim line, scene labels) — the lerp handles smoothing
 - Do not assume the 3D module has loaded: it runs after three.js arrives from the CDN, so
   every `window._…` hook it defines can be absent — guard calls from the main script
   (`window._x && window._x()`)

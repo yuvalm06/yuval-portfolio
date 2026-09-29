@@ -33,29 +33,23 @@ axes, but the projects are *files*:
   chrome persists across both pages.
 - Slide: `transform: translateX(100%) → 0` at `0.6s cubic-bezier(.76,0,.24,1)`;
   `.digital-inner` starts at `translateX(70px)` for parallax.
-- `flipTo(i)` (first script block) owns the state: dismisses the split intro
-  if it is still up, toggles `.open`, `.digital-open` on the card, sets
-  `window._digitalOpen`, syncs the edge tabs, and calls `window._zoomOutAll()`
-  so page 1 returns to the isometric rest view.
-- **Split intro** (`.split-intro`, z 30, under the nav at z 35): the front
-  door — two equal halves (Hands-On / Digital), each textured with its
-  world's ground (dot lattice vs iso graph paper), grey hover highlight.
-  Clicking a half calls `flipTo(side)`; the intro swipes off toward the other
-  side (`exit-left` / `exit-right`) while the chosen page slides in beneath —
-  the two transitions run together and read as one swipe. Shown on every
-  load (no storage, per CLAUDE.md). Half clicks `stopPropagation()` so the
-  card's 3D click handler never raycasts them.
+- `flipTo(i)` (first script block) owns the state: toggles `.open`,
+  `.digital-open` on the card, sets `window._digitalOpen`, syncs the edge
+  tabs, and calls `window._zoomOutAll()` so page 1 returns to the isometric
+  rest view.
+- The site opens straight on the Hands-On page. (A split "front door" —
+  Hands-On | Digital halves — used to come first; it was removed in the UX
+  review: it asked visitors to choose before they had seen any work.)
 - **Edge tabs** (`.edge-tab`, z 21): thin vertical handles on the card sides;
-  exactly one is out — the handle to the OTHER world. Hidden while the intro
-  is up and while a file document is open
-  (`.digital-page.file-open ~ .edge-tab`). These replaced the page dots.
-- Other triggers: section-nav arrows (only when `_cycleFeatured` declines,
-  i.e. not zoomed on page 1), nav overlay **Projects** / **Digital** links,
-  Escape (flips home when no overlay was open; at the intro it picks
-  Hands-On), and the ←/→ keys (they press the section-nav buttons).
-- **Keyboard:** the intro halves, edge tabs, and register rows are divs with
+  exactly one is out — the handle to the OTHER world. Hidden while a file
+  document is open (`.digital-page.file-open ~ .edge-tab`). These replaced
+  the page dots.
+- Other triggers: nav overlay **Projects** / **Digital** links, and Escape
+  (flips home when no overlay, file or 3D view was open). The section-nav
+  arrows never flip pages — on this page they step through the files (below).
+- **Keyboard:** edge tabs and register rows are divs with
   `role="button" tabindex="0"`; a delegated keydown in the main script turns
-  Enter / Space into a click. Closed pages, the dismissed intro, and hidden
+  Enter / Space into a click. Closed pages and hidden
   tabs get `visibility: hidden` (delayed by their slide) so Tab never lands
   on something off-screen — the digital page is still fully laid out while
   hidden, so the stack's build-time measurements are unaffected.
@@ -158,6 +152,13 @@ stack column above the scrim (crisp) while the register blurs beneath it.
 The right column gets `pointer-events: none` while open (scrim catches
 clicks) except `#sheetStack` (click closes). Siblings in the pile fade to
 0.4 via `.file-open #sheetStack .sheet:not(.front)`.
+
+**Arrows:** on this page the section-nav arrows (and ←/→) step through the
+files in register order via `window._stepFile(dir)` — from the last file
+opened, else from File 01 (the last file going back). An open file closes
+first and the next opens 520 ms later, once its sheet has settled into the
+pile (`tweenFront` runs one sheet at a time). Escape during that gap cancels
+the step (`window._fileStepping()`); `closeFile()` clears the timer.
 
 Close paths: ✕ button, scrim click, stack click, Escape (closes the doc
 first, flips home on the next press), and `flipTo(0)` (calls

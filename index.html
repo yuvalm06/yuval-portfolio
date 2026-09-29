@@ -146,7 +146,7 @@
     .nav {
       position: absolute;
       top: 0; left: 0; right: 0;
-      z-index: 35;    /* above the split intro so the brand + menu persist */
+      z-index: 35;    /* over the scene and the Digital page; the pages (40) cover it */
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -156,14 +156,18 @@
     }
     .nav > * { pointer-events: auto; }   /* …the name and menu button still take them */
 
+    /* the name, with the role line and the status note stacked beside it */
     .nav-left {
-      display: flex;
+      display: grid;
+      grid-template-columns: auto auto;
       align-items: center;
-      gap: 16px;
+      column-gap: 16px;
+      row-gap: 6px;
       min-width: 0;
     }
 
     .logo-ym {
+      grid-row: 1 / 3;
       font-family: var(--font);
       font-size: 38px;
       font-weight: 700;
@@ -176,17 +180,31 @@
       flex-shrink: 0;
     }
 
-    /* role line beside the name — the spec-sheet mono voice */
-    .nav-role {
+    /* role line and status note beside the name — the spec-sheet mono voice */
+    .nav-role, .nav-note {
+      grid-column: 2;
       font-family: var(--mono);
       font-size: 9.5px;
       font-weight: 500;
       letter-spacing: 0.14em;
+      line-height: 1.2;
       text-transform: uppercase;
       color: var(--ink-mid);
       white-space: nowrap;
       user-select: none;
-      padding-top: 3px;
+    }
+    .nav-role { align-self: end; }
+    .nav-note {
+      align-self: start;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .nav-note-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #5c9e6b;
+      flex-shrink: 0;
     }
 
     .nav-right {
@@ -210,6 +228,34 @@
     }
 
     .nav-menu-btn:hover { background: rgba(205,203,198,0.9); }
+
+    /* Resume / Contact: one click from anywhere, in the menu button's glass */
+    .nav-link {
+      display: flex;
+      align-items: center;
+      height: 36px;
+      padding: 1px calc(14px - 0.14em) 0 14px;   /* the tracking trails the last letter */
+      background: rgba(220,218,213,0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .nav-link:hover { background: rgba(205,203,198,0.9); }
+    @media (pointer: coarse) {   /* a 44px-tall touch target around the 36px button */
+      .nav-link, .nav-menu-btn { position: relative; }
+      .nav-link::after, .nav-menu-btn::after { content: ''; position: absolute; inset: -5px -3px; }
+    }
 
     .hamburger {
       display: flex;
@@ -423,105 +469,6 @@
     }
 
     /* ─────────────────────────────────────────
-       SPLIT INTRO — front door: two equal worlds
-    ───────────────────────────────────────── */
-    .split-intro {
-      position: absolute;
-      inset: 0;
-      z-index: 30;               /* over page chrome, under nav (35) */
-      display: flex;
-      border-radius: 14px;
-      overflow: hidden;
-      transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1);
-    }
-
-    /* choosing a side swipes the whole door toward the other one */
-    .split-intro.exit-left  { transform: translateX(-100%); pointer-events: none; }
-    .split-intro.exit-right { transform: translateX(100%);  pointer-events: none; }
-    .split-intro.exit-left, .split-intro.exit-right {
-      visibility: hidden;      /* gone for good once the swipe lands */
-      transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1), visibility 0s linear 0.65s;
-    }
-
-    .split-intro::after {   /* grain, same as the card */
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-      opacity: 0.035;
-      pointer-events: none;
-    }
-
-    .split-half {
-      position: relative;
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background: var(--bg);
-      cursor: pointer;
-      transition: background 0.25s ease;
-    }
-
-    .split-half.left { border-right: 1px solid var(--border); }
-
-    /* each half previews its world's ground: dots vs graph paper */
-    .split-half.left::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: radial-gradient(rgba(108,90,135,0.16) 1.2px, transparent 1.3px);
-      background-size: 24px 24px;
-      -webkit-mask-image: linear-gradient(to bottom, transparent 4%, rgba(0,0,0,0.7) 45%, #000 90%);
-      mask-image: linear-gradient(to bottom, transparent 4%, rgba(0,0,0,0.7) 45%, #000 90%);
-      pointer-events: none;
-    }
-
-    .split-half.right::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        repeating-linear-gradient(26.57deg,  rgba(108,90,135,0.06) 0 1px, transparent 1px 26px),
-        repeating-linear-gradient(153.43deg, rgba(108,90,135,0.06) 0 1px, transparent 1px 26px);
-      -webkit-mask-image: linear-gradient(to bottom, transparent 4%, rgba(0,0,0,0.7) 45%, #000 90%);
-      mask-image: linear-gradient(to bottom, transparent 4%, rgba(0,0,0,0.7) 45%, #000 90%);
-      pointer-events: none;
-    }
-
-    .split-half:hover,
-    .split-half:focus-visible { background: #E5E3DF; }   /* grey highlight */
-
-    .split-label {
-      font-family: var(--mono);
-      font-size: 9.5px;
-      font-weight: 500;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--ink-light);
-    }
-
-    .split-title {
-      font-size: clamp(38px, 4.5vw, 58px);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      color: var(--ink);
-      line-height: 1;
-      transition: transform 0.25s ease;
-    }
-
-    .split-half:hover .split-title { transform: translateY(-3px); }
-
-    .split-desc {
-      font-size: 12px;
-      color: var(--ink-light);
-      margin-top: 4px;
-    }
-
-    /* ─────────────────────────────────────────
        EDGE TABS — thin flip handles on the card sides
     ───────────────────────────────────────── */
     .edge-tab {
@@ -577,7 +524,7 @@
     /* yield to the opened file document on the digital page */
     .digital-page.file-open ~ .edge-tab { opacity: 0; pointer-events: none; visibility: hidden; }
 
-    /* keyboard focus on the div-based controls (intro halves, tabs, rows) */
+    /* keyboard focus on the div-based controls (edge tabs, register rows) */
     [role="button"]:focus-visible { outline: 1px solid var(--ink-mid); outline-offset: -3px; }
 
     /* ─────────────────────────────────────────
@@ -1464,10 +1411,16 @@
       transform: rotate(-6deg);
     }
 
-    /* ── Hover callout tag (rest view) ── */
-    .hover-tag {
+    /* ── Scene labels (rest view): every project's number and name at its
+       model — over the back row, under the front row — as a mono spec tag
+       on a leader line; hovering the model (or the tag) lights it, a click
+       features that project. The 3D module builds them and places them per
+       frame (transform + opacity). ── */
+    .scene-labels { position: absolute; inset: 0; z-index: 14; pointer-events: none; }
+    .scene-label {
       position: absolute;
-      z-index: 22;
+      left: 0; top: 0;
+      translate: -50% calc(-100% - 14px);   /* sits above its anchor, on the leader line */
       font-family: var(--mono);
       font-size: 9.5px;
       font-weight: 500;
@@ -1478,20 +1431,27 @@
       border: 1px solid rgba(26,25,22,0.18);
       border-radius: 2px;
       padding: 5px 9px 4px;
-      pointer-events: none;
-      opacity: 0;
       white-space: nowrap;
+      cursor: pointer;
+      pointer-events: auto;
+      opacity: 0;
+      visibility: hidden;
       will-change: transform, opacity;
     }
-    .hover-tag::after {          /* leader line down toward the model */
+    .scene-label b { font-weight: 500; color: var(--ink-light); margin-right: 8px; }
+    .scene-label::after {        /* leader line down to the model */
       content: '';
       position: absolute;
-      left: 14px;
+      left: 50%;
       top: 100%;
       width: 1px;
       height: 14px;
       background: rgba(26,25,22,0.35);
     }
+    .scene-label.below { translate: -50% 14px; }                 /* front row: under the model */
+    .scene-label.below::after { top: auto; bottom: 100%; }
+    .scene-label:hover, .scene-label.on { color: var(--bg); background: var(--ink); border-color: var(--ink); }
+    .scene-label:hover b, .scene-label.on b { color: rgba(238,236,234,0.55); }
 
     /* ── Dimension line under the featured model ── */
     .dim-line {
@@ -2032,8 +1992,6 @@
       .skills-col:last-child:nth-child(3n+2) { grid-column: span 2; }
       .digital-right { display: none; }
       .digital-left  { flex: 1; }
-      .split-intro   { flex-direction: column; }
-      .split-half.left { border-right: none; border-bottom: 1px solid var(--border); }
       /* no stack column to share with — recenter the doc */
       .file-doc {
         left: 50%;
@@ -2086,7 +2044,7 @@
       .m-type, .m-stack, .m-year { display: none; }
 
       /* 3D page: the panels sit under the nav, clear of the featured model */
-      .project-panel, .sprocket-panel { top: 84px; left: 12px; right: 12px; width: auto; translate: none; }
+      .project-panel, .sprocket-panel { top: 96px; left: 12px; right: 12px; width: auto; translate: none; }
       .project-panel .pp-img-slot, .project-panel .pp-meta { display: none; }
       .sprocket-panel { padding: 18px 16px 16px; }
     }
@@ -2097,12 +2055,32 @@
       .nav-footer a   { color: rgba(255,255,255,0.6); }
     }
 
-    /* Narrow screens: the role line stacks under the name */
-    @media (max-width: 640px) {
-      .nav       { padding: 14px 16px; align-items: flex-start; }
-      .nav-left  { flex-direction: column; align-items: flex-start; gap: 5px; }
-      .logo-ym   { font-size: 27px; }
-      .nav-role  { font-size: 8.5px; letter-spacing: 0.12em; padding-top: 0; }
+    /* Top bar, narrower: once the role line and the note no longer fit beside
+       the name, the name shares the top row with the buttons and the two lines
+       run full width under it. That is ≤ 900px (the desktop card is inset
+       30px a side), except landscape phones: they take the phone type below,
+       which fits beside the name from 690px. */
+    @media (max-width: 689px), (max-width: 900px) and (min-height: 501px),
+           (max-width: 900px) and (pointer: fine) {
+      .nav        { display: grid; grid-template-columns: 1fr auto; column-gap: 10px; row-gap: 6px; }
+      .nav-left   { display: contents; }
+      .logo-ym    { grid-area: 1 / 1; align-self: end; }
+      .nav-right  { grid-area: 1 / 2; }
+      .nav-role, .nav-note { grid-column: 1 / -1; justify-self: start; }   /* no full-width */
+      .nav-note   { grid-row: 3; }                                            /*   click catcher */
+      .scene-hint { top: 108px; }   /* under the taller bar (desktop only) */
+    }
+    /* phone type — phones, landscape phones, windows ≤ 640px */
+    @media (max-width: 640px), (pointer: coarse) and (max-height: 500px) {
+      .nav        { padding: 14px 16px; }
+      .logo-ym    { font-size: 27px; }
+      .nav-role, .nav-note { font-size: 8.5px; letter-spacing: 0.12em; }
+      .nav-right  { gap: 6px; }
+      .nav-link   { padding: 1px calc(10px - 0.12em) 0 10px; font-size: 8.5px; letter-spacing: 0.12em; }
+      .scene-hint { top: 100px; }
+    }
+    @media (max-width: 359px) {   /* no room for a third button: Contact stays in the menu */
+      #navContact { display: none; }
     }
 
     /* ─────────────────────────────────────────
@@ -2138,10 +2116,10 @@
     }
 
     /* desktop chrome: identity caption, sheet frame + note, scene hint,
-       prev / next arrows, edge tabs, hover tag, dimension line */
+       prev / next arrows, edge tabs, scene labels, dimension line */
     html.compact .identity, html.compact .scene-hint, html.compact .frame-marks,
     html.compact .section-nav, html.compact .edge-tab, html.compact .dim-line,
-    html.compact .hover-tag { display: none; }
+    html.compact .scene-labels { display: none; }
 
     /* The stage: the box the featured model is framed into (the dot grid
        measures it to fit the camera) — under the nav, above the pager and
@@ -2459,8 +2437,13 @@
     html.compact .exp-org  { grid-column: 1; grid-row: 1; white-space: normal; }
     html.compact .exp-date { grid-column: 2; grid-row: 1; }
     html.compact .exp-role { grid-column: 1 / -1; grid-row: 2; }
-    @media (max-width: 640px) {
-      html.compact { --nav-h: 72px; }
+    /* clear of the top bar: taller where its two lines stack under the name
+       (portrait tablets; phones) — see the nav's narrow rules */
+    @media (max-width: 900px) and (min-height: 501px) {
+      html.compact { --nav-h: 106px; }
+    }
+    @media (max-width: 689px) {
+      html.compact { --nav-h: 96px; }
     }
   </style>
 </head>
@@ -2482,9 +2465,12 @@
     <div class="nav-left">
       <div class="logo-ym">Yuval Munz</div>
       <div class="nav-role">Mechanical Engineer · Systems Optimization</div>
+      <div class="nav-note"><span class="nav-note-dot" aria-hidden="true"></span>Queen's '28 · Open to 2027 internships &amp; co-ops</div>
     </div>
 
     <div class="nav-right">
+      <a class="nav-link" href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a>
+      <button class="nav-link" id="navContact">Contact</button>
       <button class="nav-menu-btn" id="menuBtn" aria-label="Open menu">
         <div class="hamburger">
           <span></span><span></span><span></span>
@@ -2493,7 +2479,7 @@
     </div>
   </nav>
 
-  <div class="scene-hint">Click on a project to view more</div>
+  <div class="scene-hint">Loading the projects…</div>
 
   <!-- ───────── FULL-SCREEN NAV OVERLAY ───────── -->
   <div class="nav-overlay" id="navOverlay">
@@ -2525,7 +2511,7 @@
 
     <div class="contact-status">
       <div class="contact-status-dot"></div>
-      Available for work
+      Open to 2027 internships &amp; co-ops
     </div>
 
     <h1 class="contact-heading">Say hello.</h1>
@@ -2780,8 +2766,8 @@
   <!-- Dimension line under the featured model -->
   <div class="dim-line" id="dimLine"><span class="dim-label" id="dimLabel">L 3020 MM</span></div>
 
-  <!-- Hover callout tag (rest view) -->
-  <div class="hover-tag" id="hoverTag">01 · Open-Wheel Prototype</div>
+  <!-- Project names at the models (rest view; the 3D module fills it) -->
+  <div class="scene-labels" id="sceneLabels" role="group" aria-label="Projects"></div>
 
   <!-- Detail callout around the clickable sprocket (car zoom view) -->
   <div class="detail-callout" id="detailCallout">
@@ -2917,20 +2903,6 @@
     </div>
   </div>
 
-  <!-- ───────── SPLIT INTRO (front door: pick a world) ───────── -->
-  <div class="split-intro" id="splitIntro">
-    <div class="split-half left" id="splitLeft" role="button" tabindex="0">
-      <div class="split-label">Build 1.0</div>
-      <h2 class="split-title">Hands-On.</h2>
-      <p class="split-desc">Machines — designed, machined, assembled.</p>
-    </div>
-    <div class="split-half right" id="splitRight" role="button" tabindex="0">
-      <div class="split-label">Build 2.0</div>
-      <h2 class="split-title">Digital.</h2>
-      <p class="split-desc">Software, documents, and systems.</p>
-    </div>
-  </div>
-
   <!-- ───────── EDGE TABS (flip handles to the other world) ───────── -->
   <div class="edge-tab left hidden-tab" id="tabLeft" role="button" tabindex="0"><span>Hands-On</span></div>
   <div class="edge-tab right hidden-tab" id="tabRight" role="button" tabindex="0"><span>Digital</span></div>
@@ -2943,10 +2915,10 @@
 
   <!-- ───────── SECTION PREV / NEXT ───────── -->
   <div class="section-nav">
-    <button class="section-btn" aria-label="Previous section">
+    <button class="section-btn" aria-label="Previous project">
       <svg viewBox="0 0 10 10"><polyline points="6 2 4 5 6 8"/></svg>
     </button>
-    <button class="section-btn" aria-label="Next section">
+    <button class="section-btn" aria-label="Next project">
       <svg viewBox="0 0 10 10"><polyline points="4 2 6 5 4 8"/></svg>
     </button>
   </div>
@@ -2956,7 +2928,7 @@
 <script>
   // ── Project copy — ONE copy for both layouts ─────────────────────────────
   // The 3D scene reads it for the featured-zoom panel (the bottom sheet on
-  // compact), identity caption, hover tag, and dimension line. Content
+  // compact), identity caption, scene labels, and dimension line. Content
   // follows the master resume.
   //   points  content bullets
   //   hint    interaction line appended to the panel ("Click" reads "Tap"
@@ -3093,6 +3065,13 @@
     }
   });
 
+  // Top bar: Contact opens its page from anywhere (Resume is a plain link)
+  document.getElementById('navContact').addEventListener('click', () => {
+    navOverlay.classList.remove('open');
+    closeAllPages();
+    pages['Contact'].classList.add('open');
+  });
+
   // Wire each page's close button
   document.getElementById('contactBack').addEventListener('click', closeAllPages);
   document.getElementById('aboutBack').addEventListener('click', closeAllPages);
@@ -3111,18 +3090,21 @@
       navOverlay.classList.remove('open');
       closeAllPages();
       if (hadOverlay) return;
-      if (window._fileDocOpen) { window._closeFileDoc(); return; }
+      if (window._fileDocOpen || (window._fileStepping && window._fileStepping())) {
+        window._closeFileDoc();
+        return;
+      }
       if (!window._digitalOpen && window._stepBack && window._stepBack()) return;
       flipTo(0);
     } else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && !e.repeat &&
-               !window._raceOpen && !window._fileDocOpen && !overlayOpen() &&
+               !window._raceOpen && !overlayOpen() &&
                !e.altKey && !e.ctrlKey && !e.metaKey) {
       (e.key === 'ArrowLeft' ? prevBtn : nextBtn).click();
     }
   });
 
-  // Keyboard access for the div-based controls (intro halves, edge tabs,
-  // register rows): Enter / Space activate them like a click
+  // Keyboard access for the div-based controls (edge tabs, register rows):
+  // Enter / Space activate them like a click
   document.addEventListener('keydown', e => {
     if ((e.key === 'Enter' || e.key === ' ') && !window._raceOpen &&
         e.target.matches && e.target.matches('[role="button"]')) {
@@ -3132,41 +3114,35 @@
   });
 
   // What is hiding the 3D scene: 'page' (the menu, an opaque page, or the
-  // race), 'intro' (the front door), or '' — the module script skips hover
-  // raycasts under either, and stops drawing once a page has covered it.
-  window._sceneCover = () => window._raceOpen || overlayOpen() ? 'page' : introUp ? 'intro' : '';
+  // race) or '' — the module script skips hover raycasts under a page, and
+  // stops drawing once one has covered it.
+  window._sceneCover = () => window._raceOpen || overlayOpen() ? 'page' : '';
 
-  // ── Page flip: 0 = hands-on (3D scene), 1 = digital work.
-  //    The split intro is the front door; the edge tabs are the handles. ──
+  // ── Page flip: 0 = hands-on (3D scene), 1 = digital work. The site opens
+  //    on the hands-on page; the edge tabs (the phone switch) flip it. ──
   const digitalPage = document.getElementById('digitalPage');
   const cardEl      = document.getElementById('card');
-  const splitIntro  = document.getElementById('splitIntro');
   const tabLeft     = document.getElementById('tabLeft');
   const tabRight    = document.getElementById('tabRight');
   const modeSwitch  = document.getElementById('modeSwitch');   // compact only
   const modeBtns    = [...modeSwitch.querySelectorAll('button')];
   let currentPage   = 0;
-  let introUp       = true;
-
-  // choosing a side swipes the door toward the other one
-  function dismissIntro(chosen) {
-    if (!introUp) return;
-    introUp = false;
-    splitIntro.classList.add(chosen === 1 ? 'exit-left' : 'exit-right');
-  }
 
   // exactly one tab is out at a time: the handle to the OTHER world. The
-  // compact layout's Hands-On | Digital switch mirrors the same state.
+  // compact layout's Hands-On | Digital switch mirrors the same state, and
+  // the section-nav arrows say what they step through on this page.
   function updateTabs() {
-    tabRight.classList.toggle('hidden-tab', introUp || currentPage === 1);
-    tabLeft.classList.toggle('hidden-tab',  introUp || currentPage === 0);
-    modeSwitch.classList.toggle('up', !introUp);
+    tabRight.classList.toggle('hidden-tab', currentPage === 1);
+    tabLeft.classList.toggle('hidden-tab',  currentPage === 0);
+    modeSwitch.classList.add('up');
     modeBtns.forEach((b, i) => b.setAttribute('aria-pressed', String(i === currentPage)));
+    const item = currentPage === 1 ? 'file' : 'project';
+    prevBtn.setAttribute('aria-label', `Previous ${item}`);
+    nextBtn.setAttribute('aria-label', `Next ${item}`);
   }
 
   function flipTo(i) {
     const target = Math.max(0, Math.min(1, i));
-    dismissIntro(target);
     if (target !== currentPage) {
       currentPage = target;
       const open = currentPage === 1;
@@ -3179,29 +3155,23 @@
     updateTabs();
   }
 
-  // intro halves + edge tabs (stopPropagation keeps the card's 3D click
+  // edge tabs + phone switch (stopPropagation keeps the card's 3D click
   // handler from raycasting these clicks)
-  document.getElementById('splitLeft').addEventListener('click',  e => { e.stopPropagation(); flipTo(0); });
-  document.getElementById('splitRight').addEventListener('click', e => { e.stopPropagation(); flipTo(1); });
   tabLeft.addEventListener('click',  e => { e.stopPropagation(); flipTo(0); });
   tabRight.addEventListener('click', e => { e.stopPropagation(); flipTo(1); });
   modeBtns.forEach((b, i) => b.addEventListener('click', e => { e.stopPropagation(); flipTo(i); }));
 
-  // ── Section nav arrows: cycle featured projects while zoomed on the
-  //    physical page; otherwise flip between the two root pages ──
+  // ── Section nav arrows (and ← →): step through what this page holds —
+  //    the projects 01 to 05 on the hands-on page, the files on the digital
+  //    one. They never flip pages; the edge tabs do that. ──
   const [prevBtn, nextBtn] = document.querySelectorAll('.section-btn');
-
-  prevBtn.addEventListener('click', e => {
-    e.stopPropagation();   // don't let the card's click handler zoom out
-    if (!window._digitalOpen && window._cycleFeatured && window._cycleFeatured(-1)) return;
-    flipTo(currentPage - 1);
-  });
-
-  nextBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    if (!window._digitalOpen && window._cycleFeatured && window._cycleFeatured(1)) return;
-    flipTo(currentPage + 1);
-  });
+  const step = dir => {
+    if (window._digitalOpen) window._stepFile && window._stepFile(dir);
+    else window._cycleFeatured && window._cycleFeatured(dir);
+  };
+  prevBtn.addEventListener('click', e => { e.stopPropagation(); step(-1); });   // never a click on the scene
+  nextBtn.addEventListener('click', e => { e.stopPropagation(); step(1); });
+  updateTabs();
 
   // ── Compact carousel controls: pager, sheet, swipe ───────────────────────
   // The 3D module owns the carousel (window._swipe / _swipeTo / _swipeDrag,
@@ -3259,7 +3229,7 @@
     let sw = null, swallowClick = false;
     cardEl.addEventListener('pointerdown', e => {
       if (sw || (e.pointerType === 'mouse' && e.button !== 0)) return;
-      if (introUp || window._digitalOpen || window._raceOpen || overlayOpen()) return;
+      if (window._digitalOpen || window._raceOpen || overlayOpen()) return;
       if (e.target.closest('.nav, .mode-switch')) return;
       sw = { id: e.pointerId, x0: e.clientX, y0: e.clientY, lastX: e.clientX, lastT: e.timeStamp, v: 0, horiz: null };
     });
@@ -3634,7 +3604,9 @@
     }
 
     // row i (File 01 on top of the register) ⇄ sheet n-1-i (top of the pile)
-    let activeIdx = 0;
+    let activeIdx  = 0;
+    let lastOpened = -1;   // the arrows carry on from the last file opened
+    let stepTimer  = 0;    // an arrow step waiting on the closing sheet (_stepFile)
     function setActive(i) {
       activeIdx = i;
       rows.forEach((r, k) => r.classList.toggle('active', k === i));
@@ -3656,6 +3628,7 @@
     function openFile(i) {
       if (window._fileDocOpen) return;
       setActive(i);
+      lastOpened = i;
       const info = DIGITAL_INFO[i];
       const no   = String(i + 1).padStart(2, '0');
       const sheet = SHEETS[n - 1 - i];
@@ -3689,6 +3662,8 @@
     }
 
     function closeFile() {
+      clearTimeout(stepTimer);   // an arrow step in flight stops here too
+      stepTimer = 0;
       if (!window._fileDocOpen) return;
       fileDoc.classList.remove('open');
       fileScrim.classList.remove('open');
@@ -3701,6 +3676,19 @@
       sheetNoteEl.textContent = 'YM · Build 2.0 · Index';
     }
     window._closeFileDoc = closeFile;
+
+    // The section-nav arrows (and ← →) step through the files in register
+    // order, from the last one opened (else from File 01, or the last going
+    // back). An open file closes first: the next one opens once its sheet has
+    // settled back into the pile (tweenFront runs one sheet at a time).
+    window._stepFile = dir => {
+      clearTimeout(stepTimer);
+      const next = lastOpened < 0 ? (dir > 0 ? 0 : n - 1) : (lastOpened + dir + n) % n;
+      if (!window._fileDocOpen) { stepTimer = 0; openFile(next); return; }
+      closeFile();
+      stepTimer = setTimeout(() => { stepTimer = 0; openFile(next); }, 520);
+    };
+    window._fileStepping = () => stepTimer !== 0;   // Escape cancels a step in flight
 
     rows.forEach((r, i) => {
       r.addEventListener('click', () => openFile(i));
@@ -4513,7 +4501,7 @@ const STEERING_POS   = { x: 2.7, z: -1.7 };  // right of the car, in front of th
 // the others fade out.
 let featured = 'car';
 
-// Per-project copy (panel, identity caption, hover tag, dimension line)
+// Per-project copy (panel, identity caption, scene labels, dimension line)
 // lives in the main script (window.PROJECT_INFO).
 const PROJECT_INFO = window.PROJECT_INFO;
 
@@ -4530,7 +4518,6 @@ const ppBody       = document.getElementById('ppBody');   //   (and its copy wra
 const ppFig        = document.getElementById('ppFig');
 const dimLine      = document.getElementById('dimLine');
 const dimLabel     = document.getElementById('dimLabel');
-const hoverTag     = document.getElementById('hoverTag');
 const sceneHint    = document.querySelector('.scene-hint');
 const identityMeta  = document.querySelector('.identity-meta');
 const identityLayer = document.querySelector('.identity-layer');
@@ -4539,7 +4526,9 @@ const IDENTITY_DEFAULT = {
   layer: identityLayer.textContent,
   desc:  identityDesc.innerHTML
 };
-const HINT_DEFAULT = sceneHint.textContent;
+const HINT_LOADING = sceneHint.textContent;   // the markup's, until the five models are in
+const HINT_START   = 'Start at 01, or click any project';   // at rest, until one has been open
+const HINT_DEFAULT = 'Click on a project to view more';
 const HINT_ZOOMED  = 'Click anywhere to return';
 const HINT_DIGITAL = 'Click a file to open it';
 const sheetNote    = document.querySelector('.sheet-note');
@@ -4551,7 +4540,8 @@ const IDENTITY_DIGITAL = {
 };
 let digitalT = 0;                // eased flip state: 0 = physical, 1 = digital
 let identityShows = 'default';   // 'default' | 'digital' | featured project key
-let hoverTagO = 0, hoverTagX = 0, hoverTagY = 0;   // hover callout state
+let hintShows     = HINT_LOADING;
+let projectsIn    = false;       // all five GLBs arrived (or 12 s passed) — the hint stops saying "Loading"
 const detailCallout = document.getElementById('detailCallout');
 let detailO = 0;                 // detail-callout smoothed opacity
 
@@ -5515,7 +5505,42 @@ const sprocketPanel = document.getElementById('sprocketPanel');
 // While a project is featured, the section-nav arrows cycle to the next /
 // previous project: zoom out, swap the feature at rest, zoom back in.
 let pendingFeature = null;
-const FEATURE_ORDER = ['scooter', 'printer', 'car', 'steering', 'rivian'];
+// ONE project order for every control — arrows, keys, labels, the phone
+// carousel and its pager: project number, 01 → 05 (PROJECT_INFO's key order)
+const PROJECT_ORDER = Object.keys(PROJECT_INFO);
+let toured = false;   // has any project been opened yet (desktop arrows start at 01)
+function featureProject(name) {   // desktop, from rest: zoom into one project
+  featured = name;
+  fillProjectPanel(name);
+  zoomDir = 1;
+  toured = true;
+}
+
+// Scene labels (desktop): each project's number and name at its model at
+// rest, so the models are named before anyone hovers — and a name is a
+// second way in. Placed per frame off the model's hit proxy (see the loop):
+// over the back row, under the front row — a front model's label above it
+// would sit across the model behind. The card click handler skips them, so
+// a click on one never raycasts.
+const LABEL_HITBOX = { car: carHitbox, rivian: rivianHitbox, scooter: scooterHitbox,
+                       printer: printerHitbox, steering: steeringHitbox };
+const LABEL_BELOW  = { car: true, scooter: true, steering: true };   // the front row
+const labelEls = {};
+const labelPt  = new THREE.Vector3();
+let labelsCoverO = 1;   // smoothed: labels fade out under a page or the menu
+if (!COMPACT) {
+  const box = document.getElementById('sceneLabels');
+  for (const k of PROJECT_ORDER) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = LABEL_BELOW[k] ? 'scene-label below' : 'scene-label';
+    b.innerHTML = `<b>${PROJECT_INFO[k].index}</b>${PROJECT_INFO[k].title}`;
+    b.setAttribute('aria-label', `${PROJECT_INFO[k].index} · ${PROJECT_INFO[k].title}`);
+    b.addEventListener('click', () => { if (zoomT === 0 && !pendingFeature) featureProject(k); });
+    box.appendChild(b);
+    labelEls[k] = b;
+  }
+}
 
 // ── Compact carousel ─────────────────────────────────────────────────────
 // Phones see one project at a time. The first time the Hands-On page shows,
@@ -5528,8 +5553,7 @@ const FEATURE_ORDER = ['scooter', 'printer', 'car', 'steering', 'rivian'];
 // through the scene. carPos is the continuous position in stations (0 = the
 // car); the line wraps, so it has no ends. Swipes, the pager and the arrow
 // keys come in through window._swipe / _swipeTo / _swipeDrag (main script).
-const MOBILE_ORDER = Object.keys(PROJECT_INFO);   // project-number order, 01 → 05
-const NST = MOBILE_ORDER.length;
+const NST = PROJECT_ORDER.length;
 let carousel    = false;               // compact, and the opening zoom has landed
 let carPos      = 0, carVel = 0;       // stations, stations/s
 let carTarget   = 0;                   // the station it is settling on (an integer)
@@ -5540,7 +5564,7 @@ let nudgeT      = 0, carNudged = false;   // the one-time "there's more" nudge
 const wrapSt = i => ((i % NST) + NST) % NST;
 // signed distance, in stations, from the view to a model's nearest copy
 function stationDelta(name) {
-  let d = (MOBILE_ORDER.indexOf(name) - carPos) % NST;
+  let d = (PROJECT_ORDER.indexOf(name) - carPos) % NST;
   if (d > NST / 2) d -= NST; else if (d < -NST / 2) d += NST;
   return d;
 }
@@ -5556,7 +5580,7 @@ window._swipe = dir => {
 };
 // Jump to a project (pager dots) the short way round the loop
 window._swipeTo = name => {
-  const i = MOBILE_ORDER.indexOf(name);
+  const i = PROJECT_ORDER.indexOf(name);
   if (!carousel || i < 0) return false;
   let d = wrapSt(i - Math.round(carTarget));
   if (d > NST / 2) d -= NST;
@@ -5587,17 +5611,22 @@ window._swipeDrag = (phase, dx, v) => {
   return true;
 };
 
+// Arrows and ← →: the projects in number order. At rest they start the
+// tour (01, or 05 going back) or, once a project has been open, carry on
+// from it. While one is open they bounce to the next; a press during a
+// bounce, or while a zoom is still coming in, moves the target on.
 window._cycleFeatured = dir => {
   if (COMPACT) return window._swipe(dir);   // arrow keys on a phone / tablet
-  // At rest (or heading back to it) the arrows flip pages instead. A press
-  // during a bounce, or while a zoom is still coming in, moves the target on —
-  // it used to fall through to the page flip, so a quick double-click on
-  // "next" landed on the digital page.
-  if (!pendingFeature && zoomDir !== 1 && zoomT < 0.5) return false;
-  pendingFeature = FEATURE_ORDER[
-    (FEATURE_ORDER.indexOf(pendingFeature || featured) + dir + FEATURE_ORDER.length) % FEATURE_ORDER.length];
-  sprocketOpen = false;
-  seatOpen = false;
+  const N = PROJECT_ORDER.length, from = PROJECT_ORDER.indexOf(pendingFeature || featured);
+  const next = toured || pendingFeature ? PROJECT_ORDER.at((from + dir + N) % N)
+                                        : PROJECT_ORDER.at(dir > 0 ? 0 : -1);
+  if (!pendingFeature && zoomDir !== 1 && zoomT < 0.5) {
+    if (zoomT === 0) featureProject(next);   // at rest
+    else pendingFeature = next;              // heading back to rest: bounce into it
+    return true;
+  }
+  pendingFeature = next;
+  leaveDetail();
   zoomDir = -1;
   return true;
 };
@@ -5635,7 +5664,7 @@ card.addEventListener('click', e => {
   // Clicks on the menu and the opaque pages bubble up to the card too; they
   // must never raycast the hidden scene behind them (a click on the About
   // page used to zoom whichever model sat under the pointer)
-  if (e.target.closest('.nav-menu-btn, .nav-overlay, .page-overlay, .contact-page, .race-page, .split-intro, .section-nav, .edge-tab, .mode-switch, .m-pager, .project-panel')) return;
+  if (e.target.closest('.nav, .nav-overlay, .page-overlay, .contact-page, .race-page, .scene-labels, .section-nav, .edge-tab, .mode-switch, .m-pager, .project-panel')) return;
   if (!modelMeshes.length) return;
   const r = card.getBoundingClientRect();
   mousePt.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
@@ -5695,10 +5724,8 @@ card.addEventListener('click', e => {
     const steeringHit = !carHit && !rivianHit && !scooterHit && !printerHit && steeringMeshes.length &&
                        raycaster.intersectObjects(steeringHitbox, false).length > 0;
     if (carHit || rivianHit || scooterHit || printerHit || steeringHit) {
-      featured = carHit ? 'car' : rivianHit ? 'rivian' : scooterHit ? 'scooter'
-               : printerHit ? 'printer' : 'steering';
-      fillProjectPanel(featured);
-      zoomDir = 1;
+      featureProject(carHit ? 'car' : rivianHit ? 'rivian' : scooterHit ? 'scooter'
+                     : printerHit ? 'printer' : 'steering');
     }
   } else if (!sprocketOpen) {
     zoomDir = -1;
@@ -5713,9 +5740,9 @@ card.addEventListener('click', e => {
 window._feature = name => {
   if (COMPACT && carousel) { window._swipeTo(name); return; }
   if (zoomT === 0 && PROJECT_INFO[name]) {
-    featured = name; fillProjectPanel(name); zoomDir = 1;
+    featureProject(name);
     // compact: the opening zoom lands the carousel on this station
-    if (COMPACT) carPos = carTarget = truckBase = MOBILE_ORDER.indexOf(name);
+    if (COMPACT) carPos = carTarget = truckBase = PROJECT_ORDER.indexOf(name);
   }
 };
 window._seatDetach = v => { seatOpen = !!v; };
@@ -5738,7 +5765,7 @@ function cardFlag(name, on) {
   if (cardFlags[name] !== on) { cardFlags[name] = on; card.classList.toggle(name, on); }
 }
 function announce() {   // the main script's pager follows this
-  card.dispatchEvent(new CustomEvent('featured', { detail: MOBILE_ORDER.indexOf(featured) }));
+  card.dispatchEvent(new CustomEvent('featured', { detail: PROJECT_ORDER.indexOf(featured) }));
 }
 function compactStep(dt, cover) {
   const onPage = cover === '' && !window._digitalOpen;
@@ -5768,7 +5795,7 @@ function compactStep(dt, cover) {
     if (carDragging || carTarget !== truckBase) carNudged = true;   // found it on their own
     else if (onPage && (nudgeT += dt) > 1.4) { carNudged = true; carVel = 2.4; }
   }
-  const name = MOBILE_ORDER[wrapSt(Math.round(carPos))];
+  const name = PROJECT_ORDER[wrapSt(Math.round(carPos))];
   if (name !== featured) {
     featured = name;
     fillProjectPanel(name);
@@ -5789,17 +5816,16 @@ function loop() {
 
   // Arrow-cycling bounce: once fully back at rest, feature the next project
   if (pendingFeature && zoomT === 0) {
-    featured = pendingFeature;
+    const name = pendingFeature;
     pendingFeature = null;
-    fillProjectPanel(featured);
-    zoomDir = 1;
+    featureProject(name);
   }
 
   // Share zoom progress with the dot grid so it can reproject its own camera.
   const c = window._dotCam || { hSkew: -0.09, tilt: 1, vShift: 0 };
 
-  // Intro, menu, and opaque pages hide the scene: no hover raycasts under
-  // them, and no drawing once a page has fully slid in (pageCoverT, below)
+  // The menu and opaque pages hide the scene: no hover raycasts under them,
+  // and no drawing once a page has fully slid in (pageCoverT, below)
   const cover        = window._sceneCover ? window._sceneCover() : '';
   const sceneCovered = cover !== '';
   pageCoverT = cover === 'page' ? pageCoverT + dt : 0;
@@ -5823,7 +5849,7 @@ function loop() {
   let zoomEl = elOf(featured);
   if (carousel) {
     const f = Math.floor(carPos), u = carPos - f, k = u * u * (3 - 2 * u);
-    const e0 = elOf(MOBILE_ORDER[wrapSt(f)]), e1 = elOf(MOBILE_ORDER[wrapSt(f + 1)]);
+    const e0 = elOf(PROJECT_ORDER[wrapSt(f)]), e1 = elOf(PROJECT_ORDER[wrapSt(f + 1)]);
     zoomEl = e0 + (e1 - e0) * k;
   }
   const baseAz = BASE_AZ - c.hSkew * 0.30 * (1 - ease);
@@ -5924,14 +5950,20 @@ function loop() {
               : PROJECT_INFO[identityTarget];
     identityLayer.textContent = src.layer;
     identityDesc.innerHTML    = src.desc;
-    sceneHint.textContent     = identityTarget === 'digital' ? HINT_DIGITAL
-                              : identityTarget === 'default' ? HINT_DEFAULT : HINT_ZOOMED;
     sheetNote.textContent     = identityTarget === 'digital'
       ? 'YM · Build 2.0 · Index'
       : identityTarget === 'default'
       ? 'YM · Build 1.0 · Index'
       : `YM · Build 1.0 · Sheet ${PROJECT_INFO[identityTarget].index}/05`;
   }
+  // At rest the hint says the projects are loading until all five are in (a
+  // model that never arrives gives up after 12 s) — the one text swap made
+  // without the crossfade — then points at 01 until a project has been open
+  if (!projectsIn) projectsIn = PROJECT_ORDER.every(k => LOADED[k]()) || now > 12000;
+  const hintText = identityTarget === 'digital' ? HINT_DIGITAL
+                 : identityTarget !== 'default' ? HINT_ZOOMED
+                 : !projectsIn ? HINT_LOADING : toured ? HINT_DEFAULT : HINT_START;
+  if (hintText !== hintShows) sceneHint.textContent = hintShows = hintText;
   const metaFade = Math.min(1, Math.abs(ease - 0.5) * 2)
                  * Math.min(1, Math.abs(digitalT - 0.5) * 2);
   identityMeta.style.opacity = metaFade;
@@ -6330,8 +6362,8 @@ function loop() {
   }
 
   // Hover detection (only at rest, and never under the digital page or the
-  // intro / menu / opaque pages — raycaster is expensive on complex mesh,
-  // and the pointer cursor would show through those layers)
+  // menu / opaque pages — raycaster is expensive on complex mesh, and the
+  // pointer cursor would show through those layers)
   if (!transitioning && !window._digitalOpen && !sceneCovered && c.mx > -999) {
     const rect = card.getBoundingClientRect();
     mousePt.set((c.mx / rect.width) * 2 - 1, -(c.my / rect.height) * 2 + 1);
@@ -6442,21 +6474,47 @@ function loop() {
   const cursor = pointer ? 'pointer' : '';
   if (card.style.cursor !== cursor) card.style.cursor = cursor;
 
-  // Hover callout tag: a mono spec label that trails the cursor over a model
-  const hoverName = rivianHovered ? 'rivian' : scooterHovered ? 'scooter'
-                  : printerHovered ? 'printer' : steeringHovered ? 'steering'
-                  : isHovered ? 'car' : null;
-  if (hoverName) {
-    const hi = PROJECT_INFO[hoverName];
-    hoverTag.textContent = `${hi.index} · ${hi.title}`;
+  // Scene labels: gone by ease 0.25 (a zoom's first moment — the car is
+  // faded by then), and out with the Digital flip or under a page / menu.
+  // Each rides its model's hit proxy, centred on it: over the top face's
+  // centre (back row), or under the lowest of the bottom face's edge
+  // midpoints on screen (front row — about where the model meets the ground
+  // nearest the camera; the box's corners overshoot the silhouette).
+  // Hovering a model lights its label.
+  if (!COMPACT) {
+    const hovered = ease > 0.05 ? null
+                  : isHovered ? 'car' : rivianHovered ? 'rivian' : scooterHovered ? 'scooter'
+                  : printerHovered ? 'printer' : steeringHovered ? 'steering' : null;
+    labelsCoverO += ((sceneCovered ? 0 : 1) - labelsCoverO) * (1 - Math.exp(-10 * dt));
+    const o = labelsCoverO * Math.max(0, 1 - ease * 4) * (1 - digitalT);
+    if (o > 0.01) camera.updateMatrixWorld();
+    for (const k of PROJECT_ORDER) {
+      const el = labelEls[k], proxy = LABEL_HITBOX[k][0];
+      if (!proxy || o <= 0.01) {
+        if (el.style.visibility !== 'hidden') { el.style.visibility = 'hidden'; el.style.opacity = '0'; }
+        continue;
+      }
+      proxy.updateWorldMatrix(true, false);
+      const g = proxy.geometry.parameters;
+      let y = Infinity;   // NDC (y up)
+      if (LABEL_BELOW[k]) {
+        for (let i = 0; i < 4; i++) {   // the lowest of the bottom face's edge midpoints
+          labelPt.set(i < 2 ? (i ? 0.5 : -0.5) * g.width : 0, -g.height / 2,
+                      i < 2 ? 0 : (i & 1 ? 0.5 : -0.5) * g.depth);
+          y = Math.min(y, proxy.localToWorld(labelPt).project(camera).y);
+        }
+      } else {
+        y = proxy.localToWorld(labelPt.set(0, g.height / 2, 0)).project(camera).y;   // top face centre
+      }
+      proxy.localToWorld(labelPt.set(0, 0, 0)).project(camera);
+      el.style.visibility = 'visible';
+      el.style.opacity    = o.toFixed(3);
+      el.style.transform  = `translate(${((labelPt.x + 1) / 2 * viewW).toFixed(1)}px, ` +
+                            `${((1 - y) / 2 * viewH).toFixed(1)}px)`;
+      const on = hovered === k;
+      if (el.classList.contains('on') !== on) el.classList.toggle('on', on);
+    }
   }
-  const tagK = 1 - Math.exp(-14 * dt);
-  if (hoverTagO < 0.02 && c.mx > -999) { hoverTagX = c.mx; hoverTagY = c.my; }  // no fly-in
-  hoverTagX += (c.mx - hoverTagX) * tagK;
-  hoverTagY += (c.my - hoverTagY) * tagK;
-  hoverTagO += ((hoverName && ease < 0.05 ? 1 : 0) - hoverTagO) * tagK;
-  hoverTag.style.opacity = hoverTagO;
-  hoverTag.style.transform = `translate(${hoverTagX + 16}px, ${hoverTagY - 44}px)`;
 
   // Non-featured models fade out during zoom; the featured one stays opaque.
   // In the carousel a model shows while it is within a station of the view
@@ -6528,9 +6586,7 @@ function loop() {
   // Nothing to draw once an opaque layer fully hides the scene: the digital
   // page after its flip lands, or the menu / a page / the race after its
   // slide-in (0.6 s outlasts the longest, 0.48 s). Everything above keeps
-  // running, so the first frame back is current. Never skipped under the
-  // intro — rendering there compiles shaders and uploads the models before
-  // the reveal, instead of hitching the swipe.
+  // running, so the first frame back is current.
   const hidden = (window._digitalOpen && digitalT === 1) || pageCoverT > 0.6;
   if (window._dotCam) window._dotCam.hidden = hidden;   // the dot grid skips too
   if (!hidden) composer.render();

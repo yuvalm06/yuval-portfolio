@@ -37,10 +37,10 @@ matchMedia('(max-width: 640px), (pointer: coarse) and (orientation: portrait), '
 
 ## The carousel (3D module)
 
-- **Opening zoom.** The first time the Hands-On page is actually on screen
-  (intro dismissed, not under Digital or a page) the desktop zoom plays into
-  the car — once its GLB is in, or after 3 s regardless. Until then the scene
-  sits at rest behind the intro, exactly like desktop.
+- **Opening zoom.** The site opens on the Hands-On page, and the desktop
+  zoom plays into the car as soon as that page is on screen (not under
+  Digital or a page) — once the car's GLB is in, or after 3 s regardless.
+  Until then the scene sits at rest, exactly like desktop.
 - **Stations.** Once the zoom lands (`zoomT === 1` → `carousel`), every model
   holds its `FEATURE_POSE` at its own station along world x:
   `stageT(name)` is `ease` for all of them (desktop: only `featured`) and
@@ -172,7 +172,15 @@ phones stay at 8 (height-limited).
   sheet column in landscape) replaces the edge tabs; `updateTabs()` drives
   both. Hidden while a file doc is open.
 - Hidden on compact: identity, scene hint, frame marks, section-nav arrows,
-  edge tabs, dimension line, hover tag.
+  edge tabs, dimension line, scene labels (the carousel shows one project at
+  a time, its sheet names it).
+- **Top bar:** the name shares the top row with Resume · Contact · menu; the
+  role line and the status note ("Queen's '28 · Open to 2027 internships &
+  co-ops") run full width under it. `--nav-h` clears it: 96px on phones
+  (≤ 689px wide), 106px on portrait tablets (≤ 900px, the 38px name), 78px
+  where the two lines still fit beside the name — landscape phones from
+  690px (at the phone type) and anything wider than 900px. Below 360px
+  Contact drops to the menu (no room for a third button).
 - The digital page's register column scrolls; About is one column on every
   compact screen; the card fills the screen (`100dvh` follows mobile browser
   toolbars) and is pinned against programmatic scroll (focus moves).
