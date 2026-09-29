@@ -573,8 +573,9 @@ against the numbers on the sheets).
   meshes otherwise).
 - Zoom-out reverses everything; `featured` persists until the next click
   (harmless — at ease 0 all models are at their rest poses).
-- The sheet note shows `Sheet NN/05` — bump the denominator when adding a
-  sixth project.
+- The sheet note ("Hands-On · 02 of 05") and the caption ("Project 02 of 05")
+  count `PROJECT_ORDER` — a sixth project only needs its `PROJECT_INFO`
+  entry (with a `slug`), its model, and its hit proxy.
 
 ---
 
@@ -618,10 +619,19 @@ headlines and body copy.
 
 - **Spec-sheet panel:** corner tick marks (`.tick`, reused on the sprocket
   panel and card frame), mono tag + ghost index numeral header, ruled title,
-  numbered rows (CSS counter `pp-row`), figure slot with diagonal hatch
-  placeholder ("Fig. 01", replaced by `PROJECT_INFO[..].img` where set), and a
-  "REV A · 2026 / YM WORKS" meta footer. Rows stagger in via transition-delays
-  when the RAF loop toggles `.in` at ppIn > 0.4.
+  then ONE shape for every project (P1.1, `PROJECT_INFO`): a mono "who" line
+  (`sub`: team · role), labelled rows with run-in mono labels (`rows`:
+  Problem → Approach → Result — a concept states its Concept; a fact the
+  resume doesn't give is left out, not invented — then a `Try` row from
+  `hint`), the figure (hatch placeholder "Fig. 01" unless `img`), a footer of
+  real metadata (`when` · `status` — it replaced the decorative "REV A · 2026 /
+  YM WORKS"), and the links: `Related · …` (the matching Digital file) and the
+  named next step `Next · 02 Rivian R1S — Cabin Zoning` (after 05,
+  `Next · Wrap-up`) — see addresses.md. The panel is pointer-events: none (a
+  click anywhere zooms out); its links opt back in while it is `.in`. Rows
+  stagger in via transition-delays when the RAF loop toggles `.in` at
+  ppIn > 0.4. It must clear the top bar and the arrows at 1280×720: on
+  screens under 820px tall the figure is 96px and rows 11.5px.
 - **Dimension line** (`#dimLine`): drawing-style dimension with end ticks and
   a mono label under the featured model; geometry per project in
   `PROJECT_INFO[..].dim` = {l, w, y (percent), label}. Draws outward from
@@ -646,18 +656,26 @@ headlines and body copy.
   has been open (`toured`), then "CLICK ON A PROJECT TO VIEW MORE"; it swaps
   to "CLICK ANYWHERE TO RETURN" when zoomed, and the
   **sheet note** (bottom centre, inside `.frame-marks`) reads
-  "…· Index" at rest / "…· Sheet 02/03" when featured — both crossfade on the
-  same `|ease − 0.5| × 2` dip as the identity caption.
+  "Hands-On · Overview" at rest / "Hands-On · 02 of 05" when featured — both
+  crossfade on the same `|ease − 0.5| × 2` dip as the identity caption. The
+  caption's title is the side's name (Hands-On / Digital) and swaps with the
+  page flip; its layer line reads "5 engineering projects" at rest and
+  "Project 02 of 05" when featured (no "Build 1.0 / 2.0" anywhere a visitor
+  reads it).
 - **Arrow cycling:** the section-nav arrows call `window._cycleFeatured(dir)`
   (module) and only ever step projects — they never flip pages (on the
-  Digital page they step files instead, see digital-page.md). At rest the
-  first press starts the tour (01, or 05 going back); once a project has been
-  open (`toured`) a press carries on from it. While zoomed: zoom out, swap
-  the feature at rest, zoom back in (`pendingFeature` bounce). A press during
-  a bounce (or while a zoom is still coming in) advances `pendingFeature`.
-  Button handlers stopPropagation so the card's zoom-out click doesn't also
-  fire. The ←/→ keys press the same buttons (not on key auto-repeat; ignored
-  while a page, the menu, or the race is open).
+  Digital page they step files instead, see digital-page.md). The sequence
+  has ends: at rest the first press starts at 01 (once a project has been
+  open — `toured` — a press carries on from it); ← from 01 returns to rest;
+  → past 05 zooms out and opens the wrap-up card, and ← from the wrap-up
+  goes back to 05 (addresses.md). The arrows dim where there is nothing
+  further (`.section-btn.off`, set by the router's poll). Moves go through
+  `goProject(key)`: from rest a zoom in, from another project a bounce (zoom
+  out, swap the feature at rest, zoom back in — `pendingFeature`). A press
+  during a bounce (or while a zoom is still coming in) advances
+  `pendingFeature`. Button handlers stopPropagation so the card's zoom-out
+  click doesn't also fire. The ←/→ keys press the same buttons (not on key
+  auto-repeat; ignored while a page, the menu, or the race is open).
 
 ---
 
@@ -671,11 +689,14 @@ that hidden model (measured: ease 0.41–0.59 behind the page; 0 now).
 
 - **Clicks:** the card handler returns early when `e.target.closest(...)`
   is the top bar (`.nav`: name, Resume, Contact, menu button), the menu, a
-  page overlay, the race page, a scene label, the section-nav, an edge tab,
-  or (compact) the switch, pager or sheet. The sprocket panel is deliberately
-  NOT in the list — a click on it still closes the detail view.
+  page overlay, the race page, the wrap-up card or its scrim, a scene label,
+  the section-nav, an edge tab, or (compact) the switch, pager or sheet. The
+  sprocket panel is deliberately NOT in the list — a click on it still closes
+  the detail view. (Clicks on "#…" links never get here at all: the router
+  takes them in the capture phase.)
 - **Hover:** `window._sceneCover()` (main script) returns `'page'` (menu /
-  page / race) or `''`; hover raycasts only run when it is `''`.
+  page / race), `'end'` (the wrap-up — the scene stays drawn behind its
+  scrim) or `''`; hover raycasts only run when it is `''`.
 - **Cursor:** derived ONCE per frame from the union of hover flags, at the
   end of the hover block. Each channel used to write `card.style.cursor`
   itself, so moving straight from one model's hitbox onto a neighbour (e.g.
@@ -687,6 +708,11 @@ that hidden model (measured: ease 0.41–0.59 behind the page; 0 now).
   skips `composer.render()` and sets `_dotCam.hidden` so the dot grid skips
   its redraw. All state updates keep running, so the first frame back is
   current.
-- **Escape:** menu/page → file doc → `window._stepBack()` (closes an open
-  sprocket / seat detail view, then zooms out of the featured project,
-  cancelling an arrow-cycling bounce) → `flipTo(0)`.
+- **Escape:** menu/page → wrap-up card → file doc → `window._stepBack()`
+  (closes an open sprocket / seat detail view, then zooms out of the featured
+  project, cancelling an arrow-cycling bounce) → `flipTo(0)`.
+- **Router hooks** (addresses.md): `_goProject(key, detail)`, `_goRest()`,
+  `_sceneTarget()` (where the scene is headed — for the address bar),
+  `pendingSprocket` (an address asked for the sprocket study: it opens once
+  the car's zoom has landed), `_sceneReady()` called at the end of the
+  module.

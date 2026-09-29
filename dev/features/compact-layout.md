@@ -44,8 +44,10 @@ matchMedia('(max-width: 640px), (pointer: coarse) and (orientation: portrait), '
 - **Stations.** Once the zoom lands (`zoomT === 1` → `carousel`), every model
   holds its `FEATURE_POSE` at its own station along world x:
   `stageT(name)` is `ease` for all of them (desktop: only `featured`) and
-  `stageX(name) = stationDelta(name) × spacing`. Stations wrap (each model
-  sits at its nearest copy), so the line has no ends.
+  `stageX(name) = stationDelta(name) × spacing`. The line has ends: 01 first,
+  05 last (`clampSt`); a drag past either end gives (0.3×) and springs back,
+  and › at 05 opens the wrap-up card instead of wrapping to 01
+  (addresses.md). It used to wrap, with no way to tell you had seen them all.
 - **Motion.** `carPos` (continuous, in stations) is the view; `carTarget` the
   integer station it settles on through an exact critically damped spring
   (ω 10 — about 0.4 s; a flick's velocity carries straight in).
@@ -64,15 +66,15 @@ matchMedia('(max-width: 640px), (pointer: coarse) and (orientation: portrait), '
   steering 0.24, the rest 0.10); on compact the dot grid's `SV_TILT` follows
   it (`_dotCam.zoomEl`) so the ground stays under the raised views.
 - Once, 1.4 s after it first lands, the carousel nudges toward the next
-  project and springs back — "this moves sideways". Skipped if the user has
-  already moved it.
+  project and springs back — "this moves sideways" (landing on 05 from an
+  address, it nudges back instead). Skipped if the user has already moved it.
 
 ### Entry points (main script → module; all guarded, the module loads async)
 
 | Hook | Used by | Does |
 |------|---------|------|
-| `_swipe(±1)` | pager arrows, arrow keys (via `_cycleFeatured`) | one station; presses stack on the target |
-| `_swipeTo(key)` | pager dots | that project, the short way round |
+| `_swipe(±1)` | pager arrows, arrow keys (via `_cycleFeatured`) | one station; presses stack on the target; › at 05 opens the wrap-up, ‹ under it closes it |
+| `_swipeTo(key)` | pager dots, the router (`_goProject`) | that project |
 | `_swipeDrag('move' \| 'end', dx, v)` | the swipe gesture | the model tracks the finger 1:1 (px per station = `spacing × ppu`); on release a flick (> 0.35 px/ms) goes on in its direction, otherwise the nearer station — a third of the way is enough to leave |
 | `_carouselState()` | tests | `{ carousel, carPos, carTarget, featured, dragging }` |
 | `_feature(name)` | tests | at rest: pre-selects the station the opening zoom lands on; after: `_swipeTo` |
@@ -125,10 +127,12 @@ phones stay at 8 (height-limited).
 - **Portrait:** docked above the switch at a fixed collapsed height
   (`--sheet-h`, 128px — the stage is framed around it): tag, title and a
   two-line summary (the project's `desc`, `<br>` dropped). Tapping it — or
-  Details — opens it up the screen (`.expanded`: rows, figure with its
-  `imgCap` caption, meta; it scrolls). Close, a tap on the scene above, or
-  rotating the phone folds it back. The pager steps aside while it's open
-  (`sheet-open` on the card).
+  Details — opens it up the screen (`.expanded`: the who line, the labelled
+  Problem → Approach → Result rows, figure with its `imgCap` caption, dates ·
+  status, Related / Next links; it scrolls). Close, a tap on the scene above,
+  rotating the phone, or moving to another project (the `featured` event —
+  a swipe, the pager, the sheet's own Next, Back) folds it back. The pager
+  steps aside while it's open (`sheet-open` on the card).
 - **Landscape:** beside the stage, always open.
 - Between stations the sheet frame stays; its copy wrapper `.pp-body`
   (`display: contents` on desktop — no box, no layout change) fades out a
@@ -165,9 +169,12 @@ phones stay at 8 (height-limited).
 ## Navigation and pages
 
 - **Pager** `‹ • • • • • ›` between the stage and the sheet (under the stage
-  in landscape): arrows step, dots jump. Shown once the carousel is up
-  (`carousel-on`); hidden under Digital, the open sheet and the sprocket
-  study (`detail-open`).
+  in landscape): arrows step, dots jump; ‹ is disabled at 01 and › at 05
+  opens the wrap-up. Shown once the carousel is up (`carousel-on`); hidden
+  under Digital, the open sheet and the sprocket study (`detail-open`).
+- Every station has an address (`#rivian` …; 01 is the bare address) —
+  Back steps back along the line; a link to a project opens the carousel on
+  it (addresses.md).
 - **Hands-On | Digital switch** (`.mode-switch`, bottom centre; under the
   sheet column in landscape) replaces the edge tabs; `updateTabs()` drives
   both. Hidden while a file doc is open.

@@ -1,4 +1,4 @@
-# Feature: Digital Page (Build 2.0)
+# Feature: Digital Page
 
 **File:** `index.html` — `.digital-page` markup + CSS, wiring in the first
 `<script>` block, identity/hint integration in the Three.js module
@@ -62,7 +62,7 @@ axes, but the projects are *files*:
 - `digitalT` lerps toward `_digitalOpen` (`1 − exp(−6·dt)`), and drives the
   same dip-to-zero crossfade as the featured zoom for the identity caption
   (`IDENTITY_DIGITAL`), scene hint (`HINT_DIGITAL`), and sheet note
-  (`YM · Build 2.0 · Index`). `metaFade` multiplies the ease and digital fades.
+  (`Digital · Overview`). `metaFade` multiplies the ease and digital fades.
 
 ## Sheet stack constants
 
@@ -154,11 +154,23 @@ clicks) except `#sheetStack` (click closes). Siblings in the pile fade to
 0.4 via `.file-open #sheetStack .sheet:not(.front)`.
 
 **Arrows:** on this page the section-nav arrows (and ←/→) step through the
-files in register order via `window._stepFile(dir)` — from the last file
-opened, else from File 01 (the last file going back). An open file closes
-first and the next opens 520 ms later, once its sheet has settled into the
-pile (`tweenFront` runs one sheet at a time). Escape during that gap cancels
-the step (`window._fileStepping()`); `closeFile()` clears the timer.
+files in register order via `window._stepFile(dir)`, with ends: from the
+register they start at File 01 (or carry on from the last file opened); ←
+from File 01 returns to the register; → past the last file opens the wrap-up
+card (addresses.md), and ← from it reopens the last file. `openFileAt(i)`
+does the move: straight away from the register; from an open file, that file
+closes first and the next opens 520 ms later, once its sheet has settled into
+the pile (`tweenFront` runs one sheet at a time). Escape during that gap
+cancels the step (`window._fileStepping()`); `closeFile()` clears the timer.
+
+**Links and addresses:** each file doc ends with its next step
+(`Next · File 02 Actiograph`, after the last `Next · Wrap-up`) and, where there
+is one, the matching Hands-On project (`Related · Formula SAE Drivetrain`,
+`DIGITAL_INFO[..].related`). Every file has an address (`#digital/pursr` —
+`DIGITAL_INFO[..].slug`); `window._fileTarget()` tells the router which file is
+open or on its way. The title block is File / Year / Status: the decorative
+"Rev" letter is gone (the sheet faces print `FILE 01 · 2026 · ACTIVE` and
+`YUVAL MUNZ`), and the page label reads "Software & ventures".
 
 Close paths: ✕ button, scrim click, stack click, Escape (closes the doc
 first, flips home on the next press), and `flipTo(0)` (calls
@@ -167,7 +179,7 @@ first, flips home on the next press), and `flipTo(0)` (calls
 still receive Enter). The nav strip above the page is click-through
 (`pointer-events: none`, children opt back in), so a tall doc's ✕ is never
 blocked by the empty width of the nav.
-While open, the sheet note reads `YM · Build 2.0 · File NN`.
+While open, the sheet note reads `Digital · File NN of 06`.
 
 ## Gotchas
 
