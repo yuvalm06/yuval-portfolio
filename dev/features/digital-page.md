@@ -176,7 +176,7 @@ While open, the sheet note reads `YM · Build 2.0 · File NN`.
 - The manifest row stagger uses a `--d` custom property per
   `nth-child` so the hover `background` transition keeps `0s` delay.
 - Content lives in `DIGITAL_INFO` (first script) + the manifest rows in the
-  markup — keep the two in sync (the resume has fuller Pursr / Campus
-  Cravings stories than the register does).
+  markup — keep the two in sync (the resume, `assets/resume.pdf`, has fuller
+  Pursr / Actiograph stories than the register does).
 - Phones (≤640px) show only No. / Name / Status in the register; type,
   stack, and year are in the opened file.
