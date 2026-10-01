@@ -15,7 +15,7 @@
   <meta property="og:image" content="https://yuvalmunz.com/assets/og-image.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Five engineering projects — an open-wheel race car, a Rivian R1S, an e-scooter, a belt 3D printer, and a Baja steering wheel — on an isometric dot grid." />
+  <meta property="og:image:alt" content="Five engineering projects — an open-wheel race car, a Rivian R1S, an e-scooter, a belt 3D printer, and an off-road steering wheel — on an isometric dot grid." />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231A1916'/%3E%3Ctext x='32' y='42' font-family='Helvetica,Arial,sans-serif' font-size='26' font-weight='700' letter-spacing='-1' fill='%23EEECEA' text-anchor='middle'%3EYM%3C/text%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -1697,14 +1697,7 @@
       flex-direction: column;
     }
 
-    .digital-sub {
-      font-size: 12.5px;
-      color: var(--ink-light);
-      line-height: 1.6;
-      max-width: 430px;
-      margin-top: 10px;
-    }
-    /* each side's intro points to the other */
+    /* each side's caption points to the other */
     .side-link {
       color: var(--ink);
       text-decoration: underline;
@@ -1723,7 +1716,7 @@
     .manifest-head,
     .manifest-row {
       display: grid;
-      grid-template-columns: 30px 1.25fr 0.95fr 1.3fr 40px 74px;
+      grid-template-columns: 30px 1.3fr 0.9fr 1.45fr 74px;
       gap: 12px;
       align-items: center;
     }
@@ -1774,7 +1767,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .m-type, .m-stack, .m-year {
+    .m-type, .m-stack {
       font-size: 10px;
       white-space: nowrap;
       overflow: hidden;
@@ -1782,7 +1775,6 @@
     }
     .m-type  { color: var(--ink-mid); }
     .m-stack { color: var(--ink-light); }
-    .m-year  { color: var(--ink-light); }
 
     .m-status {
       display: inline-flex;
@@ -2032,7 +2024,7 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-bottom: 6px;
+      margin: 2px 0 18px;
     }
     .fd-figs.one { grid-template-columns: 1fr; }
     .fd-figs[hidden], .fd-fig[hidden] { display: none; }   /* no image yet: no empty box */
@@ -2058,6 +2050,131 @@
     .fd-link::after { content: '  →'; white-space: pre; }
     .fd-link:hover  { text-decoration: underline; text-underline-offset: 2px; }
     .fd-link[hidden] { display: none; }
+
+    /* ── App screens in a phone frame: a file with `screens` plays them like
+       a short screen recording — each holds a few seconds, then the next
+       fades in the way a tab change would. The bars are the progress and
+       jump to a screen; a tap on the phone skips ahead; hover holds. Not
+       driven per frame, so plain CSS transitions / animations.
+       Sized by --dev-h: the column's height on desktop, the doc's width on
+       narrow screens. Screen 923 × 2000 (the screenshots), bezel 3% of the
+       width → the frame is 1000 × 2097. ── */
+    .device {
+      --dev-h: min(500px, calc(100vh - 250px));
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .device[hidden] { display: none; }
+    .device-phone {
+      position: relative;
+      height: var(--dev-h);
+      aspect-ratio: 1000 / 2097;
+      background: #1A1916;
+      border-radius: 13.5% / 6.44%;
+      box-shadow:
+        0 28px 48px rgba(26,25,22,0.20),
+        0 6px 14px rgba(26,25,22,0.12),
+        inset 0 0 0 1px rgba(255,255,255,0.10);
+      cursor: pointer;
+    }
+    .device-screen {
+      position: absolute;
+      inset: 1.43% 3%;
+      overflow: hidden;
+      border-radius: 11.2% / 5.15%;
+      background: #F7F7F5;          /* the app's own background */
+    }
+    .device-screen img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .device-screen img.on { opacity: 1; }
+    .device-island {
+      position: absolute;
+      top: 2.7%;
+      left: 50%;
+      width: 28%;
+      height: 3.5%;
+      translate: -50% 0;
+      border-radius: 999px;
+      background: #0B0B0A;
+    }
+    .device-cap {
+      width: calc(var(--dev-h) * 1000 / 2097);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+    .device-bars { display: flex; gap: 4px; width: 100%; }
+    .device-bars button {
+      flex: 1;
+      padding: 6px 0;               /* a usable hit area round a 2px bar */
+      background: none;
+      border: 0;
+      cursor: pointer;
+    }
+    .device-bars i {
+      display: block;
+      position: relative;
+      height: 2px;
+      border-radius: 1px;
+      overflow: hidden;
+      background: rgba(26,25,22,0.16);
+    }
+    .device-bars i::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--ink);
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+    .device-bars .done i::after { transform: none; }
+    .device-bars .on i::after { animation: device-fill 3.2s linear forwards; }
+    .device.held .device-bars .on i::after { animation-play-state: paused; }
+    @keyframes device-fill { to { transform: none; } }
+    .device-label {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      white-space: nowrap;
+    }
+    /* reduced motion: no autoplay — the bars still pick a screen */
+    @media (prefers-reduced-motion: reduce) {
+      .device-bars .on i::after { animation: none; transform: none; }
+      .device-screen img { transition: none; }
+    }
+    /* in the doc (narrow screens): under the description, sized to the
+       screen */
+    .file-doc .device { --dev-h: min(400px, 62vh); margin: 2px 0 20px; }
+    /* in the stack column (desktop): the phone takes the standing sheet's
+       place and the pile steps back */
+    .digital-right > .device {
+      position: absolute;
+      left: 50%;
+      top: 47%;
+      translate: -50% -50%;
+      pointer-events: auto;        /* the column passes clicks through while a file is open */
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(14px);
+      transition: opacity 0.45s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.45s;
+    }
+    .digital-right > .device.in { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+    #sheetStack { transition: opacity 0.4s ease; }
+    .digital-page.file-open.screens #sheetStack { opacity: 0; }
 
     /* ── Wrap-up card: the end of either side's sequence — over a scrim that
        keeps the scene in view (not an opaque page: it isn't driven per frame,
@@ -2183,13 +2300,16 @@
       .skills-col:last-child:nth-child(3n+2) { grid-column: span 2; }
       .digital-right { display: none; }
       .digital-left  { flex: 1; }
-      /* no stack column to share with — recenter the doc */
+      /* no stack column to share with — the doc is centred, hung under the
+         taller top bar (see the nav's narrow rules) and clear of the arrows */
       .file-doc {
         left: 50%;
+        top: 112px;
+        max-height: calc(100% - 182px);
         width: calc(100% - 40px);
-        transform: translate(-50%, -44%) rotate(0.8deg) scale(0.96);
+        transform: translate(-50%, 12px) rotate(0.8deg) scale(0.96);
       }
-      .file-doc.open { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+      .file-doc.open { transform: translateX(-50%); }
     }
 
     /* ─────────────────────────────────────────
@@ -2228,11 +2348,14 @@
       .fd-cell   { padding: 6px 6px 5px; }
       .fd-cell b { font-size: 10px; }
 
-      /* Digital register: No. / Name / Status — the opened file has the rest */
-      .manifest-head, .manifest-row { grid-template-columns: 24px 1fr auto; gap: 10px; }
-      .manifest-head span:nth-child(3), .manifest-head span:nth-child(4),
-      .manifest-head span:nth-child(5),
-      .m-type, .m-stack, .m-year { display: none; }
+      /* Digital register: No. / Name, its type under it / Status — the
+         opened file has the rest */
+      .manifest-head, .manifest-row { grid-template-columns: 24px 1fr auto; gap: 3px 10px; }
+      .manifest-head span:nth-child(3), .manifest-head span:nth-child(4), .m-stack { display: none; }
+      .manifest-row .m-no     { grid-area: 1 / 1 / 3 / 2; }
+      .manifest-row .m-name   { grid-area: 1 / 2; }
+      .manifest-row .m-type   { grid-area: 2 / 2; font-size: 9.5px; color: var(--ink-light); }
+      .manifest-row .m-status { grid-area: 1 / 3 / 3 / 4; }
 
       /* 3D page: the panels sit under the nav, clear of the featured model */
       .project-panel, .sprocket-panel { top: 96px; left: 12px; right: 12px; width: auto; translate: none; }
@@ -2984,30 +3107,24 @@
       <div class="digital-left">
         <div class="page-label">Software &amp; ventures</div>
         <h1 class="page-heading">Digital.</h1>
-        <p class="digital-sub">
-          Work with no mass — products, pipelines, and documents that ship as files.
-          The machines are on the <a class="side-link" href="#">Hands-On</a> side.
-        </p>
 
         <!-- File register: swap names / stacks / statuses with real projects -->
         <div class="manifest" id="manifest">
           <div class="manifest-head">
-            <span>No.</span><span>Name</span><span>Type</span><span>Stack</span><span>Year</span><span>Status</span>
+            <span>No.</span><span>Name</span><span>Type</span><span>Stack</span><span>Status</span>
           </div>
           <div class="manifest-row" data-i="0" role="button" tabindex="0">
             <span class="m-no">01</span>
             <span class="m-name">Pursr</span>
-            <span class="m-type">SR&amp;ED evidence platform</span>
-            <span class="m-stack">Next.js · Supabase · Anthropic API</span>
-            <span class="m-year">2026</span>
+            <span class="m-type">SR&amp;ED evidence</span>
+            <span class="m-stack">Next.js · Supabase · Anthropic</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
           <div class="manifest-row" data-i="1" role="button" tabindex="0">
             <span class="m-no">02</span>
             <span class="m-name">Actiograph</span>
-            <span class="m-type">Pre-med application platform</span>
+            <span class="m-type">Pre-med app</span>
             <span class="m-stack">React Native · Expo · Supabase</span>
-            <span class="m-year">2026</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
           <div class="manifest-row" data-i="2" role="button" tabindex="0">
@@ -3015,7 +3132,6 @@
             <span class="m-name">Campus Cravings OS</span>
             <span class="m-type">Ops &amp; ordering</span>
             <span class="m-stack">Twilio · Make.com · Stripe</span>
-            <span class="m-year">2025</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
           <div class="manifest-row" data-i="3" role="button" tabindex="0">
@@ -3023,7 +3139,6 @@
             <span class="m-name">Genie Support Agent</span>
             <span class="m-type">Agentic workflow</span>
             <span class="m-stack">Workato · Slack · Jira</span>
-            <span class="m-year">2026</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
           <div class="manifest-row" data-i="4" role="button" tabindex="0">
@@ -3031,7 +3146,6 @@
             <span class="m-name">Portfolio Engine</span>
             <span class="m-type">Single-file WebGL</span>
             <span class="m-stack">Three.js · Canvas 2D</span>
-            <span class="m-year">2026</span>
             <span class="m-status"><i></i>Shipped</span>
           </div>
           <div class="manifest-row" data-i="5" role="button" tabindex="0">
@@ -3039,7 +3153,6 @@
             <span class="m-name">Drivetrain Lap Simulation</span>
             <span class="m-type">Engineering model</span>
             <span class="m-stack">MATLAB · OpenLAP · Excel</span>
-            <span class="m-year">2026</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
         </div>
@@ -3065,11 +3178,24 @@
       <div class="fd-title" id="fdTitle">Project</div>
       <div class="fd-sub" id="fdSub">Stack</div>
       <p class="fd-desc" id="fdDesc">Description</p>
-      <ul class="fd-points" id="fdPoints"></ul>
+      <!-- The file's visual leads its points: app screens in a phone frame
+           (files with `screens` — here on narrow screens; the script moves
+           it into the stack column when that column is shown), or figures -->
+      <figure class="device" id="fdDevice" hidden>
+        <div class="device-phone">
+          <div class="device-screen" id="fdScreens"></div>
+          <i class="device-island" aria-hidden="true"></i>
+        </div>
+        <figcaption class="device-cap">
+          <div class="device-bars" id="fdBars"></div>
+          <span class="device-label" id="fdScreenCap"></span>
+        </figcaption>
+      </figure>
       <div class="fd-figs" id="fdFigs">
         <div class="fd-fig" id="fdFig1"><span class="pp-fig" id="fdFig1Cap">Fig. 01</span></div>
         <div class="fd-fig" id="fdFig2"><span class="pp-fig" id="fdFig2Cap">Fig. 02</span></div>
       </div>
+      <ul class="fd-points" id="fdPoints"></ul>
       <div class="fd-links">
         <a class="fd-link" id="fdRelated" href="#fsae" hidden>Related</a>
         <a class="fd-link" id="fdNext" href="#digital/actiograph">Next</a>
@@ -3096,11 +3222,7 @@
     </div>
     <div class="identity-meta">
       <div class="identity-layer">5 engineering projects</div>
-      <p class="identity-desc">
-        Physical builds — designed, machined,<br>
-        and assembled from first principles.<br>
-        Software is on the <a class="side-link" href="#digital">Digital</a> side.
-      </p>
+      <p class="identity-desc">Software is on the <a class="side-link" href="#digital">Digital</a> side.</p>
     </div>
   </div>
 
@@ -3157,7 +3279,8 @@
   //   related the matching Digital file: { title, slug (its address) }
   //   model   set where the scene's 3D model is a stand-in, not the project's
   //           own CAD — said under the figure, which leads with the real image
-  //   desc    identity caption — also the compact sheet's summary line
+  //   desc    the compact sheet's summary line (the desktop caption steps
+  //           aside while a project is open — the panel carries it)
   //   imgCap  figure caption on the compact sheet
   //   detail  a deeper study: the sprocket panel
   window.PROJECT_INFO = {
@@ -3187,12 +3310,12 @@
       }
     },
     steering: {
-      index: '02', tag: 'Project 02', title: 'Baja SAE Steering Wheel', slug: 'steering',
-      sub: 'Baja SAE · CAD, FEA, ergonomic design',
+      index: '02', tag: 'Project 02', title: 'Off-Road Steering Wheel', slug: 'steering',
+      sub: 'Design & engineering course · CAD, FEA, ergonomics',
       when: 'Jan – Apr 2025', status: 'Prototyped',
       rows: [
         ['Problem', 'Keep the driver\'s grip on the wheel over rough terrain'],
-        ['Approach', 'Steel wheel designed from driver requirements, grips molded to interviewed drivers\' hand profiles; FEA under two load cases — axial load at the bolt pattern, and asymmetric, opposed-hand steering input'],
+        ['Approach', 'Grips molded to interviewed drivers\' hand profiles; the steel wheel validated in FEA under two load cases — axial at the bolt pattern, and opposed-hand steering'],
         ['Result', 'A printed prototype for fit and ergonomic review, ahead of steel manufacture']
       ],
       model: 'The 3D wheel is a stand-in, not the CAD',
@@ -3202,12 +3325,12 @@
     },
     rivian: {
       index: '03', tag: 'Project 03', title: 'Rivian R1S — Cabin Zoning', slug: 'rivian',
-      sub: 'Concept study · Python, thermal modelling, CAD',
+      sub: 'Personal project · Python, thermal modelling, CAD',
       when: 'Oct 2025 – Jan 2026', status: 'Concept',
       rows: [
         ['Problem', 'Camp Mode conditions the whole cabin while occupants use only the rear ~60%'],
         ['Approach', 'Steady-state heat-loss model in Python (Q = U·A·ΔT) across the cabin surfaces; an insulated partition specified on thermal conductivity and mass'],
-        ['Result', 'An estimated 40% cut in HVAC draw by conditioning the rear zone alone, with concept renders of the zoned cabin']
+        ['Result', 'An estimated 40% cut in HVAC draw by conditioning only the rear zone']
       ],
       model: 'The 3D R1S is a stand-in model',
       desc: 'Condition the sleeping zone, not the whole<br>cabin — an estimated 40% less HVAC draw.',
@@ -3230,13 +3353,12 @@
     printer: {
       index: '05', tag: 'Project 05', title: 'Infinite Z-Axis Printer', slug: 'printer',
       sub: 'Queen\'s Additive Manufacturing Team · Mechanical Operations Lead',
-      status: 'In development',
+      when: 'June 2026 – present', status: 'In development',
       rows: [
-        ['Concept', 'A belt printer for continuous, unbounded print height'],
-        ['Status', 'In development with the team — write-up coming soon']
+        ['Concept', 'A belt printer for continuous, unbounded print height']
       ],
-      model: 'The 3D printer is a stand-in while the design is in development',
-      desc: 'Belt printer for unbounded print height —<br>in development, write-up coming soon.',
+      model: 'The 3D printer is a stand-in',
+      desc: 'Belt printer for continuous,<br>unbounded print height.',
       dim: { l: 30, w: 30, y: 68, label: 'W 480 MM' },
       img: null,
       wip: true
@@ -3494,54 +3616,56 @@
     // opened document's title block (replace with an <image> href later).
     // figs: captions for the two figure slots in the opened document;
     // figImg: optional [url, url] to fill those slots with real screenshots.
+    // screens: optional [[url, caption], …] app screenshots (923 × 2000,
+    // status bar painted out) played in a phone frame — see "App screens".
     // slug: the file's address (#digital/pursr — the router, end of this
     // script); related: the matching Hands-On project.
     const DIGITAL_INFO = [
       { title: 'Pursr', slug: 'pursr', meta: 'Next.js · Supabase · Anthropic API',
         logo: 'PR', year: '2026', status: 'Active',
-        desc: 'SR&ED evidence infrastructure for Canadian manufacturing SMEs. Claims are usually reconstructed from memory months after the engineering happens; Pursr captures contemporaneous, audit-ready evidence at the point of work instead. Technical Co-Founder & CTO.',
+        desc: 'SR&ED, Canada\'s R&D tax credit, is usually documented from memory months after the engineering. Pursr captures audit-ready evidence at the point of work, for manufacturing SMEs. Technical Co-Founder & CTO.',
         figs: ['Product UI', 'System architecture'], figImg: [null, null],
-        points: ['Audit-ready SR&ED evidence captured as the work happens',
-                 'CNC machine data scoped on read-only MTConnect over FOCAS — plant IT won\'t grant write access',
-                 'Consultant-first tenancy (firm → client → project), validated with a Toronto SR&ED firm',
-                 'Slack round-trip: a documentation gap becomes a prompted question, and the reply lands as structured evidence'] },
+        points: ['Slack round-trip: a documentation gap becomes a prompted question, and the engineer\'s reply lands as structured evidence',
+                 'CNC machine data on read-only MTConnect, not FOCAS — plant IT won\'t allow write access',
+                 'Consultant-first (firm → client → project), after validating demand with a Toronto SR&ED firm'] },
       { title: 'Actiograph', slug: 'actiograph', meta: 'React Native · Expo · Supabase',
         logo: 'AG', year: '2026', status: 'Active',
-        desc: 'Application-tracking platform for Canadian pre-med students. Applicants assemble their record months before applying, from experiences that span the prior five years; Actiograph captures each experience, reflection, and verifier contact as it happens. Founding Engineer & CTO.',
+        desc: 'Pre-med students assemble their application from five years of experiences, months before they apply. Actiograph captures each one as it happens. Founding Engineer & CTO.',
+        screens: [['renders/actiograph-home.webp', 'Dashboard'],
+                  ['renders/actiograph-log.webp', 'Activity log'],
+                  ['renders/actiograph-abs.webp', 'Application builder'],
+                  ['renders/actiograph-checklist.webp', 'School checklist'],
+                  ['renders/actiograph-gpa.webp', 'GPA converter']],
         figs: ['Experience log', 'Launch landing page'], figImg: [null, null],
-        points: ['React Native app shipped to TestFlight — one structured record instead of scattered notes, spreadsheets, and documents',
-                 'Captures each experience, reflection, and verifier contact at the time it happens',
-                 'Structured testing with an advisory board of pre-med and medical students',
-                 'Prepared and submitted the DDQIC Ignite qualifying pitch at Queen\'s'] },
+        points: ['Shipped the React Native app to TestFlight',
+                 'Tested with an advisory board of pre-med and medical students',
+                 'Submitted the DDQIC Ignite qualifying pitch at Queen\'s'] },
       { title: 'Campus Cravings OS', slug: 'campus-cravings', meta: 'Twilio · Make.com · Stripe',
         logo: 'CC', year: '2025', status: 'Active',
-        desc: 'SMS-based late-night food delivery, built and run from scratch — live inventory, Stripe payments, and delivery routing wired into one system.',
+        desc: 'Late-night food delivery ordered by text — built and run from scratch.',
         figs: ['Menu', 'Order automation'], figImg: ['renders/campus-cravings-menu.jpg', 'renders/campus-cravings-workflow.jpg'],
-        points: ['SMS ordering flow with live inventory',
+        points: ['SMS ordering with live inventory',
                  'Stripe payments and delivery routing',
-                 'Twilio and Make.com automations running the ops'] },
+                 'Twilio and Make.com automations run the ops'] },
       { title: 'Genie Support Agent', slug: 'genie-agent', meta: 'Workato · Slack · Jira',
         logo: 'GA', year: '2026', status: 'Active',
-        desc: 'Product Intern at Workato: a Genie agent in Slack that triaged support load during the AIRO beta, and is still running after GA.',
+        desc: 'Product Intern at Workato: a Genie agent in Slack that triaged support during the AIRO beta — still running after launch.',
         figs: ['Agent skill routing', 'Knowledge-base loop'], figImg: [null, null],
-        points: ['Routes channel messages across four skills: questions, bug capture, Jira tickets, and knowledge-base answers',
-                 'Self-updating knowledge base: unanswered questions escalate to the team and their replies fold back in',
+        points: ['Routes messages across four skills: questions, bug capture, Jira tickets, knowledge-base answers',
+                 'Self-updating knowledge base: unanswered questions go to the team, and their replies fold back in',
                  'Deflected ~30 daily requesters off a 4-person product team',
-                 'Also stood up an in-house animation pipeline — 20 demo videos on Workato\'s YouTube'] },
+                 'Also built an in-house animation pipeline: 20 demo videos on Workato\'s YouTube'] },
       { title: 'Portfolio Engine', slug: 'portfolio-engine', meta: 'Three.js · Canvas 2D',
         logo: 'PE', year: '2026', status: 'Shipped',
-        desc: 'This site — one HTML file, a hand-rolled perspective dot grid, a WebGL scene glued to it, and the camera math that keeps them in lockstep.',
+        desc: 'This site: one HTML file — a hand-rolled perspective dot grid and a WebGL scene, kept in lockstep by the camera math.',
         figs: ['Dot grid projection', 'Zoom camera path'], figImg: [null, null],
-        points: ['Single-file site — dot grid + WebGL scene',
-                 'Custom projection math, camera matching',
-                 'This page is part of the exhibit'] },
+        points: ['This page is part of the exhibit'] },
       { title: 'Drivetrain Lap Simulation', slug: 'lap-sim', meta: 'MATLAB · OpenLAP · Excel',
         related: { title: 'Formula SAE Drivetrain', slug: 'fsae' },
         logo: 'LS', year: '2026', status: 'Active',
-        desc: 'Choosing the final drive by lap time: a MATLAB lap simulation (OpenLAP) sweeping ratios across the EMRAX 188 HV torque curve to quantify the acceleration vs top-speed trade-off.',
+        desc: 'Choosing the final drive by lap time: a MATLAB lap simulation (OpenLAP) sweeping ratios across the EMRAX 188 HV torque curve.',
         figs: ['Lap time vs final drive', 'Load case sheet'], figImg: ['renders/drivetrain-lapsim.jpg', 'renders/sprocket-topology-2.jpg'],
-        points: ['Final drive ratios swept across the EMRAX 188 HV torque curve',
-                 'Lap time as the objective — acceleration vs top speed, quantified',
+        points: ['Quantifies the acceleration vs top-speed trade-off',
                  'Chain and sprocket load cases (2,700 N) behind the 7075-T6 sprocket study'] },
     ];
 
@@ -3781,15 +3905,22 @@
         txt(0.7,  z, { 'font-family': MONO, 'font-size': 4.6 * FK, fill: '#8A8784' }, '0' + (k + 1));
         txt(1.12, z, { 'font-family': SANS, 'font-size': 5.6 * FK, fill: '#4A4844' }, trunc(pt, 38));
       });
-      // two figure slots
+      // figure slots — only where the file has an image (no empty boxes, as
+      // in the doc), showing it; fetched when the sheet first stands up
+      sheet.figs = [];
       [0, 1].forEach(k => {
+        const url = info.figImg && info.figImg[k];
+        if (!url) return;
         const x0 = 0.7 + k * 2.18, p = FA(x0, 4.95);
-        sheet.face.appendChild(el('rect', {
-          x: p.x.toFixed(1), y: p.y.toFixed(1),
-          width: (2.02 * FRONT_S).toFixed(1), height: (1.55 * FRONT_S).toFixed(1),
-          fill: 'rgba(26,25,22,0.045)', stroke: 'rgba(26,25,22,0.10)', 'stroke-width': 0.8
-        }));
-        txt(x0 + 0.12, 6.28, { 'font-family': MONO, 'font-size': 4.2 * FK,
+        const box = { x: p.x.toFixed(1), y: p.y.toFixed(1),
+                      width: (2.02 * FRONT_S).toFixed(1), height: (1.55 * FRONT_S).toFixed(1) };
+        sheet.face.appendChild(el('rect', Object.assign({
+          fill: '#fff', stroke: 'rgba(26,25,22,0.10)', 'stroke-width': 0.8 }, box)));
+        const im = el('image', Object.assign({}, box, {   // the label gets a strip under it
+          height: (1.23 * FRONT_S).toFixed(1), preserveAspectRatio: 'xMidYMid meet' }));
+        sheet.face.appendChild(im);
+        sheet.figs.push([im, url]);
+        txt(x0 + 0.12, 6.40, { 'font-family': MONO, 'font-size': 4.2 * FK,
           'letter-spacing': 0.5 * FK, fill: '#8A8784' }, 'FIG. 0' + (k + 1));
       });
       // footer
@@ -3845,6 +3976,77 @@
     const sheetNoteEl = document.querySelector('.sheet-note');
     const fd = id => document.getElementById(id);
 
+    // ── App screens (a file with `screens`): a phone frame that plays them
+    //    like a short screen recording. Each screen holds while its bar
+    //    fills — a CSS animation whose animationend advances, so a hover
+    //    holds it with animation-play-state; the bars jump to a screen and a
+    //    tap on the phone skips ahead. Where the stack column is shown the
+    //    phone takes the standing sheet's place; on narrow screens it sits in
+    //    the doc, under the description.
+    const device   = fd('fdDevice');
+    const devRight = svg.parentElement;
+    let devShots = [], devAt = 0, devFile = -1;
+    function showScreen(k) {
+      devAt = k;
+      devShots.forEach((s, j) => {
+        s.img.classList.toggle('on', j === k);
+        s.bar.classList.toggle('done', j < k);
+        s.bar.classList.remove('on');
+        s.bar.removeAttribute('aria-current');
+      });
+      const cur = devShots[k];
+      void cur.bar.offsetWidth;            // restart its fill
+      cur.bar.classList.add('on');
+      cur.bar.setAttribute('aria-current', 'true');
+      fd('fdScreenCap').textContent = cur.cap;
+    }
+    function placeDevice(column) {
+      if (column) {
+        if (device.parentElement !== devRight) devRight.appendChild(device);
+        requestAnimationFrame(() => device.classList.add('in'));
+      } else if (device.parentElement !== fileDoc) {
+        fileDoc.insertBefore(device, fd('fdFigs'));
+      }
+    }
+    function mountDevice(i, info, column) {
+      if (devFile !== i) {                 // this file's screens, built once
+        devFile = i;
+        fd('fdScreens').textContent = '';
+        fd('fdBars').textContent = '';
+        devShots = info.screens.map(([src, cap], k) => {
+          const img = new Image();
+          img.decoding = 'async';
+          img.alt = cap;
+          img.src = src;
+          fd('fdScreens').appendChild(img);
+          const bar = document.createElement('button');
+          bar.type = 'button';
+          bar.setAttribute('aria-label', cap);
+          bar.appendChild(document.createElement('i'));
+          bar.addEventListener('click', () => showScreen(k));
+          fd('fdBars').appendChild(bar);
+          return { img, bar, cap };
+        });
+        device.setAttribute('aria-label', `${info.title} app screens`);
+      }
+      device.hidden = false;
+      device.classList.remove('held');
+      showScreen(0);
+      placeDevice(column);
+    }
+    function stopDevice() {
+      device.classList.remove('in');
+      devShots.forEach(s => s.bar.classList.remove('on'));   // stops the clock
+    }
+    fd('fdBars').addEventListener('animationend', () => {
+      if (window._fileDocOpen && !device.hidden) showScreen((devAt + 1) % devShots.length);
+    });
+    device.querySelector('.device-phone').addEventListener('click', () => {
+      if (devShots.length) showScreen((devAt + 1) % devShots.length);
+    });
+    device.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') device.classList.add('held'); });
+    device.addEventListener('pointerleave', () => device.classList.remove('held'));
+
     function openFile(i) {
       if (window._fileDocOpen) return;
       setActive(i);
@@ -3852,12 +4054,18 @@
       const info = DIGITAL_INFO[i];
       const no   = String(i + 1).padStart(2, '0');
       const sheet = SHEETS[n - 1 - i];
-      // the sheet stands up only where the stack column is shown
-      if (fitStack()) {
+      const column = fitStack();          // the stack column is shown
+      // the sheet stands up where the column is shown — unless the file has
+      // app screens: then the phone takes its place
+      if (column && !info.screens) {
         svg.appendChild(sheet.g);         // paint the standing sheet on top
         sheet.g.classList.add('front');
+        sheet.figs.forEach(([im, url]) => im.getAttribute('href') || im.setAttribute('href', url));
         tweenFront(sheet, 1, 620);
       }
+      if (info.screens) mountDevice(i, info, column);
+      else device.hidden = true;
+      digitalPage.classList.toggle('screens', !!info.screens);
       digitalPage.classList.add('file-open');
       fd('fdLogo').textContent   = info.logo;
       fd('fdNo').textContent     = no;
@@ -3893,7 +4101,7 @@
       fileDoc.classList.add('open');
       fileScrim.classList.add('open');
       window._fileDocOpen = true;
-      sheetNoteEl.textContent = `Digital · File ${no} of ${String(n).padStart(2, '0')}`;
+      sheetNoteEl.textContent = window._fileNote();
     }
 
     function closeFile() {
@@ -3903,13 +4111,14 @@
       if (!window._fileDocOpen) return;
       fileDoc.classList.remove('open');
       fileScrim.classList.remove('open');
-      digitalPage.classList.remove('file-open');
+      digitalPage.classList.remove('file-open', 'screens');
+      stopDevice();
       if (frontSheet) {
         frontSheet.g.classList.remove('front');
         tweenFront(frontSheet, 0, 480);
       }
       window._fileDocOpen = false;
-      sheetNoteEl.textContent = 'Digital · Overview';
+      sheetNoteEl.textContent = window._fileNote();
     }
     window._closeFileDoc = closeFile;
 
@@ -3929,6 +4138,11 @@
     window._fileTarget   = () => stepTimer ? stepTo : window._fileDocOpen ? lastOpened : -1;
     window._fileStepping = () => stepTimer !== 0;   // Escape cancels a step in flight
     window._fileLast     = () => lastOpened;
+    // the frame's location note on this side (the 3D module's identity
+    // crossfade asks too — a cold load opens the file before the flip lands)
+    window._fileNote     = () => window._fileDocOpen
+      ? `Digital · File ${String(lastOpened + 1).padStart(2, '0')} of ${String(n).padStart(2, '0')}`
+      : 'Digital · Overview';
 
     // The section-nav arrows (and ← →) step through the files in register
     // order, with ends: from the register they start at File 01, or carry on
@@ -3956,9 +4170,12 @@
     document.getElementById('fileClose').addEventListener('click', closeFile);
 
     // keep the stack fitted — the first time a narrow layout widens — and a
-    // standing sheet anchored to its column through resizes
+    // standing sheet anchored to its column through resizes; an open file's
+    // phone follows the column in and out
     new ResizeObserver(() => {
-      if (fitStack() && frontSheet && frontSheet.t === 1) renderSheet(frontSheet, 1);
+      const column = fitStack();
+      if (column && frontSheet && frontSheet.t === 1) renderSheet(frontSheet, 1);
+      if (window._fileDocOpen && !device.hidden) placeDevice(column);
     }).observe(svg.parentElement);
   })();
 
@@ -4990,10 +5207,11 @@ const sheetNote    = document.querySelector('.sheet-note');
 // Identity caption for the digital page — the page flip swaps the
 // bottom-left copy through the same crossfade as the featured zoom.
 const IDENTITY_DIGITAL = {
-  layer: 'Software & ventures',
-  desc:  'Software, documents, and systems —<br>work that ships as files.'
+  layer: `${(window._fileSlugs || []).length || 6} software projects`,
+  desc:  'The machines are on the <a class="side-link" href="#">Hands-On</a> side.'
 };
 let digitalT = 0;                // eased flip state: 0 = physical, 1 = digital
+let fileT    = 0;                // eased: a Digital file is open (hint + caption step aside)
 let identityShows = 'default';   // 'default' | 'digital' | featured project key
 let hintShows     = HINT_LOADING;
 let projectsIn    = false;       // all five GLBs arrived (or 12 s passed) — the hint stops saying "Loading"
@@ -6461,10 +6679,13 @@ function loop() {
   dimLine.style.top     = dg.y + '%';
 
   // Identity caption and scene hint crossfade to the featured copy mid-zoom:
-  // opacity dips to 0 at ease 0.5, where the text is swapped, and recovers.
-  // The digital page flip drives the same crossfade through digitalT.
+  // opacity dips to 0 at ease 0.5, where the text is swapped, and recovers —
+  // except the caption's count + line, which stay out while a project or a
+  // file is open (the panel / doc says it all). The digital page flip drives
+  // the same crossfade through digitalT.
   digitalT += ((window._digitalOpen ? 1 : 0) - digitalT) * (1 - Math.exp(-6 * dt));
   if (digitalT < 0.001) digitalT = 0; else if (digitalT > 0.999) digitalT = 1;
+  fileT += ((window._fileDocOpen ? 1 : 0) - fileT) * (1 - Math.exp(-8 * dt));
   const identityTarget = digitalT > 0.5 ? 'digital' : ease > 0.5 ? featured : 'default';
   if (identityTarget !== identityShows) {
     identityShows = identityTarget;
@@ -6475,7 +6696,7 @@ function loop() {
     identityLayer.textContent = src.layer || `Project ${of}`;
     identityDesc.innerHTML    = src.desc;
     identityTitle.textContent = identityTarget === 'digital' ? 'Digital' : 'Hands-On';
-    sheetNote.textContent     = identityTarget === 'digital' ? 'Digital · Overview'
+    sheetNote.textContent     = identityTarget === 'digital' ? window._fileNote()
                               : identityTarget === 'default' ? 'Hands-On · Overview'
                               : `Hands-On · ${of}`;
   }
@@ -6489,9 +6710,14 @@ function loop() {
   if (hintText !== hintShows) sceneHint.textContent = hintShows = hintText;
   const metaFade = Math.min(1, Math.abs(ease - 0.5) * 2)
                  * Math.min(1, Math.abs(digitalT - 0.5) * 2);
-  identityMeta.style.opacity = metaFade;
+  // with a project or a file open the caption steps aside — the panel / doc
+  // carries it
+  const metaO = identityTarget === 'default' ? metaFade
+              : identityTarget === 'digital' ? metaFade * (1 - fileT) : 0;
+  identityMeta.style.opacity       = metaO;
+  identityMeta.style.pointerEvents = metaO > 0.5 ? '' : 'none';   // no hidden side link
   identityTitle.style.opacity = Math.min(1, Math.abs(digitalT - 0.5) * 2);   // swaps with the page
-  sceneHint.style.opacity    = metaFade;
+  sceneHint.style.opacity    = metaFade * (1 - fileT);
   sheetNote.style.opacity    = metaFade;
 
   if (window._dotCam) {

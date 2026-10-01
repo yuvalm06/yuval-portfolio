@@ -604,10 +604,13 @@ and driven from the RAF loop:
   image, `contain` on white. A `cover` crop cut the FEA plots to 6:1 strips
   and chopped the burned-in captions off the Rivian/scooter figures.
 
-The identity caption (bottom-left `.identity-meta`) crossfades to the
-featured project's `layer`/`desc` copy: its opacity is `|ease - 0.5| * 2`
-(dips to 0 at mid-zoom, where the text is swapped) — one formula handles
-both directions of the transition.
+The identity caption (bottom-left `.identity-meta`: the count + one line)
+dips out on the same `|ease - 0.5| * 2` as the hint, and stays out while a
+project is open — the panel carries the project, and the caption repeating
+its summary (plus a second "01 of 05" beside the sheet note's) was clutter.
+Its `layer`/`desc` text still swaps at mid-zoom; on a phone `desc` is the
+sheet's summary line. The pointer events follow it out (the Digital side's
+caption holds a link).
 
 ---
 
@@ -629,7 +632,7 @@ headlines and body copy.
   invented — then a `Try` row from `hint`); a footer of real metadata
   (`when` · `status` — it replaced the decorative "REV A · 2026 / YM WORKS");
   and the links: `Related · …` (the matching Digital file) and the named next
-  step `Next · 02 Baja SAE Steering Wheel` (after 05, `Next · Wrap-up`) — see
+  step `Next · 02 Off-Road Steering Wheel` (after 05, `Next · Wrap-up`) — see
   addresses.md. The panel is pointer-events: none (a click anywhere zooms
   out); its links opt back in while it is `.in`. Rows stagger in via
   transition-delays when the RAF loop toggles `.in` at ppIn > 0.4. It must
@@ -670,9 +673,9 @@ headlines and body copy.
   "Hands-On · Overview" at rest / "Hands-On · 02 of 05" when featured — both
   crossfade on the same `|ease − 0.5| × 2` dip as the identity caption. The
   caption's title is the side's name (Hands-On / Digital) and swaps with the
-  page flip; its layer line reads "5 engineering projects" at rest and
-  "Project 02 of 05" when featured (no "Build 1.0 / 2.0" anywhere a visitor
-  reads it).
+  page flip; its layer line reads "5 engineering projects" at rest, over
+  the way across ("Software is on the Digital side.") — no "Build 1.0 / 2.0"
+  anywhere a visitor reads it.
 - **Arrow cycling:** the section-nav arrows call `window._cycleFeatured(dir)`
   (module) and only ever step projects — they never flip pages (on the
   Digital page they step files instead, see digital-page.md). The sequence

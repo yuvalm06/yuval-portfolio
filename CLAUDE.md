@@ -12,6 +12,10 @@ as a sheet. See `dev/features/compact-layout.md`. Project copy lives in ONE plac
 (team · role, its own image first, Problem → Approach → Result, dates · status, the
 next step), strongest first: FSAE, steering wheel, Rivian, scooter, printer. Where a
 scene model is a stand-in rather than the project's own CAD, its `model` note says so.
+The Digital files live in `DIGITAL_INFO` (the digital page script); each file's visual
+leads its points — app screenshots (`screens`) play in a phone frame, see
+`dev/features/digital-page.md`. Visitor copy stays short: say a thing once (the panel or
+doc, not also the caption), and let the image carry what it can.
 
 Every view has an address (`#fsae`, `#digital/pursr`, `#about` …) so browser Back
 steps out of a view and a project can be linked — the router at the end of the main
@@ -26,7 +30,8 @@ card (rounded inset frame, #EEECEA background)
  ├── #dot-canvas          ← animated perspective dot grid (Canvas 2D)
  ├── .distance-fog        ← CSS gradient overlay that fades dots into distance
  ├── <canvas> (WebGL)     ← Three.js scene, injected by JS with inline styles (z 3)
- ├── .digital-page        ← the Digital page, flips in from the right (z 16)
+ ├── .digital-page        ← the Digital page, flips in from the right (z 16); an open
+ │                          file docks left, its sheet (or app-screen phone) right
  ├── .race-page           ← race-game easter egg overlay (z 45), opened by the
  │                          green button on the steering wheel's face
  ├── .nav                 ← top bar (z 35): name + role line + status note left;

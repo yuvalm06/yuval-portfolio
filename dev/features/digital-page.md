@@ -14,7 +14,11 @@ machines), page 2 is the **drafting table** — same greys, same isometric
 axes, but the projects are *files*:
 
 - **Manifest** (left) — a drawing-register style file index in IBM Plex Mono:
-  No. / Name / Type / Stack / Year / Status rows with staggered entrance.
+  No. / Name / Type / Stack / Status rows with staggered entrance (the year
+  is in the opened file's title block; the Year column made the Type and
+  Stack cells truncate). Over it, just the page label ("Software &
+  ventures") and the heading — the sub-line that used to sit there repeated
+  the caption.
   Hovering a row lifts its sheet; clicking opens the file document view.
   (There is deliberately NO hover detail card — it duplicated the register
   and the open document; removed in the 2026-07 cleanup pass.)
@@ -61,8 +65,14 @@ axes, but the projects are *files*:
 - `window._zoomOutAll()` — zooms out, clears `pendingFeature` + `sprocketOpen`.
 - `digitalT` lerps toward `_digitalOpen` (`1 − exp(−6·dt)`), and drives the
   same dip-to-zero crossfade as the featured zoom for the identity caption
-  (`IDENTITY_DIGITAL`), scene hint (`HINT_DIGITAL`), and sheet note
-  (`Digital · Overview`). `metaFade` multiplies the ease and digital fades.
+  (`IDENTITY_DIGITAL`: "6 software projects" over "The machines are on the
+  Hands-On side." — the same shape as the Hands-On caption), scene hint
+  (`HINT_DIGITAL`), and sheet note (`window._fileNote()`: `Digital ·
+  Overview`, or `Digital · File 02 of 06` — asked of the digital script, so a
+  cold load of `#digital/actiograph`, which opens the file before the flip
+  lands, doesn't overwrite it). `metaFade` multiplies the ease and digital
+  fades; `fileT` (eased `_fileDocOpen`) takes the hint and the caption out
+  while a file is open — the doc says it all.
 
 ## Sheet stack constants
 
@@ -109,10 +119,12 @@ things at once:
 
 1. **Doc panel docks left** — `.file-doc` (z6) at `left: 30px`, width
    `min(580px, 55% − 50px)`, over `.file-scrim` (z3, blur + wash). Contents
-   mirror an engineering drawing: title-block strip (logo cell + File / Rev /
-   Year / Status), title, mono stack line, description, numbered points, two
-   hatched figure slots (captions from `DIGITAL_INFO[i].figs`, fill via
-   `figImg: [url, url]`), mono footer.
+   mirror an engineering drawing: title-block strip (logo cell + File /
+   Year / Status), title, mono stack line, description, then the file's
+   **visual** — app screens in a phone frame (below) or the figures
+   (captions from `DIGITAL_INFO[i].figs`, images from `figImg: [url, url]`)
+   — then the numbered points and the links. Visual before points: the
+   screenshot says more than the third bullet.
 2. **The clicked sheet stands up out of the pile** into a front view on the
    right — the same dual-projection blend as the 3D zoom. Sheet geometry is
    stored in local `[x, z, y]` coords; `renderSheet(sheet, t)` re-projects
@@ -183,6 +195,43 @@ still receive Enter). The nav strip above the page is click-through
 blocked by the empty width of the nav.
 While open, the sheet note reads `Digital · File NN of 06`.
 
+## App screens (phone frame)
+
+A file with `screens: [[url, caption], …]` (Actiograph) plays them in a CSS
+phone frame (`#fdDevice`: `.device-phone` bezel + island, `.device-screen`
+with one `<img>` per screen, then `.device-bars` + `.device-label`) — like a
+short screen recording, each screen holding ~3 s before the next fades in
+the way a tab change would, looping. It is deliberately not a video file:
+five ~25 KB webp stills, no player chrome, and the bars double as the
+controls.
+
+- **Clock:** the active bar's fill is a CSS animation (`device-fill 3.2s`);
+  its `animationend` advances (`showScreen`). Hovering the device (mouse
+  only) adds `.held` → `animation-play-state: paused`, so the screen being
+  looked at stays. A bar click jumps; a tap on the phone skips ahead. Under
+  `prefers-reduced-motion` there is no animation, so no autoplay — the bars
+  still pick a screen. Closing the file removes `.on` from the bars, which
+  stops the clock (no timers to clear).
+- **Where it shows:** where the stack column is laid out (`fitStack()` true)
+  the phone takes the standing sheet's place — absolutely centred in
+  `.digital-right` (`pointer-events: auto`; the column passes clicks through
+  while a file is open), rising in with `.in` while the pile fades out
+  (`.digital-page.file-open.screens #sheetStack { opacity: 0 }`); no sheet
+  stands up. Where it isn't (≤ 900px, phones), the device is moved into the
+  doc, between the description and the figures. The column's
+  ResizeObserver moves it if the layout crosses 900px while open.
+- **Size:** `--dev-h` — `min(500px, 100vh − 250px)` in the column (≈ 360px
+  on a 1280×610 laptop window), `min(400px, 62vh)` in the doc. The frame is
+  1000 × 2097 (screen 923 × 2000 plus a 3%-of-width bezel); radii and insets
+  are percentages, so it scales cleanly.
+- **Screenshots:** 923 × 2000 phone captures with the status bar (time,
+  Dynamic Island, battery) painted out in the app's background colour
+  (#F7F7F5, rows 0–125), resized to 600 wide, webp q80 —
+  `renders/actiograph-*.webp`. The frame draws its own island.
+- Built once per file on first open (`mountDevice`), so the images load only
+  when someone opens the file. A browser frame for web-app screens (Pursr)
+  would be a second `.device` variant on the same clock.
+
 ## Gotchas
 
 - The scene hint / identity / sheet-note opacities are set **inline every
@@ -193,5 +242,7 @@ While open, the sheet note reads `Digital · File NN of 06`.
 - Content lives in `DIGITAL_INFO` (first script) + the manifest rows in the
   markup — keep the two in sync (the resume, `assets/resume.pdf`, has fuller
   Pursr / Actiograph stories than the register does).
-- Phones (≤640px) show only No. / Name / Status in the register; type,
-  stack, and year are in the opened file.
+- Phones (≤640px) show No. / Name / Status in the register, with each
+  file's type in small mono under its name (names alone — "Pursr", "Genie
+  Support Agent" — said nothing); the stack and year are in the opened
+  file.

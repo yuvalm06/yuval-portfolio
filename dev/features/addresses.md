@@ -23,7 +23,7 @@ Digital:   register → File 01 → … → File 06 → wrap-up (Hands-On · Res
 ```
 
 - Every project panel (and phone sheet) ends with its named next step —
-  `Next · 02 Baja SAE Steering Wheel`; after the last one, `Next · Wrap-up`.
+  `Next · 02 Off-Road Steering Wheel`; after the last one, `Next · Wrap-up`.
   The file docs do the same (`Next · File 02 Actiograph`).
 - The sequences have ends. Desktop arrows: → at rest starts at 01 (or carries
   on from the last project seen), ← from 01 returns to the overview, → past 05
@@ -40,8 +40,9 @@ Digital:   register → File 01 → … → File 06 → wrap-up (Hands-On · Res
   flip closes it (each side has its own).
 - **Bridges:** the FSAE panel's `Related · Drivetrain Lap Simulation` and the
   lap-sim file's `Related · Formula SAE Drivetrain (Hands-On)`
-  (`PROJECT_INFO.car.related`, `DIGITAL_INFO[5].related`); each side's intro
-  (the desktop caption at rest, the Digital page's sub-line) links the other.
+  (`PROJECT_INFO.car.related`, `DIGITAL_INFO[5].related`); each side's
+  desktop caption (bottom left) links the other — on a phone the Hands-On |
+  Digital switch is always there.
 
 ## Addresses (the router)
 
