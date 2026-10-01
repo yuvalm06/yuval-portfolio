@@ -2051,16 +2051,14 @@
     .fd-link:hover  { text-decoration: underline; text-underline-offset: 2px; }
     .fd-link[hidden] { display: none; }
 
-    /* ── App screens in a phone frame: a file with `screens` plays them like
+    /* ── App screens in a device frame: a file with `screens` plays them like
        a short screen recording — each holds a few seconds, then the next
        fades in the way a tab change would. The bars are the progress and
-       jump to a screen; a tap on the phone skips ahead; hover holds. Not
-       driven per frame, so plain CSS transitions / animations.
-       Sized by --dev-h: the column's height on desktop, the doc's width on
-       narrow screens. Screen 923 × 2000 (the screenshots), bezel 3% of the
-       width → the frame is 1000 × 2097. ── */
+       jump to a screen; a click / tap on the frame skips ahead; hover holds.
+       Two frames: .phone (a mobile app — Actiograph) and .browser (a web
+       app — Pursr). Not driven per frame, so plain CSS transitions /
+       animations. ── */
     .device {
-      --dev-h: min(500px, calc(100vh - 250px));
       margin: 0;
       display: flex;
       flex-direction: column;
@@ -2068,25 +2066,8 @@
       gap: 12px;
     }
     .device[hidden] { display: none; }
-    .device-phone {
-      position: relative;
-      height: var(--dev-h);
-      aspect-ratio: 1000 / 2097;
-      background: #1A1916;
-      border-radius: 13.5% / 6.44%;
-      box-shadow:
-        0 28px 48px rgba(26,25,22,0.20),
-        0 6px 14px rgba(26,25,22,0.12),
-        inset 0 0 0 1px rgba(255,255,255,0.10);
-      cursor: pointer;
-    }
-    .device-screen {
-      position: absolute;
-      inset: 1.43% 3%;
-      overflow: hidden;
-      border-radius: 11.2% / 5.15%;
-      background: #F7F7F5;          /* the app's own background */
-    }
+    .device-frame { position: relative; cursor: pointer; }
+    .device-screen { overflow: hidden; }
     .device-screen img {
       position: absolute;
       inset: 0;
@@ -2097,7 +2078,36 @@
       transition: opacity 0.3s ease;
     }
     .device-screen img.on { opacity: 1; }
-    .device-island {
+    .device-island, .device-chrome { display: none; }
+    .device-cap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Phone — sized by --dev-h: the column's height on desktop, the screen
+       on narrow ones. Screen 923 × 2000 (the screenshots), bezel 3% of the
+       width → the frame is 1000 × 2097. */
+    .device.phone { --dev-h: min(500px, calc(100vh - 250px)); }
+    .device.phone .device-frame {
+      height: var(--dev-h);
+      aspect-ratio: 1000 / 2097;
+      background: #1A1916;
+      border-radius: 13.5% / 6.44%;
+      box-shadow:
+        0 28px 48px rgba(26,25,22,0.20),
+        0 6px 14px rgba(26,25,22,0.12),
+        inset 0 0 0 1px rgba(255,255,255,0.10);
+    }
+    .device.phone .device-screen {
+      position: absolute;
+      inset: 1.43% 3%;
+      border-radius: 11.2% / 5.15%;
+      background: #F7F7F5;          /* the app's own background */
+    }
+    .device.phone .device-island {
+      display: block;
       position: absolute;
       top: 2.7%;
       left: 50%;
@@ -2107,13 +2117,40 @@
       border-radius: 999px;
       background: #0B0B0A;
     }
-    .device-cap {
-      width: calc(var(--dev-h) * 1000 / 2097);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 6px;
+    .device.phone .device-cap { width: calc(var(--dev-h) * 1000 / 2097); }
+
+    /* Browser — a plain window: three dots and a blank address bar (no
+       made-up URL), as wide as its place allows; screens 2000 × 1153
+       (desktop captures, the window's own corners squared off) */
+    .device.browser .device-frame {
+      width: 100%;
+      background: #E4E2DD;
+      border: 1px solid rgba(26,25,22,0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow:
+        0 24px 44px rgba(26,25,22,0.16),
+        0 5px 12px rgba(26,25,22,0.10);
     }
+    .device.browser .device-chrome {
+      display: grid;
+      grid-template-columns: 1fr 38% 1fr;
+      align-items: center;
+      height: 22px;
+      padding: 0 10px;
+      border-bottom: 1px solid rgba(26,25,22,0.10);
+    }
+    .device-chrome b { display: flex; gap: 5px; }
+    .device-chrome i { width: 7px; height: 7px; border-radius: 50%; background: rgba(26,25,22,0.18); }
+    .device-chrome span { height: 10px; border-radius: 5px; background: rgba(255,255,255,0.7); }
+    .device.browser .device-screen {
+      position: relative;
+      aspect-ratio: 2000 / 1153;
+      background: #FAFAFA;
+    }
+    .device.browser .device-cap { width: 100%; }
+    .device.browser .device-bars .on i::after { animation-duration: 4.2s; }   /* more to take in */
+
     .device-bars { display: flex; gap: 4px; width: 100%; }
     .device-bars button {
       flex: 1;
@@ -2140,7 +2177,8 @@
     }
     .device-bars .done i::after { transform: none; }
     .device-bars .on i::after { animation: device-fill 3.2s linear forwards; }
-    .device.held .device-bars .on i::after { animation-play-state: paused; }
+    .device.held .device-bars .on i::after,
+    .device.loading .device-bars .on i::after { animation-play-state: paused; }
     @keyframes device-fill { to { transform: none; } }
     .device-label {
       font-family: var(--mono);
@@ -2158,7 +2196,9 @@
     }
     /* in the doc (narrow screens): under the description, sized to the
        screen */
-    .file-doc .device { --dev-h: min(400px, 62vh); margin: 2px 0 20px; }
+    .file-doc .device { margin: 2px 0 20px; }
+    .file-doc .device.phone { --dev-h: min(400px, 62vh); }
+    .file-doc .device.browser { width: min(100%, calc(62vh * 1.73)); margin-inline: auto; }
     /* in the stack column (desktop): the phone takes the standing sheet's
        place and the pile steps back */
     .digital-right > .device {
@@ -2173,6 +2213,7 @@
       transition: opacity 0.45s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.45s;
     }
     .digital-right > .device.in { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+    .digital-right > .device.browser { width: min(600px, calc(100% - 48px), calc((100vh - 290px) * 1.73)); }
     #sheetStack { transition: opacity 0.4s ease; }
     .digital-page.file-open.screens #sheetStack { opacity: 0; }
 
@@ -3178,11 +3219,13 @@
       <div class="fd-title" id="fdTitle">Project</div>
       <div class="fd-sub" id="fdSub">Stack</div>
       <p class="fd-desc" id="fdDesc">Description</p>
-      <!-- The file's visual leads its points: app screens in a phone frame
-           (files with `screens` — here on narrow screens; the script moves
-           it into the stack column when that column is shown), or figures -->
+      <!-- The file's visual leads its points: app screens in a phone or
+           browser frame (files with `screens` — here on narrow screens; the
+           script moves it into the stack column when that column is shown),
+           or figures -->
       <figure class="device" id="fdDevice" hidden>
-        <div class="device-phone">
+        <div class="device-frame">
+          <div class="device-chrome" aria-hidden="true"><b><i></i><i></i><i></i></b><span></span></div>
           <div class="device-screen" id="fdScreens"></div>
           <i class="device-island" aria-hidden="true"></i>
         </div>
@@ -3616,14 +3659,20 @@
     // opened document's title block (replace with an <image> href later).
     // figs: captions for the two figure slots in the opened document;
     // figImg: optional [url, url] to fill those slots with real screenshots.
-    // screens: optional [[url, caption], …] app screenshots (923 × 2000,
-    // status bar painted out) played in a phone frame — see "App screens".
+    // screens: optional [[url, caption], …] app screenshots played in a
+    // device frame — frame: 'phone' (923 × 2000, status bar painted out) or
+    // 'browser' (2000 × 1153 window captures) — see "App screens".
     // slug: the file's address (#digital/pursr — the router, end of this
     // script); related: the matching Hands-On project.
     const DIGITAL_INFO = [
       { title: 'Pursr', slug: 'pursr', meta: 'Next.js · Supabase · Anthropic API',
         logo: 'PR', year: '2026', status: 'Active',
         desc: 'SR&ED, Canada\'s R&D tax credit, is usually documented from memory months after the engineering. Pursr captures audit-ready evidence at the point of work, for manufacturing SMEs. Technical Co-Founder & CTO.',
+        frame: 'browser',
+        screens: [['renders/pursr-home.webp',      'Floor manager · Dashboard'],
+                  ['renders/pursr-equipment.webp', 'Consultant · Machine data'],
+                  ['renders/pursr-materials.webp', 'Consultant · Materials'],
+                  ['renders/pursr-review.webp',    'Consultant · Review']],
         figs: ['Product UI', 'System architecture'], figImg: [null, null],
         points: ['Slack round-trip: a documentation gap becomes a prompted question, and the engineer\'s reply lands as structured evidence',
                  'CNC machine data on read-only MTConnect, not FOCAS — plant IT won\'t allow write access',
@@ -3631,6 +3680,7 @@
       { title: 'Actiograph', slug: 'actiograph', meta: 'React Native · Expo · Supabase',
         logo: 'AG', year: '2026', status: 'Active',
         desc: 'Pre-med students assemble their application from five years of experiences, months before they apply. Actiograph captures each one as it happens. Founding Engineer & CTO.',
+        frame: 'phone',
         screens: [['renders/actiograph-home.webp', 'Dashboard'],
                   ['renders/actiograph-log.webp', 'Activity log'],
                   ['renders/actiograph-abs.webp', 'Application builder'],
@@ -3976,13 +4026,13 @@
     const sheetNoteEl = document.querySelector('.sheet-note');
     const fd = id => document.getElementById(id);
 
-    // ── App screens (a file with `screens`): a phone frame that plays them
-    //    like a short screen recording. Each screen holds while its bar
-    //    fills — a CSS animation whose animationend advances, so a hover
-    //    holds it with animation-play-state; the bars jump to a screen and a
-    //    tap on the phone skips ahead. Where the stack column is shown the
-    //    phone takes the standing sheet's place; on narrow screens it sits in
-    //    the doc, under the description.
+    // ── App screens (a file with `screens`): a phone or browser frame that
+    //    plays them like a short screen recording. Each screen holds while
+    //    its bar fills — a CSS animation whose animationend advances, so a
+    //    hover holds it with animation-play-state; the bars jump to a screen
+    //    and a tap on the frame skips ahead. Where the stack column is shown
+    //    the device takes the standing sheet's place; on narrow screens it
+    //    sits in the doc, under the description.
     const device   = fd('fdDevice');
     const devRight = svg.parentElement;
     let devShots = [], devAt = 0, devFile = -1;
@@ -4028,9 +4078,18 @@
           return { img, bar, cap };
         });
         device.setAttribute('aria-label', `${info.title} app screens`);
+        device.classList.toggle('browser', info.frame === 'browser');
+        device.classList.toggle('phone', info.frame !== 'browser');
       }
       device.hidden = false;
       device.classList.remove('held');
+      // the clock waits for the first screen to arrive (a slow connection
+      // would otherwise spend its turn on an empty frame)
+      const first = devShots[0].img;
+      device.classList.toggle('loading', !first.complete);
+      const arrived = () => device.classList.remove('loading');
+      first.addEventListener('load', arrived, { once: true });
+      first.addEventListener('error', arrived, { once: true });
       showScreen(0);
       placeDevice(column);
     }
@@ -4041,7 +4100,7 @@
     fd('fdBars').addEventListener('animationend', () => {
       if (window._fileDocOpen && !device.hidden) showScreen((devAt + 1) % devShots.length);
     });
-    device.querySelector('.device-phone').addEventListener('click', () => {
+    device.querySelector('.device-frame').addEventListener('click', () => {
       if (devShots.length) showScreen((devAt + 1) % devShots.length);
     });
     device.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') device.classList.add('held'); });

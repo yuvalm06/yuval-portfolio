@@ -121,7 +121,7 @@ things at once:
    `min(580px, 55% − 50px)`, over `.file-scrim` (z3, blur + wash). Contents
    mirror an engineering drawing: title-block strip (logo cell + File /
    Year / Status), title, mono stack line, description, then the file's
-   **visual** — app screens in a phone frame (below) or the figures
+   **visual** — app screens in a device frame (below) or the figures
    (captions from `DIGITAL_INFO[i].figs`, images from `figImg: [url, url]`)
    — then the numbered points and the links. Visual before points: the
    screenshot says more than the third bullet.
@@ -195,15 +195,25 @@ still receive Enter). The nav strip above the page is click-through
 blocked by the empty width of the nav.
 While open, the sheet note reads `Digital · File NN of 06`.
 
-## App screens (phone frame)
+## App screens (device frame)
 
-A file with `screens: [[url, caption], …]` (Actiograph) plays them in a CSS
-phone frame (`#fdDevice`: `.device-phone` bezel + island, `.device-screen`
-with one `<img>` per screen, then `.device-bars` + `.device-label`) — like a
-short screen recording, each screen holding ~3 s before the next fades in
-the way a tab change would, looping. It is deliberately not a video file:
-five ~25 KB webp stills, no player chrome, and the bars double as the
-controls.
+A file with `screens: [[url, caption], …]` plays them in a CSS device frame
+(`#fdDevice`: `.device-frame`, `.device-screen` with one `<img>` per screen,
+then `.device-bars` + `.device-label`) — like a short screen recording, each
+screen holding a few seconds before the next fades in the way a tab change
+would, looping. It is deliberately not a video file: a few ~25–50 KB webp
+stills, no player chrome, and the bars double as the controls.
+
+Two frames, picked by the file's `frame`:
+
+- **`phone`** (Actiograph, a React Native app): dark bezel + island
+  (`.device-island`), 3.2 s a screen. Dashboard → Activity log →
+  Application builder → School checklist → GPA converter.
+- **`browser`** (Pursr, a web app): a plain light window — three dots and a
+  blank address bar (`.device-chrome`; no made-up URL) — 4.2 s a screen
+  (more to take in). The captions name whose view it is: Floor manager ·
+  Dashboard, then Consultant · Machine data / Materials / Review — the
+  consultant-first product in four frames.
 
 - **Clock:** the active bar's fill is a CSS animation (`device-fill 3.2s`);
   its `animationend` advances (`showScreen`). Hovering the device (mouse
@@ -220,17 +230,24 @@ controls.
   stands up. Where it isn't (≤ 900px, phones), the device is moved into the
   doc, between the description and the figures. The column's
   ResizeObserver moves it if the layout crosses 900px while open.
-- **Size:** `--dev-h` — `min(500px, 100vh − 250px)` in the column (≈ 360px
-  on a 1280×610 laptop window), `min(400px, 62vh)` in the doc. The frame is
-  1000 × 2097 (screen 923 × 2000 plus a 3%-of-width bezel); radii and insets
-  are percentages, so it scales cleanly.
-- **Screenshots:** 923 × 2000 phone captures with the status bar (time,
+- **Size:** the phone by `--dev-h` — `min(500px, 100vh − 250px)` in the
+  column (≈ 360px on a 1280×610 laptop window), `min(400px, 62vh)` in the
+  doc; its frame is 1000 × 2097 (screen 923 × 2000 plus a 3%-of-width
+  bezel), radii and insets in percentages so it scales cleanly. The browser
+  by width — `min(600px, column − 48px, (100vh − 290px) × 1.73)` in the
+  column (≈ 480px at 1440×900, 426px at 1280×610), the doc's width (capped
+  at `62vh × 1.73`, for landscape phones) in the doc.
+- **Screenshots:** phone — 923 × 2000 captures with the status bar (time,
   Dynamic Island, battery) painted out in the app's background colour
   (#F7F7F5, rows 0–125), resized to 600 wide, webp q80 —
-  `renders/actiograph-*.webp`. The frame draws its own island.
+  `renders/actiograph-*.webp`; the frame draws its own island. Browser —
+  2000 × 1153 window captures with the window's rounded bottom corners
+  squared off (they showed the desktop through) and any stray top line
+  cropped, resized to 1200 wide, webp q80 — `renders/pursr-*.webp`.
 - Built once per file on first open (`mountDevice`), so the images load only
-  when someone opens the file. A browser frame for web-app screens (Pursr)
-  would be a second `.device` variant on the same clock.
+  when someone opens the file; the clock waits (`.loading`) until the first
+  screen has arrived, so a slow connection doesn't spend its turn on an
+  empty frame.
 
 ## Gotchas
 
