@@ -702,15 +702,15 @@ Clicking a menu link, the About photo, or a skill tag over a model zoomed
 that hidden model (measured: ease 0.41–0.59 behind the page; 0 now).
 
 - **Clicks:** the card handler returns early when `e.target.closest(...)`
-  is the top bar (`.nav`: name, Resume, Contact, menu button), the menu, a
-  page overlay, the race page, the wrap-up card or its scrim, a scene label,
+  is the top bar (`.nav`: name, Resume, Contact, menu button), the menu, the
+  home page, a page overlay, the race page, the wrap-up card or its scrim, a scene label,
   the section-nav, an edge tab, or (compact) the switch, pager or sheet. The
   sprocket panel is deliberately NOT in the list — a click on it still closes
   the detail view. (Clicks on "#…" links never get here at all: the router
   takes them in the capture phase.)
-- **Hover:** `window._sceneCover()` (main script) returns `'page'` (menu /
-  page / race), `'end'` (the wrap-up — the scene stays drawn behind its
-  scrim) or `''`; hover raycasts only run when it is `''`.
+- **Hover:** `window._sceneCover()` (main script) returns `'page'` (home /
+  menu / page / race), `'end'` (the wrap-up — the scene stays drawn behind
+  its scrim) or `''`; hover raycasts only run when it is `''`.
 - **Cursor:** derived ONCE per frame from the union of hover flags, at the
   end of the hover block. Each channel used to write `card.style.cursor`
   itself, so moving straight from one model's hitbox onto a neighbour (e.g.
@@ -721,10 +721,14 @@ that hidden model (measured: ease 0.41–0.59 behind the page; 0 now).
   a page/menu/race has covered the scene for 0.6 s (`pageCoverT`), the loop
   skips `composer.render()` and sets `_dotCam.hidden` so the dot grid skips
   its redraw. All state updates keep running, so the first frame back is
-  current.
+  current. Exception: once behind the home page, when the five models are
+  in, it draws one frame anyway (`warmed`) — compiling shaders and uploading
+  geometry then, not on the first frame after the Hands-On door.
+  (home-page.md)
 - **Escape:** menu/page → wrap-up card → file doc → `window._stepBack()`
   (closes an open sprocket / seat detail view, then zooms out of the featured
-  project, cancelling an arrow-cycling bounce) → `flipTo(0)`.
+  project, cancelling an arrow-cycling bounce) → the home page. On the home
+  page itself it does nothing.
 - **Router hooks** (addresses.md): `_goProject(key, detail)`, `_goRest()`,
   `_sceneTarget()` (where the scene is headed — for the address bar),
   `pendingSprocket` (an address asked for the sprocket study: it opens once

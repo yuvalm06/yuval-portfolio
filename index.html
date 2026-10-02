@@ -15,7 +15,7 @@
   <meta property="og:image" content="https://yuvalmunz.com/assets/og-image.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Five engineering projects — an open-wheel race car, a Rivian R1S, an e-scooter, a belt 3D printer, and an off-road steering wheel — on an isometric dot grid." />
+  <meta property="og:image:alt" content="Yuval Munz — Mechanical Engineering, Queen's University, class of 2028: current roles, and doors to the hands-on and software work." />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231A1916'/%3E%3Ctext x='32' y='42' font-family='Helvetica,Arial,sans-serif' font-size='26' font-weight='700' letter-spacing='-1' fill='%23EEECEA' text-anchor='middle'%3EYM%3C/text%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -166,7 +166,7 @@
       min-width: 0;
     }
 
-    .logo-ym {
+    .logo-ym {                  /* the way home (#) */
       grid-row: 1 / 3;
       font-family: var(--font);
       font-size: 38px;
@@ -174,7 +174,7 @@
       letter-spacing: -0.02em;
       line-height: 1;
       color: var(--ink);
-      cursor: default;
+      text-decoration: none;
       user-select: none;
       white-space: nowrap;
       flex-shrink: 0;
@@ -2309,6 +2309,218 @@
     .ec-back::before { content: '←  '; white-space: pre; }
     .ec-back:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
 
+    /* ── Home: the front door at the plain address — who, what now, the two
+       sides. It covers the scene (z 30, under the top bar) while the models
+       load behind it; the dot grid shows through, faintly (the scene stops
+       drawing under it — see _sceneCover). Not driven per frame, so plain
+       transitions. ── */
+    .home-page {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: none;
+      background: rgba(238,236,234,0.92);
+      border-radius: 14px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0s linear 0.4s;
+    }
+    .home-page::-webkit-scrollbar { display: none; }
+    .home-page.open { opacity: 1; visibility: visible; transition-delay: 0s; }
+    .home-inner {
+      min-height: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) clamp(190px, 21vw, 300px);
+      gap: 56px;
+      align-items: center;
+      padding: 96px 64px 44px;
+    }
+    .home-hi, .home-label {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+    .home-name {
+      font-size: clamp(44px, 8.4vh, 76px);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 0.95;
+      color: var(--ink);
+      margin: 8px 0 12px;
+    }
+    .home-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+    }
+    .home-lede {
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--ink-mid);
+      max-width: 560px;
+      margin: 18px 0 22px;
+    }
+    /* each current role links to its work */
+    .home-roles { list-style: none; margin: 6px 0 24px; padding: 0; }
+    .home-roles a {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 10px;
+      padding: 3px 0;
+      font-size: 13px;
+      line-height: 1.35;
+      color: var(--ink-mid);
+      text-decoration: none;
+    }
+    .home-roles b { color: var(--ink); font-weight: 600; }
+    .home-roles a:hover span, .home-roles a:focus-visible span { color: var(--ink); }
+    .home-roles a:hover span::after, .home-roles a:focus-visible span::after { content: '  →'; white-space: pre; }
+    .home-doors {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      max-width: 640px;
+      margin-bottom: 20px;
+    }
+    .home-door {
+      display: block;
+      color: var(--ink);
+      text-decoration: none;
+      background: #F7F6F4;
+      border: 1px solid rgba(26,25,22,0.14);
+      border-radius: 3px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(26,25,22,0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .home-door:hover { transform: translateY(-2px); box-shadow: 0 16px 30px rgba(26,25,22,0.12); }
+    .home-door-img {
+      display: block;
+      height: clamp(76px, 13vh, 118px);
+      background: #fff center / cover no-repeat;
+      border-bottom: 1px solid rgba(26,25,22,0.10);
+    }
+    .home-door-txt { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px 13px; }
+    .home-door-txt b {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .home-door-txt b::after { content: '  →'; white-space: pre; }
+    .home-door-txt span { font-size: 12.5px; color: var(--ink-mid); }
+    .home-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+    .home-status, .home-foot a {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .home-status { display: inline-flex; align-items: center; gap: 7px; color: var(--ink-mid); }
+    .home-status i { width: 6px; height: 6px; border-radius: 50%; background: #5c9e6b; }
+    .home-foot a { color: var(--ink); text-underline-offset: 3px; }
+    .home-photo {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 3px;
+      border: 1px solid rgba(26,25,22,0.12);
+    }
+    .home-avatar { display: none; }
+    /* laptop windows under their browser bars: tighter, so the doors stay
+       on screen */
+    @media (max-height: 760px) {
+      .home-inner { padding: 80px 64px 28px; }
+      .home-name  { margin: 4px 0 8px; }
+      .home-lede  { font-size: 15.5px; margin: 12px 0 14px; }
+      .home-roles { margin-bottom: 16px; }
+      .home-roles a { padding: 2px 0; font-size: 12.5px; }
+      .home-doors { margin-bottom: 14px; }
+      .home-door-txt { padding: 9px 12px 10px; }
+    }
+    /* narrow windows and phones: one column, the photo beside the name */
+    @media (max-width: 900px) {
+      .home-inner {
+        grid-template-columns: minmax(0, 1fr);
+        align-items: start;
+        padding: 108px 24px 32px;
+      }
+      .home-photo  { display: none; }
+      .home-id     { display: flex; align-items: center; gap: 14px; }
+      .home-avatar {
+        display: block;
+        flex: none;
+        width: 64px; height: 64px;
+        border-radius: 50%;
+        background: url('assets/yuval.jpeg') center / cover;
+        border: 1px solid rgba(26,25,22,0.12);
+      }
+      .home-name   { font-size: 38px; margin: 2px 0 4px; }
+      .home-meta   { margin-top: 12px; }
+      .home-lede   { font-size: 15px; margin: 14px 0 16px; }
+      .home-roles a { grid-template-columns: minmax(0, 1fr); gap: 0; padding: 3px 0; }
+      .home-roles span { font-size: 11.5px; color: var(--ink-light); }
+      .home-doors  { gap: 10px; margin: 2px 0 16px; }
+      .home-door-img { height: 74px; }
+      .home-door-txt { padding: 9px 10px 10px; }
+      .home-door-txt b { font-size: 9.5px; }
+      .home-door-txt span { font-size: 11.5px; }
+    }
+    @media (max-width: 640px) {
+      .home-inner  { padding: 100px 20px 28px; }
+      .home-status { width: 100%; }        /* the note on its own line, the links under it */
+    }
+    /* small phones: tighter, so the doors reach the first screen */
+    @media (max-width: 640px) and (max-height: 700px) {
+      .home-inner  { padding-top: 84px; }
+      .home-avatar { width: 52px; height: 52px; }
+      .home-name   { font-size: 32px; }
+      .home-meta   { margin-top: 8px; }
+      .home-lede   { font-size: 14px; margin: 10px 0 12px; }
+      .home-roles a { padding: 2px 0; }
+    }
+    /* landscape phones: the doors move up beside the intro */
+    @media (max-width: 900px) and (max-height: 500px) {
+      .home-inner { padding: 76px 24px 20px; }
+      .home-main  {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+        column-gap: 28px;
+        align-items: start;
+      }
+      .home-main > * { grid-column: 1; }
+      .home-doors {
+        grid-column: 2;
+        grid-row: 1 / span 6;
+        grid-template-columns: minmax(0, 1fr);
+        align-self: center;
+        margin: 0;
+      }
+      .home-door-img { height: 64px; }
+      .home-lede { margin: 10px 0 12px; }
+      .home-roles a { grid-template-columns: 190px minmax(0, 1fr); gap: 10px; padding: 1px 0; }
+      .home-roles span { font-size: 12px; }
+    }
+    /* Under the home page: its name / role line / note say it, and the
+       scene's chrome stays out of reach (no faint copies, no Tab stops) */
+    .card.home-open :is(.logo-ym, .nav-role, .nav-note),
+    .card.home-open > canvas:not(#dot-canvas),
+    .card.home-open :is(.identity, .scene-hint, .scene-labels, .scene-label, .section-nav, .edge-tab,
+      .sheet-note, .mode-switch, .m-pager, .m-stage, .project-panel, .sprocket-panel,
+      .dim-line, .detail-callout, .digital-page, .end-card, .end-scrim) {
+      visibility: hidden !important;
+    }
+
     .fd-fig {
       position: relative;
       height: 138px;
@@ -2805,7 +3017,7 @@
 </head>
 <body>
 
-<div class="card" id="card">
+<div class="card home-open" id="card">
 
   <!-- ── ANIMATED DOT GRID ── -->
   <canvas id="dot-canvas" aria-hidden="true"></canvas>
@@ -2819,7 +3031,7 @@
   <nav class="nav">
 
     <div class="nav-left">
-      <div class="logo-ym">Yuval Munz</div>
+      <a class="logo-ym" href="#" title="Home">Yuval Munz</a>
       <a class="nav-role" href="#about" title="About · experience">Mechanical Engineer · Systems Optimization</a>
       <div class="nav-note"><span class="nav-note-dot" aria-hidden="true"></span>Queen's '28 · Open to 2027 internships &amp; co-ops</div>
     </div>
@@ -2843,7 +3055,8 @@
       <button class="nav-close-btn" id="closeBtn" aria-label="Close menu">&#x2715;</button>
     </div>
     <ul class="nav-links">
-      <li><a href="#">Hands-On <span>Engineering</span></a></li>
+      <li><a href="#">Home <span>Intro</span></a></li>
+      <li><a href="#hands-on">Hands-On <span>Engineering</span></a></li>
       <li><a href="#digital">Digital <span>Software</span></a></li>
       <li><a href="#about">About <span>Experience</span></a></li>
       <li><a href="#skills">Skills <span>Stack</span></a></li>
@@ -3248,6 +3461,50 @@
     </div>
   </div>
 
+  <!-- ───────── HOME — the front door: who, what now, the two sides ─────────
+       The plain address. It covers the scene (z 30, under the top bar) while
+       the models load behind it; each role links to its work, and the doors
+       lead into Hands-On (#hands-on) and Digital (#digital). -->
+  <section class="home-page open" id="homePage" aria-labelledby="homeName">
+    <div class="home-inner">
+      <div class="home-main">
+        <div class="home-id">
+          <span class="home-avatar" aria-hidden="true"></span>
+          <div>
+            <div class="home-hi">Hi, I'm</div>
+            <h1 class="home-name" id="homeName">Yuval Munz.</h1>
+          </div>
+        </div>
+        <div class="home-meta">Mechanical Engineering · Queen's University · Class of 2028</div>
+        <p class="home-lede">I work out how systems run, find where small design decisions waste effort, and build the more efficient version.</p>
+        <div class="home-label">Now</div>
+        <ul class="home-roles">
+          <li><a href="#fsae"><b>Queen's Formula SAE</b><span>Gear reduction &amp; sprockets lead</span></a></li>
+          <li><a href="#digital/genie-agent"><b>Workato</b><span>Product intern</span></a></li>
+          <li><a href="#digital/pursr"><b>Pursr</b><span>Co-founder &amp; CTO</span></a></li>
+          <li><a href="#digital/actiograph"><b>Actiograph</b><span>Founding engineer &amp; CTO</span></a></li>
+          <li><a href="#printer"><b>Queen's Additive Manufacturing</b><span>Mechanical operations lead</span></a></li>
+        </ul>
+        <div class="home-doors">
+          <a class="home-door" href="#hands-on">
+            <span class="home-door-img" style="background-image: url('renders/lineup.webp'); background-size: contain; background-color: #EEECEA"></span>
+            <span class="home-door-txt"><b>Hands-On</b><span id="homeHandsCount">Engineering projects</span></span>
+          </a>
+          <a class="home-door" href="#digital">
+            <span class="home-door-img" style="background-image: url('renders/pursr-home.webp'); background-position: left top"></span>
+            <span class="home-door-txt"><b>Digital</b><span id="homeDigitalCount">Software projects</span></span>
+          </a>
+        </div>
+        <div class="home-foot">
+          <span class="home-status"><i></i>Open to 2027 internships &amp; co-ops</span>
+          <a href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a>
+          <a href="#about">About</a>
+        </div>
+      </div>
+      <img class="home-photo" src="assets/yuval.jpeg" alt="Yuval Munz" />
+    </div>
+  </section>
+
   <!-- ───────── IDENTITY (bottom-left) ───────── -->
   <div class="identity">
     <div class="identity-headline">
@@ -3453,7 +3710,7 @@
     Object.values(pages).some(p => p.classList.contains('open'));
 
   // Close on Escape: overlays first, then step out of the 3D view (detail
-  // view, then the featured zoom), then flip back to the physical page.
+  // view, then the featured zoom), then out of the side to the home page.
   // Left / right arrows mirror the section-nav buttons.
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
@@ -3461,16 +3718,16 @@
       const hadOverlay = overlayOpen();
       navOverlay.classList.remove('open');
       closeAllPages();
-      if (hadOverlay) return;
+      if (hadOverlay || window._homeOpen) return;   // home is the top: nothing above it
       if (window._endOpen) { window._closeEnd(); return; }
       if (window._fileDocOpen || (window._fileStepping && window._fileStepping())) {
         window._closeFileDoc();
         return;
       }
       if (!window._digitalOpen && window._stepBack && window._stepBack()) return;
-      flipTo(0);
+      openHome();
     } else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && !e.repeat &&
-               !window._raceOpen && !overlayOpen() &&
+               !window._raceOpen && !window._homeOpen && !overlayOpen() &&
                !e.altKey && !e.ctrlKey && !e.metaKey) {
       (e.key === 'ArrowLeft' ? prevBtn : nextBtn).click();
     }
@@ -3486,11 +3743,13 @@
     }
   });
 
-  // What is hiding the 3D scene: 'page' (the menu, an opaque page, or the
-  // race), 'end' (the wrap-up card — the scene stays in view behind it) or
-  // '' — the module skips hover raycasts under either, and stops drawing
-  // once a page has covered it.
-  window._sceneCover = () => window._raceOpen || overlayOpen() ? 'page' : window._endOpen ? 'end' : '';
+  // What is hiding the 3D scene: 'page' (the home page, the menu, an opaque
+  // page, or the race), 'end' (the wrap-up card — the scene stays in view
+  // behind it) or '' — the module skips hover raycasts under either, and
+  // stops drawing once a page has covered it.
+  window._homeOpen = true;   // the site opens on the home page (see "Home")
+  window._sceneCover = () => window._homeOpen || window._raceOpen || overlayOpen() ? 'page'
+                            : window._endOpen ? 'end' : '';
 
   // ── Page flip: 0 = hands-on (3D scene), 1 = digital work. The site opens
   //    on the hands-on page; the edge tabs (the phone switch) flip it. ──
@@ -3610,7 +3869,7 @@
     let sw = null, swallowClick = false;
     cardEl.addEventListener('pointerdown', e => {
       if (sw || (e.pointerType === 'mouse' && e.button !== 0)) return;
-      if (window._digitalOpen || window._raceOpen || window._endOpen || overlayOpen()) return;
+      if (window._homeOpen || window._digitalOpen || window._raceOpen || window._endOpen || overlayOpen()) return;
       if (e.target.closest('.nav, .mode-switch')) return;
       sw = { id: e.pointerId, x0: e.clientX, y0: e.clientY, lastX: e.clientX, lastT: e.timeStamp, v: 0, horiz: null };
     });
@@ -4879,6 +5138,35 @@
   })();
   // ── End Race easter egg ──────────────────────────────────────────────────
 
+  // ── Home ─────────────────────────────────────────────────────────────────
+  // The front door at the plain address: who, what now, and the two sides.
+  // Open on arrival unless the address names a view (the router, below);
+  // the 3D scene loads behind it and stops drawing while covered. Opening
+  // it puts everything back to rest: the Hands-On page, no file, no wrap-up.
+  const homePage = document.getElementById('homePage');
+  document.getElementById('homeHandsCount').textContent =
+    `${Object.keys(PROJECT_INFO).length} engineering projects`;
+  document.getElementById('homeDigitalCount').textContent =
+    `${window._fileSlugs.length} software projects`;
+  function openHome() {
+    flipTo(0);
+    closeEnd();
+    if (window._goRest) window._goRest();   // the scene settles out of sight
+    homePage.classList.add('open');
+    cardEl.classList.add('home-open');
+    window._homeOpen = true;
+  }
+  function closeHome(instant) {
+    if (!window._homeOpen) return;
+    if (instant) {                          // an address straight into a view: no fade on arrival
+      homePage.style.transition = 'none';
+      requestAnimationFrame(() => requestAnimationFrame(() => { homePage.style.transition = ''; }));
+    }
+    homePage.classList.remove('open');
+    cardEl.classList.remove('home-open');
+    window._homeOpen = false;
+  }
+
   // ── Wrap-up ──────────────────────────────────────────────────────────────
   // The card after the last project on either side — the arrows, the phone
   // pager and a panel's "Next · Wrap-up" all end here — instead of a silent
@@ -4896,7 +5184,7 @@
     { tag:   `Digital · all ${nFiles} files`,
       title: 'That\'s the digital work.',
       desc:  'The engineering builds are on the Hands-On side. Or get in touch.',
-      other: ['Hands-On work', '#'],
+      other: ['Hands-On work', '#hands-on'],
       back:  [`Back to file ${String(nFiles).padStart(2, '0')}`, '#digital/' + window._fileSlugs.at(-1)] }
   ];
   window._endOpen = false;
@@ -4923,10 +5211,10 @@
   endScrim.addEventListener('click', closeEnd);
 
   // ── Addresses ────────────────────────────────────────────────────────────
-  // Every view has one — #fsae, #fsae/sprocket, #end, #digital,
-  // #digital/pursr, #about, #race … — so browser Back steps out of a view
-  // instead of leaving the site, and a link opens one view directly. Two
-  // directions:
+  // Every view has one — the plain address (home), #hands-on, #fsae,
+  // #fsae/sprocket, #end, #digital, #digital/pursr, #about, #race … — so
+  // browser Back steps out of a view instead of leaving the site, and a link
+  // opens one view directly. Two directions:
   //  · a "#…" link, Back / Forward, or a typed address → applyHash() makes
   //    the page match (links are intercepted: navigate())
   //  · everything else that changes the view (a click on a model, the
@@ -4934,12 +5222,12 @@
   //    is headed (stateHash), pushes that address — or steps Back when the
   //    view returned to the previous entry, so closing something undoes its
   //    entry instead of stacking a new one.
-  // The phone carousel's first project is the bare address (it is what
-  // the site opens on), so '' and '#fsae' are the same view there.
+  // The phone carousel has no overview — Hands-On opens on its first
+  // project — so '#hands-on' and '#fsae' are the same view there.
   (() => {
     const KEY_OF = Object.fromEntries(Object.entries(PROJECT_INFO).map(([k, v]) => [v.slug, k]));
     const PAGE_OF = { about: 'About', skills: 'Skills', contact: 'Contact' };
-    const norm = h => { h = h && h !== '#' ? h : ''; return COMPACT && h === '#fsae' ? '' : h; };
+    const norm = h => { h = h && h !== '#' ? h : ''; return COMPACT && h === '#hands-on' ? '#fsae' : h; };
     const hist = { i: 0, stack: [] };
     let expectPop = 0;         // Back steps we took ourselves: their popstate is no news
     let sceneUp = false, pendingScene = null;
@@ -4955,6 +5243,7 @@
       if (window._raceOpen) return '#race';
       const pg = Object.keys(pages).find(k => pages[k].classList.contains('open'));
       if (pg) return '#' + pg.toLowerCase();
+      if (window._homeOpen) return '';
       if (currentPage === 1) {
         if (window._endOpen) return '#digital/end';
         const f = window._fileTarget();
@@ -4964,7 +5253,7 @@
       if (!sceneUp) return null;
       const t = window._sceneTarget();
       if (t.moving) return null;               // mid-swipe: wait for it to settle
-      return norm(t.project ? '#' + PROJECT_INFO[t.project].slug + (t.detail ? '/sprocket' : '') : '');
+      return norm(t.project ? '#' + PROJECT_INFO[t.project].slug + (t.detail ? '/sprocket' : '') : '#hands-on');
     }
 
     function applyHash(h) {
@@ -4975,6 +5264,8 @@
       closeAllPages();
       if (PAGE_OF[a]) { pages[PAGE_OF[a]].classList.add('open'); return; }   // over whatever is under it
       if (a === 'race') { if (!window._raceOpen) window._openRace(); return; }
+      if (!a) { openHome(); return; }                                       // the plain address
+      closeHome(booting);
       if (a === 'digital') {
         flipTo(1);
         const i = window._fileSlugs.indexOf(b);
@@ -5066,7 +5357,9 @@
       sceneUp = true;
       if (pendingScene !== null) { const h = pendingScene; pendingScene = null; applyHash(h); }
     };
+    let booting = true;
     if (location.hash) applyHash(location.hash);
+    booting = false;
   })();
 
 </script>
@@ -5267,7 +5560,7 @@ const sheetNote    = document.querySelector('.sheet-note');
 // bottom-left copy through the same crossfade as the featured zoom.
 const IDENTITY_DIGITAL = {
   layer: `${(window._fileSlugs || []).length || 6} software projects`,
-  desc:  'The machines are on the <a class="side-link" href="#">Hands-On</a> side.'
+  desc:  'The machines are on the <a class="side-link" href="#hands-on">Hands-On</a> side.'
 };
 let digitalT = 0;                // eased flip state: 0 = physical, 1 = digital
 let fileT    = 0;                // eased: a Digital file is open (hint + caption step aside)
@@ -6249,6 +6542,7 @@ let zoomT   = 0;     // 0 = isometric, 1 = zoomed side view
 let zoomDir = 0;     // +1 = zooming in, -1 = zooming out
 let prevTime = performance.now();
 let pageCoverT = 0;  // seconds an opaque page / the menu has covered the scene
+let warmed     = false;   // drawn once behind the home page (see the end of loop())
 const sprocketPanel = document.getElementById('sprocketPanel');
 
 // While a project is featured, the section-nav arrows cycle to the next /
@@ -6459,7 +6753,7 @@ card.addEventListener('click', e => {
   // Clicks on the menu and the opaque pages bubble up to the card too; they
   // must never raycast the hidden scene behind them (a click on the About
   // page used to zoom whichever model sat under the pointer)
-  if (e.target.closest('.nav, .nav-overlay, .page-overlay, .contact-page, .race-page, .end-card, .end-scrim, .scene-labels, .section-nav, .edge-tab, .mode-switch, .m-pager, .project-panel')) return;
+  if (e.target.closest('.nav, .nav-overlay, .home-page, .page-overlay, .contact-page, .race-page, .end-card, .end-scrim, .scene-labels, .section-nav, .edge-tab, .mode-switch, .m-pager, .project-panel')) return;
   if (!modelMeshes.length) return;
   const r = card.getBoundingClientRect();
   mousePt.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
@@ -7405,7 +7699,12 @@ function loop() {
   // running, so the first frame back is current.
   const hidden = (window._digitalOpen && digitalT === 1) || pageCoverT > 0.6;
   if (window._dotCam) window._dotCam.hidden = hidden;   // the dot grid skips too
-  if (!hidden) composer.render();
+  // …except once behind the home page, when the five models are in: that
+  // first draw compiles the shaders and uploads the geometry, so walking
+  // through the Hands-On door doesn't stall on it (the canvas is hidden)
+  const warm = hidden && !warmed && window._homeOpen && projectsIn;
+  if (warm) warmed = true;
+  if (!hidden || warm) composer.render();
 }
 loop();
 if (window._sceneReady) window._sceneReady();   // the router can now reach the scene (main script)

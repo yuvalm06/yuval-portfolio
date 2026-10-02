@@ -48,9 +48,10 @@ axes, but the projects are *files*:
   exactly one is out — the handle to the OTHER world. Hidden while a file
   document is open (`.digital-page.file-open ~ .edge-tab`). These replaced
   the page dots.
-- Other triggers: nav overlay **Projects** / **Digital** links, and Escape
-  (flips home when no overlay, file or 3D view was open). The section-nav
-  arrows never flip pages — on this page they step through the files (below).
+- Other triggers: the home page's doors, the menu's **Hands-On** /
+  **Digital** links, and Escape (from the register — no overlay or file open
+  — it steps out to the home page). The section-nav arrows never flip pages —
+  on this page they step through the files (below).
 - **Keyboard:** edge tabs and register rows are divs with
   `role="button" tabindex="0"`; a delegated keydown in the main script turns
   Enter / Space into a click. Closed pages and hidden

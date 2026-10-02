@@ -37,10 +37,11 @@ matchMedia('(max-width: 640px), (pointer: coarse) and (orientation: portrait), '
 
 ## The carousel (3D module)
 
-- **Opening zoom.** The site opens on the Hands-On page, and the desktop
-  zoom plays into the car as soon as that page is on screen (not under
-  Digital or a page) — once the car's GLB is in, or after 3 s regardless.
-  Until then the scene sits at rest, exactly like desktop.
+- **Opening zoom.** The site opens on the home page (home-page.md); the
+  desktop zoom plays into the car as soon as the Hands-On page is on screen
+  (not under home, Digital or a page) — once the car's GLB is in, or after
+  3 s regardless. Until then the scene sits at rest, exactly like desktop,
+  and stops drawing under the home page (one warm-up frame aside).
 - **Stations.** Once the zoom lands (`zoomT === 1` → `carousel`), every model
   holds its `FEATURE_POSE` at its own station along world x:
   `stageT(name)` is `ease` for all of them (desktop: only `featured`) and
@@ -172,9 +173,10 @@ phones stay at 8 (height-limited).
   in landscape): arrows step, dots jump; ‹ is disabled at 01 and › at 05
   opens the wrap-up. Shown once the carousel is up (`carousel-on`); hidden
   under Digital, the open sheet and the sprocket study (`detail-open`).
-- Every station has an address (`#rivian` …; 01 is the bare address) —
-  Back steps back along the line; a link to a project opens the carousel on
-  it (addresses.md).
+- Every station has an address (`#rivian` …; 01 is `#fsae`, and
+  `#hands-on` — the home page's door — means the same) — Back steps back
+  along the line; a link to a project opens the carousel on it
+  (addresses.md).
 - **Hands-On | Digital switch** (`.mode-switch`, bottom centre; under the
   sheet column in landscape) replaces the edge tabs; `updateTabs()` drives
   both. Hidden while a file doc is open.

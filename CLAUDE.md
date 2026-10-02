@@ -17,9 +17,13 @@ leads its points — app screenshots (`screens`) play in a phone or browser fram
 (`frame`), see `dev/features/digital-page.md`. Visitor copy stays short: say a thing once (the panel or
 doc, not also the caption), and let the image carry what it can.
 
-Every view has an address (`#fsae`, `#digital/pursr`, `#about` …) so browser Back
-steps out of a view and a project can be linked — the router at the end of the main
-script. See `dev/features/addresses.md`.
+The site opens on the **home page** (`.home-page`, the plain address): who, current
+roles (each linked to its work), and two doors — Hands-On (the 3D scene, `#hands-on`)
+and Digital. The scene loads behind it. See `dev/features/home-page.md`.
+
+Every view has an address (home is the plain one; `#hands-on`, `#fsae`,
+`#digital/pursr`, `#about` …) so browser Back steps out of a view and a project can be
+linked — the router at the end of the main script. See `dev/features/addresses.md`.
 
 ---
 
@@ -30,13 +34,15 @@ card (rounded inset frame, #EEECEA background)
  ├── #dot-canvas          ← animated perspective dot grid (Canvas 2D)
  ├── .distance-fog        ← CSS gradient overlay that fades dots into distance
  ├── <canvas> (WebGL)     ← Three.js scene, injected by JS with inline styles (z 3)
+ ├── .home-page           ← the front door at the plain address (z 30): name, one-liner,
+ │                          current roles, doors to Hands-On / Digital; covers the scene
  ├── .digital-page        ← the Digital page, flips in from the right (z 16); an open
  │                          file docks left, its sheet (or app screens in a device
  │                          frame) right
  ├── .race-page           ← race-game easter egg overlay (z 45), opened by the
  │                          green button on the steering wheel's face
- ├── .nav                 ← top bar (z 35): name + role line + status note left;
- │                          Resume · Contact · menu button right
+ ├── .nav                 ← top bar (z 35): name (links home) + role line + status note
+ │                          left (hidden on home); Resume · Contact · menu button right
  ├── .nav-overlay         ← full-screen slide-up nav menu
  ├── .identity            ← bottom-left: icon | title | layer label | description
  ├── .frame-marks         ← drawing-frame corner ticks + sheet note
@@ -159,6 +165,7 @@ Shadow system (3 layers):
 18 → .end-card (the wrap-up)
 20 → .identity, .frame-marks, .section-nav
 21 → .edge-tab, .mode-switch + .m-pager (compact only)
+30 → .home-page (the front door)
 35 → .nav
 40 → .contact-page, .page-overlay (about / skills)
 45 → .race-page (steering-wheel easter egg)

@@ -18,9 +18,13 @@ step — and share single projects with hiring engineers.
 ## The flow
 
 ```
-Hands-On:  overview → 01 → 02 → 03 → 04 → 05 → wrap-up (Digital · Resume · Contact)
-Digital:   register → File 01 → … → File 06 → wrap-up (Hands-On · Resume · Contact)
+Home (the plain address): who, current roles, two doors
+  ├─ Hands-On:  overview → 01 → 02 → 03 → 04 → 05 → wrap-up (Digital · Resume · Contact)
+  └─ Digital:   register → File 01 → … → File 06 → wrap-up (Hands-On · Resume · Contact)
 ```
+
+The site opens on the home page (home-page.md); its doors lead into the two
+sides, and each current role on it links straight to that role's work.
 
 - Every project panel (and phone sheet) ends with its named next step —
   `Next · 02 Off-Road Steering Wheel`; after the last one, `Next · Wrap-up`.
@@ -48,18 +52,20 @@ Digital:   register → File 01 → … → File 06 → wrap-up (Hands-On · Res
 
 | Address | View |
 |---------|------|
-| (none) | Hands-On overview — on a phone, the carousel at 01 (`#fsae` is the same view there) |
+| (none) | Home — the front door (home-page.md) |
+| `#hands-on` | Hands-On overview — on a phone, the carousel at 01 (`#fsae` is the same view there) |
 | `#fsae` `#rivian` `#scooter` `#printer` `#steering` | that project (`PROJECT_INFO[..].slug`) |
 | `#fsae/sprocket` | the sprocket study |
 | `#end` | the Hands-On wrap-up |
 | `#digital` · `#digital/<slug>` · `#digital/end` | the register · a file (`DIGITAL_INFO[..].slug`) · the Digital wrap-up |
-| `#about` `#skills` `#contact` | that page, over whatever is under it |
+| `#about` `#skills` `#contact` | that page, over whatever is under it (home, on a cold load) |
 | `#race` | the race easter egg |
 
 Two directions:
 
 - **`applyHash(h)`** makes the page match an address: `a[href^="#"]` links
-  anywhere (the menu, the top bar's Contact, Next / Related, the wrap-up —
+  anywhere (the menu, the top bar's name and Contact, the home page's doors and
+  roles, Next / Related, the wrap-up —
   intercepted in the capture phase so they never reach the 3D click handler),
   Back / Forward (`popstate`), a typed address, and a cold load. Scene
   addresses wait for the module (`window._sceneReady`, called at the end of
@@ -71,7 +77,10 @@ Two directions:
   `carTarget`), `_fileTarget()` the file (or the one a step is opening) — so a
   bounce between two projects never records "the overview" in between. If
   the new address is the previous entry, it steps Back instead of pushing
-  (closing something undoes its entry); otherwise it pushes.
+  (closing something undoes its entry); otherwise it pushes. Home is `''`
+  whenever it is open (`window._homeOpen`, checked after the pages, which
+  open over it); Escape from a side's overview opens it, so that too is a
+  Back step when home was the entry before.
 
 Bookkeeping: `history.state = { i }` and an in-memory `stack` of addresses
 (`i` survives a reload; the stack doesn't, so "is the previous entry?" only
