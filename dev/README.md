@@ -18,9 +18,11 @@ dev/
 - [dot-grid.md](features/dot-grid.md) — animated perspective ground plane
 - [3d-scene.md](features/3d-scene.md) — Three.js WebGL model integrated with dot grid
 - [zoom-animation.md](features/zoom-animation.md) — click-to-zoom into side-profile view
-- [digital-page.md](features/digital-page.md) — Build 2.0 flip page: file manifest + isometric sheet stack
+- [digital-page.md](features/digital-page.md) — the Digital flip page: file register + isometric sheet stack
 - [race-game.md](features/race-game.md) — easter egg: green steering-wheel button opens an A/D obstacle runner
 - [compact-layout.md](features/compact-layout.md) — phones / portrait tablets: the 3D scene as a one-model-at-a-time swipe carousel
+- [addresses.md](features/addresses.md) — the flow: named next steps, the wrap-up card, links between the sides, and an address (#fsae …) for every view so Back works
+- [home-page.md](features/home-page.md) — the front door at the plain address: who, current roles (each linked to its work), and doors into Hands-On and Digital
 
 ## Lessons
 

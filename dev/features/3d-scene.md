@@ -529,11 +529,14 @@ race car's wheel split):
 
 The nav hint promises "Click on a project to view more"; all five models now
 deliver it. `featured` (`'car' | 'rivian' | 'scooter' | 'printer' |
-'steering'`) is set by the click handler at rest; the SAME zoom animation
-(`zoomT`/`ease`, camera dolly to the origin side-view, dot-grid reprojection)
-then runs for any of them. Arrow cycling order: `FEATURE_ORDER = ['scooter',
-'printer','car','steering','rivian']` — left-to-right by screen position
-(modulo uses `FEATURE_ORDER.length` — don't hardcode the count).
+'steering'`) is set through `featureProject(name)` — by a click on a model or
+its scene label at rest, the arrows, or `_feature` — and the SAME zoom
+animation (`zoomT`/`ease`, camera dolly to the origin side-view, dot-grid
+reprojection) then runs for any of them. ONE order for every control:
+`PROJECT_ORDER = Object.keys(PROJECT_INFO)` — project number, 01 → 05 (the
+arrows, ←/→, the labels, and the phone carousel + pager all use it; it used
+to be left-to-right by screen position on desktop, which read 03 04 01 05 02
+against the numbers on the sheets).
 
 - **The clicked model glides to the origin stage** as `ease` advances: its
   rest pose (Rivian and printer: last ground-glue solution, frozen past ease
@@ -570,8 +573,9 @@ then runs for any of them. Arrow cycling order: `FEATURE_ORDER = ['scooter',
   meshes otherwise).
 - Zoom-out reverses everything; `featured` persists until the next click
   (harmless — at ease 0 all models are at their rest poses).
-- The sheet note shows `Sheet NN/05` — bump the denominator when adding a
-  sixth project.
+- The sheet note ("Hands-On · 02 of 05") and the caption ("Project 02 of 05")
+  count `PROJECT_ORDER` — a sixth project only needs its `PROJECT_INFO`
+  entry (with a `slug`), its model, and its hit proxy.
 
 ---
 
@@ -600,10 +604,13 @@ and driven from the RAF loop:
   image, `contain` on white. A `cover` crop cut the FEA plots to 6:1 strips
   and chopped the burned-in captions off the Rivian/scooter figures.
 
-The identity caption (bottom-left `.identity-meta`) crossfades to the
-featured project's `layer`/`desc` copy: its opacity is `|ease - 0.5| * 2`
-(dips to 0 at mid-zoom, where the text is swapped) — one formula handles
-both directions of the transition.
+The identity caption (bottom-left `.identity-meta`: the count + one line)
+dips out on the same `|ease - 0.5| * 2` as the hint, and stays out while a
+project is open — the panel carries the project, and the caption repeating
+its summary (plus a second "01 of 05" beside the sheet note's) was clutter.
+Its `layer`/`desc` text still swaps at mid-zoom; on a phone `desc` is the
+sheet's summary line. The pointer events follow it out (the Digital side's
+caption holds a link).
 
 ---
 
@@ -615,47 +622,95 @@ headlines and body copy.
 
 - **Spec-sheet panel:** corner tick marks (`.tick`, reused on the sprocket
   panel and card frame), mono tag + ghost index numeral header, ruled title,
-  numbered rows (CSS counter `pp-row`), figure slot with diagonal hatch
-  placeholder ("Fig. 01", replaced by `PROJECT_INFO[..].img` where set), and a
-  "REV A · 2026 / YM WORKS" meta footer. Rows stagger in via transition-delays
-  when the RAF loop toggles `.in` at ppIn > 0.4.
+  then ONE shape for every project (P1.1, `PROJECT_INFO`): a mono "who" line
+  (`sub`: team · role); the figure — the project's own CAD / render leads
+  (hatch placeholder "Fig. 01" unless `img`) — and under it, where the
+  scene's 3D model is only a stand-in, a mono note saying so (`model`, P2.3:
+  set where the repo documents the model as a generated prop); labelled rows
+  with run-in mono labels (`rows`: Problem → Approach → Result — a concept
+  states its Concept; a fact the resume doesn't give is left out, not
+  invented — then a `Try` row from `hint`); a footer of real metadata
+  (`when` · `status` — it replaced the decorative "REV A · 2026 / YM WORKS");
+  and the links: `Related · …` (the matching Digital file) and the named next
+  step `Next · 02 Off-Road Steering Wheel` (after 05, `Next · Wrap-up`) — see
+  addresses.md. The panel is pointer-events: none (a click anywhere zooms
+  out); its links opt back in while it is `.in`. Rows stagger in via
+  transition-delays when the RAF loop toggles `.in` at ppIn > 0.4. It must
+  clear the top bar and the arrows on laptop windows: under 820px tall the
+  figure is 96px and rows 11.5px, under 760px the figure is 72px, under
+  700px (1280×720 or 1366×768 screens under their browser bars) it is
+  hidden.
+- **Detail callouts** (`#detailCallout`): a dashed circle + label marking
+  the part with more to show, once the zoom settles — Detail A on the car's
+  sprocket (its study), Detail B on the scooter's seat module (it lifts off,
+  P2.4). One element, re-anchored per frame to `sprocketGroup` or the seat
+  hit proxy; `DC_LABEL` holds the wording ("Tap" on compact). Each yields to
+  its hover outline and to its open detail.
 - **Dimension line** (`#dimLine`): drawing-style dimension with end ticks and
   a mono label under the featured model; geometry per project in
   `PROJECT_INFO[..].dim` = {l, w, y (percent), label}. Draws outward from
   centre with ppIn.
-- **Hover callout** (`#hoverTag`): mono tag ("02 · RIVIAN R1S STUDY") with a
-  leader line that trails the cursor over any model at rest. Lerped position,
-  snaps to the cursor when fully faded to avoid fly-in.
-- **Scene hint** swaps to "CLICK ANYWHERE TO RETURN" when zoomed, and the
+- **Scene labels** (`#sceneLabels`, desktop): a mono tag per project —
+  "01 FORMULA SAE DRIVETRAIN" — on a 14px leader line, so every model is
+  named at rest before anyone hovers, and a name is a second way in (a
+  `<button>`: click → `featureProject`, keyboard-focusable). Placed per frame
+  off the model's hit proxy, centred on it: OVER the back row (Rivian,
+  printer — the top face's centre) and UNDER the front row (car, scooter,
+  steering — the lowest of the bottom face's edge midpoints), since a front
+  model's label above it sat across the model behind. Opacity
+  `labelsCoverO × max(0, 1 − 4·ease) × (1 − digitalT)`: gone a quarter of the
+  way into a zoom, out with the Digital flip, and under a page or the menu
+  (`labelsCoverO` lerps; `visibility: hidden` below 0.01, so they leave the
+  tab order). Hovering a model lights its label (`.on`, inverted ink). They
+  replaced the hover callout that trailed the cursor (`#hoverTag`), which
+  named a model only once you were already on it.
+- **Scene hint** reads "LOADING THE PROJECTS…" (the markup's text) until all
+  five GLBs are in (`LOADED`, or 12 s — a model that never arrives must not
+  leave it stuck), then "START AT 01, OR CLICK ANY PROJECT" until a project
+  has been open (`toured`), then "CLICK ON A PROJECT TO VIEW MORE"; it swaps
+  to "CLICK ANYWHERE TO RETURN" when zoomed, and the
   **sheet note** (bottom centre, inside `.frame-marks`) reads
-  "…· Index" at rest / "…· Sheet 02/03" when featured — both crossfade on the
-  same `|ease − 0.5| × 2` dip as the identity caption.
-- **Arrow cycling:** while zoomed, the section-nav arrows call
-  `window._cycleFeatured(dir)` (module) — zoom out, swap feature at rest,
-  zoom back in (`pendingFeature` bounce). Button handlers stopPropagation so
-  the card's zoom-out click doesn't also fire; at rest they flip between the
-  two root pages. A press during a bounce (or while a zoom is still coming
-  in) advances `pendingFeature` instead of declining — declining fell through
-  to the page flip, so a quick double-click on "next" landed on the digital
-  page. The ←/→ keys press the same buttons (not on key auto-repeat; ignored
-  while a page, the menu, a file, or the race is open).
+  "Hands-On · Overview" at rest / "Hands-On · 02 of 05" when featured — both
+  crossfade on the same `|ease − 0.5| × 2` dip as the identity caption. The
+  caption's title is the side's name (Hands-On / Digital) and swaps with the
+  page flip; its layer line reads "5 engineering projects" at rest, over
+  the way across ("Software is on the Digital side.") — no "Build 1.0 / 2.0"
+  anywhere a visitor reads it.
+- **Arrow cycling:** the section-nav arrows call `window._cycleFeatured(dir)`
+  (module) and only ever step projects — they never flip pages (on the
+  Digital page they step files instead, see digital-page.md). The sequence
+  has ends: at rest the first press starts at 01 (once a project has been
+  open — `toured` — a press carries on from it); ← from 01 returns to rest;
+  → past 05 zooms out and opens the wrap-up card, and ← from the wrap-up
+  goes back to 05 (addresses.md). The arrows dim where there is nothing
+  further (`.section-btn.off`, set by the router's poll). Moves go through
+  `goProject(key)`: from rest a zoom in, from another project a bounce (zoom
+  out, swap the feature at rest, zoom back in — `pendingFeature`). A press
+  during a bounce (or while a zoom is still coming in) advances
+  `pendingFeature`. Button handlers stopPropagation so the card's zoom-out
+  click doesn't also fire. The ←/→ keys press the same buttons (not on key
+  auto-repeat; ignored while a page, the menu, or the race is open).
 
 ---
 
 ## Covered-scene gating + keyboard (Sept 2026)
 
-The menu, About / Skills / Contact, the race page, and the split intro all
+The menu, About / Skills / Contact, the race page, and the top bar all
 live INSIDE `.card`, so their clicks bubble to the card's scene click
 handler, and the per-frame hover raycast kept running underneath them.
 Clicking a menu link, the About photo, or a skill tag over a model zoomed
 that hidden model (measured: ease 0.41–0.59 behind the page; 0 now).
 
 - **Clicks:** the card handler returns early when `e.target.closest(...)`
-  is the menu button, the menu, a page overlay, the race page, the intro,
-  the section-nav, or an edge tab. The sprocket panel is deliberately NOT in
-  the list — a click on it still closes the detail view.
-- **Hover:** `window._sceneCover()` (main script) returns `'page'` (menu /
-  page / race), `'intro'`, or `''`; hover raycasts only run when it is `''`.
+  is the top bar (`.nav`: name, Resume, Contact, menu button), the menu, the
+  home page, a page overlay, the race page, the wrap-up card or its scrim, a scene label,
+  the section-nav, an edge tab, or (compact) the switch, pager or sheet. The
+  sprocket panel is deliberately NOT in the list — a click on it still closes
+  the detail view. (Clicks on "#…" links never get here at all: the router
+  takes them in the capture phase.)
+- **Hover:** `window._sceneCover()` (main script) returns `'page'` (home /
+  menu / page / race), `'end'` (the wrap-up — the scene stays drawn behind
+  its scrim) or `''`; hover raycasts only run when it is `''`.
 - **Cursor:** derived ONCE per frame from the union of hover flags, at the
   end of the hover block. Each channel used to write `card.style.cursor`
   itself, so moving straight from one model's hitbox onto a neighbour (e.g.
@@ -666,8 +721,16 @@ that hidden model (measured: ease 0.41–0.59 behind the page; 0 now).
   a page/menu/race has covered the scene for 0.6 s (`pageCoverT`), the loop
   skips `composer.render()` and sets `_dotCam.hidden` so the dot grid skips
   its redraw. All state updates keep running, so the first frame back is
-  current. Never paused under the intro — rendering there compiles shaders
-  and uploads the models before the reveal instead of hitching the swipe.
-- **Escape:** menu/page → file doc → `window._stepBack()` (closes an open
-  sprocket / seat detail view, then zooms out of the featured project,
-  cancelling an arrow-cycling bounce) → `flipTo(0)`.
+  current. Exception: once behind the home page, when the five models are
+  in, it draws one frame anyway (`warmed`) — compiling shaders and uploading
+  geometry then, not on the first frame after the Hands-On door.
+  (home-page.md)
+- **Escape:** menu/page → wrap-up card → file doc → `window._stepBack()`
+  (closes an open sprocket / seat detail view, then zooms out of the featured
+  project, cancelling an arrow-cycling bounce) → the home page. On the home
+  page itself it does nothing.
+- **Router hooks** (addresses.md): `_goProject(key, detail)`, `_goRest()`,
+  `_sceneTarget()` (where the scene is headed — for the address bar),
+  `pendingSprocket` (an address asked for the sprocket study: it opens once
+  the car's zoom has landed), `_sceneReady()` called at the end of the
+  module.

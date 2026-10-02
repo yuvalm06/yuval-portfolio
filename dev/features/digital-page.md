@@ -1,4 +1,4 @@
-# Feature: Digital Page (Build 2.0)
+# Feature: Digital Page
 
 **File:** `index.html` — `.digital-page` markup + CSS, wiring in the first
 `<script>` block, identity/hint integration in the Three.js module
@@ -14,7 +14,11 @@ machines), page 2 is the **drafting table** — same greys, same isometric
 axes, but the projects are *files*:
 
 - **Manifest** (left) — a drawing-register style file index in IBM Plex Mono:
-  No. / Name / Type / Stack / Year / Status rows with staggered entrance.
+  No. / Name / Type / Stack / Status rows with staggered entrance (the year
+  is in the opened file's title block; the Year column made the Type and
+  Stack cells truncate). Over it, just the page label ("Software &
+  ventures") and the heading — the sub-line that used to sit there repeated
+  the caption.
   Hovering a row lifts its sheet; clicking opens the file document view.
   (There is deliberately NO hover detail card — it duplicated the register
   and the open document; removed in the 2026-07 cleanup pass.)
@@ -33,29 +37,24 @@ axes, but the projects are *files*:
   chrome persists across both pages.
 - Slide: `transform: translateX(100%) → 0` at `0.6s cubic-bezier(.76,0,.24,1)`;
   `.digital-inner` starts at `translateX(70px)` for parallax.
-- `flipTo(i)` (first script block) owns the state: dismisses the split intro
-  if it is still up, toggles `.open`, `.digital-open` on the card, sets
-  `window._digitalOpen`, syncs the edge tabs, and calls `window._zoomOutAll()`
-  so page 1 returns to the isometric rest view.
-- **Split intro** (`.split-intro`, z 30, under the nav at z 35): the front
-  door — two equal halves (Hands-On / Digital), each textured with its
-  world's ground (dot lattice vs iso graph paper), grey hover highlight.
-  Clicking a half calls `flipTo(side)`; the intro swipes off toward the other
-  side (`exit-left` / `exit-right`) while the chosen page slides in beneath —
-  the two transitions run together and read as one swipe. Shown on every
-  load (no storage, per CLAUDE.md). Half clicks `stopPropagation()` so the
-  card's 3D click handler never raycasts them.
+- `flipTo(i)` (first script block) owns the state: toggles `.open`,
+  `.digital-open` on the card, sets `window._digitalOpen`, syncs the edge
+  tabs, and calls `window._zoomOutAll()` so page 1 returns to the isometric
+  rest view.
+- The site opens straight on the Hands-On page. (A split "front door" —
+  Hands-On | Digital halves — used to come first; it was removed in the UX
+  review: it asked visitors to choose before they had seen any work.)
 - **Edge tabs** (`.edge-tab`, z 21): thin vertical handles on the card sides;
-  exactly one is out — the handle to the OTHER world. Hidden while the intro
-  is up and while a file document is open
-  (`.digital-page.file-open ~ .edge-tab`). These replaced the page dots.
-- Other triggers: section-nav arrows (only when `_cycleFeatured` declines,
-  i.e. not zoomed on page 1), nav overlay **Projects** / **Digital** links,
-  Escape (flips home when no overlay was open; at the intro it picks
-  Hands-On), and the ←/→ keys (they press the section-nav buttons).
-- **Keyboard:** the intro halves, edge tabs, and register rows are divs with
+  exactly one is out — the handle to the OTHER world. Hidden while a file
+  document is open (`.digital-page.file-open ~ .edge-tab`). These replaced
+  the page dots.
+- Other triggers: the home page's doors, the menu's **Hands-On** /
+  **Digital** links, and Escape (from the register — no overlay or file open
+  — it steps out to the home page). The section-nav arrows never flip pages —
+  on this page they step through the files (below).
+- **Keyboard:** edge tabs and register rows are divs with
   `role="button" tabindex="0"`; a delegated keydown in the main script turns
-  Enter / Space into a click. Closed pages, the dismissed intro, and hidden
+  Enter / Space into a click. Closed pages and hidden
   tabs get `visibility: hidden` (delayed by their slide) so Tab never lands
   on something off-screen — the digital page is still fully laid out while
   hidden, so the stack's build-time measurements are unaffected.
@@ -67,8 +66,14 @@ axes, but the projects are *files*:
 - `window._zoomOutAll()` — zooms out, clears `pendingFeature` + `sprocketOpen`.
 - `digitalT` lerps toward `_digitalOpen` (`1 − exp(−6·dt)`), and drives the
   same dip-to-zero crossfade as the featured zoom for the identity caption
-  (`IDENTITY_DIGITAL`), scene hint (`HINT_DIGITAL`), and sheet note
-  (`YM · Build 2.0 · Index`). `metaFade` multiplies the ease and digital fades.
+  (`IDENTITY_DIGITAL`: "6 software projects" over "The machines are on the
+  Hands-On side." — the same shape as the Hands-On caption), scene hint
+  (`HINT_DIGITAL`), and sheet note (`window._fileNote()`: `Digital ·
+  Overview`, or `Digital · File 02 of 06` — asked of the digital script, so a
+  cold load of `#digital/actiograph`, which opens the file before the flip
+  lands, doesn't overwrite it). `metaFade` multiplies the ease and digital
+  fades; `fileT` (eased `_fileDocOpen`) takes the hint and the caption out
+  while a file is open — the doc says it all.
 
 ## Sheet stack constants
 
@@ -115,10 +120,12 @@ things at once:
 
 1. **Doc panel docks left** — `.file-doc` (z6) at `left: 30px`, width
    `min(580px, 55% − 50px)`, over `.file-scrim` (z3, blur + wash). Contents
-   mirror an engineering drawing: title-block strip (logo cell + File / Rev /
-   Year / Status), title, mono stack line, description, numbered points, two
-   hatched figure slots (captions from `DIGITAL_INFO[i].figs`, fill via
-   `figImg: [url, url]`), mono footer.
+   mirror an engineering drawing: title-block strip (logo cell + File /
+   Year / Status), title, mono stack line, description, then the file's
+   **visual** — app screens in a device frame (below) or the figures
+   (captions from `DIGITAL_INFO[i].figs`, images from `figImg: [url, url]`)
+   — then the numbered points and the links. Visual before points: the
+   screenshot says more than the third bullet.
 2. **The clicked sheet stands up out of the pile** into a front view on the
    right — the same dual-projection blend as the 3D zoom. Sheet geometry is
    stored in local `[x, z, y]` coords; `renderSheet(sheet, t)` re-projects
@@ -159,6 +166,27 @@ The right column gets `pointer-events: none` while open (scrim catches
 clicks) except `#sheetStack` (click closes). Siblings in the pile fade to
 0.4 via `.file-open #sheetStack .sheet:not(.front)`.
 
+**Arrows:** on this page the section-nav arrows (and ←/→) step through the
+files in register order via `window._stepFile(dir)`, with ends: from the
+register they start at File 01 (or carry on from the last file opened); ←
+from File 01 returns to the register; → past the last file opens the wrap-up
+card (addresses.md), and ← from it reopens the last file. `openFileAt(i)`
+does the move: straight away from the register; from an open file, that file
+closes first and the next opens 520 ms later, once its sheet has settled into
+the pile (`tweenFront` runs one sheet at a time). Escape during that gap
+cancels the step (`window._fileStepping()`); `closeFile()` clears the timer.
+
+**Links and addresses:** each file doc ends with its next step
+(`Next · File 02 Actiograph`, after the last `Next · Wrap-up`) and, where there
+is one, the matching Hands-On project (`Related · Formula SAE Drivetrain`,
+`DIGITAL_INFO[..].related`). Every file has an address (`#digital/pursr` —
+`DIGITAL_INFO[..].slug`); `window._fileTarget()` tells the router which file is
+open or on its way. The title block is File / Year / Status: the decorative
+"Rev" letter is gone (the sheet faces print `FILE 01 · 2026 · ACTIVE` and
+`YUVAL MUNZ`), and the page label reads "Software & ventures". A figure slot
+shows only once its file has an image (`figImg`); with none, the figure row
+is hidden rather than showing hatched placeholder boxes (P2.2).
+
 Close paths: ✕ button, scrim click, stack click, Escape (closes the doc
 first, flips home on the next press), and `flipTo(0)` (calls
 `window._closeFileDoc()`). `window._fileDocOpen` is the shared state flag;
@@ -166,7 +194,61 @@ first, flips home on the next press), and `flipTo(0)` (calls
 still receive Enter). The nav strip above the page is click-through
 (`pointer-events: none`, children opt back in), so a tall doc's ✕ is never
 blocked by the empty width of the nav.
-While open, the sheet note reads `YM · Build 2.0 · File NN`.
+While open, the sheet note reads `Digital · File NN of 06`.
+
+## App screens (device frame)
+
+A file with `screens: [[url, caption], …]` plays them in a CSS device frame
+(`#fdDevice`: `.device-frame`, `.device-screen` with one `<img>` per screen,
+then `.device-bars` + `.device-label`) — like a short screen recording, each
+screen holding a few seconds before the next fades in the way a tab change
+would, looping. It is deliberately not a video file: a few ~25–50 KB webp
+stills, no player chrome, and the bars double as the controls.
+
+Two frames, picked by the file's `frame`:
+
+- **`phone`** (Actiograph, a React Native app): dark bezel + island
+  (`.device-island`), 3.2 s a screen. Dashboard → Activity log →
+  Application builder → School checklist → GPA converter.
+- **`browser`** (Pursr, a web app): a plain light window — three dots and a
+  blank address bar (`.device-chrome`; no made-up URL) — 4.2 s a screen
+  (more to take in). The captions name whose view it is: Floor manager ·
+  Dashboard, then Consultant · Machine data / Materials / Review — the
+  consultant-first product in four frames.
+
+- **Clock:** the active bar's fill is a CSS animation (`device-fill 3.2s`);
+  its `animationend` advances (`showScreen`). Hovering the device (mouse
+  only) adds `.held` → `animation-play-state: paused`, so the screen being
+  looked at stays. A bar click jumps; a tap on the phone skips ahead. Under
+  `prefers-reduced-motion` there is no animation, so no autoplay — the bars
+  still pick a screen. Closing the file removes `.on` from the bars, which
+  stops the clock (no timers to clear).
+- **Where it shows:** where the stack column is laid out (`fitStack()` true)
+  the phone takes the standing sheet's place — absolutely centred in
+  `.digital-right` (`pointer-events: auto`; the column passes clicks through
+  while a file is open), rising in with `.in` while the pile fades out
+  (`.digital-page.file-open.screens #sheetStack { opacity: 0 }`); no sheet
+  stands up. Where it isn't (≤ 900px, phones), the device is moved into the
+  doc, between the description and the figures. The column's
+  ResizeObserver moves it if the layout crosses 900px while open.
+- **Size:** the phone by `--dev-h` — `min(500px, 100vh − 250px)` in the
+  column (≈ 360px on a 1280×610 laptop window), `min(400px, 62vh)` in the
+  doc; its frame is 1000 × 2097 (screen 923 × 2000 plus a 3%-of-width
+  bezel), radii and insets in percentages so it scales cleanly. The browser
+  by width — `min(600px, column − 48px, (100vh − 290px) × 1.73)` in the
+  column (≈ 480px at 1440×900, 426px at 1280×610), the doc's width (capped
+  at `62vh × 1.73`, for landscape phones) in the doc.
+- **Screenshots:** phone — 923 × 2000 captures with the status bar (time,
+  Dynamic Island, battery) painted out in the app's background colour
+  (#F7F7F5, rows 0–125), resized to 600 wide, webp q80 —
+  `renders/actiograph-*.webp`; the frame draws its own island. Browser —
+  2000 × 1153 window captures with the window's rounded bottom corners
+  squared off (they showed the desktop through) and any stray top line
+  cropped, resized to 1200 wide, webp q80 — `renders/pursr-*.webp`.
+- Built once per file on first open (`mountDevice`), so the images load only
+  when someone opens the file; the clock waits (`.loading`) until the first
+  screen has arrived, so a slow connection doesn't spend its turn on an
+  empty frame.
 
 ## Gotchas
 
@@ -178,5 +260,7 @@ While open, the sheet note reads `YM · Build 2.0 · File NN`.
 - Content lives in `DIGITAL_INFO` (first script) + the manifest rows in the
   markup — keep the two in sync (the resume, `assets/resume.pdf`, has fuller
   Pursr / Actiograph stories than the register does).
-- Phones (≤640px) show only No. / Name / Status in the register; type,
-  stack, and year are in the opened file.
+- Phones (≤640px) show No. / Name / Status in the register, with each
+  file's type in small mono under its name (names alone — "Pursr", "Genie
+  Support Agent" — said nothing); the stack and year are in the opened
+  file.

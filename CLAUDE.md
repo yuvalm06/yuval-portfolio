@@ -8,7 +8,22 @@ and the **compact** layout for phones / portrait tablets (`html.compact`) — th
 scene as a one-project-at-a-time carousel: swipes truck the camera along a line of
 featured models, the dot ground scrolling under them, with the project panel docked
 as a sheet. See `dev/features/compact-layout.md`. Project copy lives in ONE place,
-`window.PROJECT_INFO` at the top of the main script.
+`window.PROJECT_INFO` at the top of the main script — every project in one shape
+(team · role, its own image first, Problem → Approach → Result, dates · status, the
+next step), strongest first: FSAE, steering wheel, Rivian, scooter, printer. Where a
+scene model is a stand-in rather than the project's own CAD, its `model` note says so.
+The Digital files live in `DIGITAL_INFO` (the digital page script); each file's visual
+leads its points — app screenshots (`screens`) play in a phone or browser frame
+(`frame`), see `dev/features/digital-page.md`. Visitor copy stays short: say a thing once (the panel or
+doc, not also the caption), and let the image carry what it can.
+
+The site opens on the **home page** (`.home-page`, the plain address): who, current
+roles (each linked to its work), and two doors — Hands-On (the 3D scene, `#hands-on`)
+and Digital. The scene loads behind it. See `dev/features/home-page.md`.
+
+Every view has an address (home is the plain one; `#hands-on`, `#fsae`,
+`#digital/pursr`, `#about` …) so browser Back steps out of a view and a project can be
+linked — the router at the end of the main script. See `dev/features/addresses.md`.
 
 ---
 
@@ -19,17 +34,25 @@ card (rounded inset frame, #EEECEA background)
  ├── #dot-canvas          ← animated perspective dot grid (Canvas 2D)
  ├── .distance-fog        ← CSS gradient overlay that fades dots into distance
  ├── <canvas> (WebGL)     ← Three.js scene, injected by JS with inline styles (z 3)
- ├── .digital-page        ← Build 2.0 page, flips in from the right (z 16)
+ ├── .home-page           ← the front door at the plain address (z 30): name, one-liner,
+ │                          current roles, doors to Hands-On / Digital; covers the scene
+ ├── .digital-page        ← the Digital page, flips in from the right (z 16); an open
+ │                          file docks left, its sheet (or app screens in a device
+ │                          frame) right
  ├── .race-page           ← race-game easter egg overlay (z 45), opened by the
  │                          green button on the steering wheel's face
- ├── .nav                 ← top bar: logo left, hamburger right (z 35, above intro)
+ ├── .nav                 ← top bar (z 35): name (links home) + role line + status note
+ │                          left (hidden on home); Resume · Contact · menu button right
  ├── .nav-overlay         ← full-screen slide-up nav menu
  ├── .identity            ← bottom-left: icon | title | layer label | description
  ├── .frame-marks         ← drawing-frame corner ticks + sheet note
- ├── .split-intro         ← front door: two equal halves (Hands-On / Digital),
- │                          click swipes to that world (z 30, shown until a pick)
+ ├── .scene-labels        ← desktop: each project's number + name at its model
+ │                          at rest; click one to open it (z 14)
  ├── .edge-tab ×2         ← thin side handles to flip to the other world (z 21)
- ├── .section-nav         ← bottom-right prev/next (cycle projects / flip page)
+ ├── .section-nav         ← bottom-right prev/next: projects 01→05, or the files
+ │                          on Digital (never flips pages); past the last → wrap-up
+ ├── .end-card            ← the wrap-up after either side's last project: the
+ │                          other side, resume, contact (z 18, over .end-scrim z 17)
  ├── .m-stage             ← compact only: the box the carousel frames the model
  │                          into (the dot grid measures it) + loading note (z 14)
  ├── .m-pager             ← compact only: ‹ project dots › (z 21)
@@ -102,6 +125,8 @@ The 3D scene is a Three.js WebGL canvas injected by the module script — see
 scale, sit on ground). Draco-compress it first (`gltf-transform draco`) and
 load it through the shared `gltfLoader` — see the Draco section of
 `dev/lessons/glb-workflow.md`; raw Meshy exports are 10-15x too heavy to ship.
+A generated model (Meshy, a prop) is a stand-in: set the project's `model` note in
+`PROJECT_INFO` so the panel says so, and lead with the real CAD / FEA image (`img`).
 
 ### With SVG geometry (for simple shapes)
 All SVG objects must use the same projection:
@@ -133,13 +158,14 @@ Shadow system (3 layers):
 2  → .distance-fog, .card::after (vignette)
 3  → WebGL canvas (inline style)
 10 → .card::before (grain)
-14 → .dim-line, .detail-callout, .m-stage (compact only)
+14 → .dim-line, .detail-callout, .scene-labels, .m-stage (compact only)
 15 → .sprocket-panel, .project-panel
 16 → .digital-page (scrim z3 / doc z6 / raised stack column z5 inside it)
+17 → .end-scrim
+18 → .end-card (the wrap-up)
 20 → .identity, .frame-marks, .section-nav
 21 → .edge-tab, .mode-switch + .m-pager (compact only)
-22 → .hover-tag
-30 → .split-intro
+30 → .home-page (the front door)
 35 → .nav
 40 → .contact-page, .page-overlay (about / skills)
 45 → .race-page (steering-wheel easter egg)
@@ -166,7 +192,7 @@ Shadow system (3 layers):
 - Do not add a JS framework — vanilla JS only
 - Do not change `PERSP`, `GS`, `CX`, `CY` constants without re-deriving all SVG object positions
 - Do not add CSS `transition` to elements whose style is driven per-frame by the rAF loops
-  (identity/hint opacity, panels, dim line, hover tag) — the lerp handles smoothing
+  (identity/hint opacity, panels, dim line, scene labels) — the lerp handles smoothing
 - Do not assume the 3D module has loaded: it runs after three.js arrives from the CDN, so
   every `window._…` hook it defines can be absent — guard calls from the main script
   (`window._x && window._x()`)
@@ -177,4 +203,7 @@ Shadow system (3 layers):
 - Do not add a page or overlay inside `.card` without adding it to the click guard at the
   top of the card click handler and to `window._sceneCover()` — its clicks bubble to the
   3D raycast and would zoom whatever model sits under the pointer
-  (see "Covered-scene gating" in `dev/features/3d-scene.md`)
+  (see "Covered-scene gating" in `dev/features/3d-scene.md`) — and without giving it an
+  address in the router's `stateHash()` / `applyHash()`, or Back can't close it
+- Do not put jargon in visitor copy ("Build 1.0", "Index", "Sheet", "Rev"): the two sides
+  are Hands-On and Digital everywhere

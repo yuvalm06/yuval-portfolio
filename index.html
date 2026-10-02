@@ -15,7 +15,7 @@
   <meta property="og:image" content="https://yuvalmunz.com/assets/og-image.jpg" />
   <meta property="og:image:width" content="1200" />
   <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Five engineering projects — an open-wheel race car, a Rivian R1S, an e-scooter, a belt 3D printer, and a Baja steering wheel — on an isometric dot grid." />
+  <meta property="og:image:alt" content="Yuval Munz — Mechanical Engineering, Queen's University, class of 2028: current roles, and doors to the hands-on and software work." />
   <meta name="twitter:card" content="summary_large_image" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%231A1916'/%3E%3Ctext x='32' y='42' font-family='Helvetica,Arial,sans-serif' font-size='26' font-weight='700' letter-spacing='-1' fill='%23EEECEA' text-anchor='middle'%3EYM%3C/text%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -146,7 +146,7 @@
     .nav {
       position: absolute;
       top: 0; left: 0; right: 0;
-      z-index: 35;    /* above the split intro so the brand + menu persist */
+      z-index: 35;    /* over the scene and the Digital page; the pages (40) cover it */
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -156,37 +156,60 @@
     }
     .nav > * { pointer-events: auto; }   /* …the name and menu button still take them */
 
+    /* the name, with the role line and the status note stacked beside it */
     .nav-left {
-      display: flex;
+      display: grid;
+      grid-template-columns: auto auto;
       align-items: center;
-      gap: 16px;
+      column-gap: 16px;
+      row-gap: 6px;
       min-width: 0;
     }
 
-    .logo-ym {
+    .logo-ym {                  /* the way home (#) */
+      grid-row: 1 / 3;
       font-family: var(--font);
       font-size: 38px;
       font-weight: 700;
       letter-spacing: -0.02em;
       line-height: 1;
       color: var(--ink);
-      cursor: default;
+      text-decoration: none;
       user-select: none;
       white-space: nowrap;
       flex-shrink: 0;
     }
 
-    /* role line beside the name — the spec-sheet mono voice */
-    .nav-role {
+    /* role line and status note beside the name — the spec-sheet mono voice */
+    .nav-role, .nav-note {
+      grid-column: 2;
       font-family: var(--mono);
       font-size: 9.5px;
       font-weight: 500;
       letter-spacing: 0.14em;
+      line-height: 1.2;
       text-transform: uppercase;
       color: var(--ink-mid);
       white-space: nowrap;
       user-select: none;
-      padding-top: 3px;
+    }
+    .nav-role { align-self: end; }
+    a.nav-role {                /* who I am → About: the experience list, one click from the intro */
+      text-decoration: underline dotted rgba(26,25,22,0.35);
+      text-underline-offset: 3px;
+    }
+    a.nav-role:hover { color: var(--ink); text-decoration-style: solid; }
+    .nav-note {
+      align-self: start;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .nav-note-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #5c9e6b;
+      flex-shrink: 0;
     }
 
     .nav-right {
@@ -210,6 +233,34 @@
     }
 
     .nav-menu-btn:hover { background: rgba(205,203,198,0.9); }
+
+    /* Resume / Contact: one click from anywhere, in the menu button's glass */
+    .nav-link {
+      display: flex;
+      align-items: center;
+      height: 36px;
+      padding: 1px calc(14px - 0.14em) 0 14px;   /* the tracking trails the last letter */
+      background: rgba(220,218,213,0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .nav-link:hover { background: rgba(205,203,198,0.9); }
+    @media (pointer: coarse) {   /* a 44px-tall touch target around the 36px button */
+      .nav-link, .nav-menu-btn { position: relative; }
+      .nav-link::after, .nav-menu-btn::after { content: ''; position: absolute; inset: -5px -3px; }
+    }
 
     .hamburger {
       display: flex;
@@ -423,105 +474,6 @@
     }
 
     /* ─────────────────────────────────────────
-       SPLIT INTRO — front door: two equal worlds
-    ───────────────────────────────────────── */
-    .split-intro {
-      position: absolute;
-      inset: 0;
-      z-index: 30;               /* over page chrome, under nav (35) */
-      display: flex;
-      border-radius: 14px;
-      overflow: hidden;
-      transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1);
-    }
-
-    /* choosing a side swipes the whole door toward the other one */
-    .split-intro.exit-left  { transform: translateX(-100%); pointer-events: none; }
-    .split-intro.exit-right { transform: translateX(100%);  pointer-events: none; }
-    .split-intro.exit-left, .split-intro.exit-right {
-      visibility: hidden;      /* gone for good once the swipe lands */
-      transition: transform 0.65s cubic-bezier(0.76, 0, 0.24, 1), visibility 0s linear 0.65s;
-    }
-
-    .split-intro::after {   /* grain, same as the card */
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
-      opacity: 0.035;
-      pointer-events: none;
-    }
-
-    .split-half {
-      position: relative;
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      background: var(--bg);
-      cursor: pointer;
-      transition: background 0.25s ease;
-    }
-
-    .split-half.left { border-right: 1px solid var(--border); }
-
-    /* each half previews its world's ground: dots vs graph paper */
-    .split-half.left::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background-image: radial-gradient(rgba(108,90,135,0.16) 1.2px, transparent 1.3px);
-      background-size: 24px 24px;
-      -webkit-mask-image: linear-gradient(to bottom, transparent 4%, rgba(0,0,0,0.7) 45%, #000 90%);
-      mask-image: linear-gradient(to bottom, transparent 4%, rgba(0,0,0,0.7) 45%, #000 90%);
-      pointer-events: none;
-    }
-
-    .split-half.right::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background:
-        repeating-linear-gradient(26.57deg,  rgba(108,90,135,0.06) 0 1px, transparent 1px 26px),
-        repeating-linear-gradient(153.43deg, rgba(108,90,135,0.06) 0 1px, transparent 1px 26px);
-      -webkit-mask-image: linear-gradient(to bottom, transparent 4%, rgba(0,0,0,0.7) 45%, #000 90%);
-      mask-image: linear-gradient(to bottom, transparent 4%, rgba(0,0,0,0.7) 45%, #000 90%);
-      pointer-events: none;
-    }
-
-    .split-half:hover,
-    .split-half:focus-visible { background: #E5E3DF; }   /* grey highlight */
-
-    .split-label {
-      font-family: var(--mono);
-      font-size: 9.5px;
-      font-weight: 500;
-      letter-spacing: 0.16em;
-      text-transform: uppercase;
-      color: var(--ink-light);
-    }
-
-    .split-title {
-      font-size: clamp(38px, 4.5vw, 58px);
-      font-weight: 700;
-      letter-spacing: -0.03em;
-      color: var(--ink);
-      line-height: 1;
-      transition: transform 0.25s ease;
-    }
-
-    .split-half:hover .split-title { transform: translateY(-3px); }
-
-    .split-desc {
-      font-size: 12px;
-      color: var(--ink-light);
-      margin-top: 4px;
-    }
-
-    /* ─────────────────────────────────────────
        EDGE TABS — thin flip handles on the card sides
     ───────────────────────────────────────── */
     .edge-tab {
@@ -577,7 +529,7 @@
     /* yield to the opened file document on the digital page */
     .digital-page.file-open ~ .edge-tab { opacity: 0; pointer-events: none; visibility: hidden; }
 
-    /* keyboard focus on the div-based controls (intro halves, tabs, rows) */
+    /* keyboard focus on the div-based controls (edge tabs, register rows) */
     [role="button"]:focus-visible { outline: 1px solid var(--ink-mid); outline-offset: -3px; }
 
     /* ─────────────────────────────────────────
@@ -607,6 +559,11 @@
     }
 
     .section-btn:hover { background: rgba(200,198,194,0.9); }
+    .section-btn.off, .section-btn.off:hover {   /* nothing further this way */
+      background: rgba(220,218,213,0.7);
+      opacity: 0.4;
+      cursor: default;
+    }
 
     .section-btn svg {
       width: 10px; height: 10px;
@@ -1356,55 +1313,103 @@
       margin-bottom: 10px;
       border-bottom: 1px solid var(--border);
     }
+    /* team · role — who and where, under the title rule */
+    .pp-sub {
+      font-family: var(--mono);
+      font-size: 8.5px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      line-height: 1.55;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      margin: -2px 0 10px;
+    }
+    .pp-sub:empty { display: none; }
     .pp-points {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 7px;
-      margin-bottom: 14px;
+      gap: 6px;
     }
+    /* under the leading figure: where the scene's 3D model is only a stand-in */
+    .pp-model {
+      font-family: var(--mono);
+      font-size: 8.5px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      line-height: 1.5;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin: -6px 0 12px;
+    }
+    .pp-model:empty { display: none; }
     .pp-points li {
       font-size: 12px;
       color: var(--ink-mid);
       line-height: 1.5;
-      padding-left: 16px;
-      position: relative;
     }
-    .pp-points li::before {
-      content: counter(pp-row, decimal-leading-zero);
-      counter-increment: pp-row;
-      position: absolute;
-      left: 0;
-      top: 1.5px;
+    .pp-points li b {            /* the row's label, run in: Problem → Approach → Result */
+      font-family: var(--mono);
+      font-size: 8.5px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-right: 6px;
+    }
+    .pp-points a, .pp-next {
+      color: var(--ink);
+      text-decoration: underline;
+      text-decoration-color: rgba(26,25,22,0.35);
+      text-underline-offset: 2px;
+    }
+    .pp-points a:hover, .pp-next:hover { text-decoration-color: var(--ink); }
+    /* the named next step, under the footer */
+    .pp-next {
+      display: block;
+      margin-top: 10px;
       font-family: var(--mono);
       font-size: 9px;
-      color: var(--ink-light);
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      text-decoration: none;
     }
-    .pp-points { counter-reset: pp-row; }
+    .pp-next::after { content: '  →'; white-space: pre; }
+    .pp-rel { margin-top: 9px; }
+    .pp-rel:not([hidden]) + .pp-next { margin-top: 5px; }
+    .pp-next[hidden] { display: none; }
+    .pp-next:hover { text-decoration: underline; }
+    html:not(.compact) .project-panel.in :is(.pp-points a, .pp-next) { pointer-events: auto; }
     /* staggered row reveal — .in is toggled from the RAF loop */
-    .pp-head, .pp-title, .pp-points li, .pp-img-slot, .pp-meta {
+    .project-panel :is(.pp-head, .pp-title, .pp-sub, .pp-img-slot, .pp-model, .pp-points li, .pp-meta, .pp-next) {
       opacity: 0;
       transform: translateY(6px);
       transition: opacity 0.35s ease, transform 0.35s ease;
     }
     .project-panel.in .pp-head                    { transition-delay: 0.00s; }
     .project-panel.in .pp-title                   { transition-delay: 0.05s; }
-    .project-panel.in .pp-points li:nth-child(1)  { transition-delay: 0.10s; }
-    .project-panel.in .pp-points li:nth-child(2)  { transition-delay: 0.16s; }
-    .project-panel.in .pp-points li:nth-child(3)  { transition-delay: 0.22s; }
-    .project-panel.in .pp-points li:nth-child(4)  { transition-delay: 0.26s; }
-    .project-panel.in .pp-img-slot                { transition-delay: 0.30s; }
+    .project-panel.in .pp-sub                     { transition-delay: 0.07s; }
+    .project-panel.in .pp-img-slot                { transition-delay: 0.10s; }
+    .project-panel.in .pp-model                   { transition-delay: 0.13s; }
+    .project-panel.in .pp-points li:nth-child(1)  { transition-delay: 0.16s; }
+    .project-panel.in .pp-points li:nth-child(2)  { transition-delay: 0.21s; }
+    .project-panel.in .pp-points li:nth-child(3)  { transition-delay: 0.26s; }
+    .project-panel.in .pp-points li:nth-child(4)  { transition-delay: 0.30s; }
+    .project-panel.in .pp-points li:nth-child(5)  { transition-delay: 0.33s; }
     .project-panel.in .pp-meta                    { transition-delay: 0.38s; }
-    .project-panel.in .pp-head, .project-panel.in .pp-title,
-    .project-panel.in .pp-points li, .project-panel.in .pp-img-slot,
-    .project-panel.in .pp-meta {
+    .project-panel.in .pp-next                    { transition-delay: 0.42s; }
+    .project-panel.in .pp-head, .project-panel.in .pp-title, .project-panel.in .pp-sub,
+    .project-panel.in .pp-points li, .project-panel.in .pp-img-slot, .project-panel.in .pp-model,
+    .project-panel.in .pp-meta, .project-panel.in .pp-next {
       opacity: 1;
       transform: translateY(0);
     }
-    .pp-img-slot {
+    .pp-img-slot {              /* the project's own image leads the rows */
       position: relative;
       width: 100%;
       height: 132px;
+      margin-bottom: 12px;
       border-radius: 2px;
       border: 1px solid rgba(26,25,22,0.10);
       background:
@@ -1412,6 +1417,15 @@
           rgba(26,25,22,0.045) 0px, rgba(26,25,22,0.045) 1px,
           transparent 1px, transparent 7px);
       overflow: hidden;
+    }
+    @media (max-height: 820px) {   /* short laptop screens: the panel must clear the bar and arrows */
+      .pp-img-slot { height: 96px; }
+      .pp-points li { font-size: 11.5px; line-height: 1.45; }
+    }
+    @media (max-height: 760px) { .pp-img-slot { height: 72px; } }
+    @media (max-height: 700px) {   /* a laptop window under its browser bars: no room for the figure */
+      .project-panel .pp-img-slot { display: none; }
+      .pp-model { margin-top: 0; }
     }
     .pp-fig {
       position: absolute;
@@ -1464,10 +1478,16 @@
       transform: rotate(-6deg);
     }
 
-    /* ── Hover callout tag (rest view) ── */
-    .hover-tag {
+    /* ── Scene labels (rest view): every project's number and name at its
+       model — over the back row, under the front row — as a mono spec tag
+       on a leader line; hovering the model (or the tag) lights it, a click
+       features that project. The 3D module builds them and places them per
+       frame (transform + opacity). ── */
+    .scene-labels { position: absolute; inset: 0; z-index: 14; pointer-events: none; }
+    .scene-label {
       position: absolute;
-      z-index: 22;
+      left: 0; top: 0;
+      translate: -50% calc(-100% - 14px);   /* sits above its anchor, on the leader line */
       font-family: var(--mono);
       font-size: 9.5px;
       font-weight: 500;
@@ -1478,20 +1498,27 @@
       border: 1px solid rgba(26,25,22,0.18);
       border-radius: 2px;
       padding: 5px 9px 4px;
-      pointer-events: none;
-      opacity: 0;
       white-space: nowrap;
+      cursor: pointer;
+      pointer-events: auto;
+      opacity: 0;
+      visibility: hidden;
       will-change: transform, opacity;
     }
-    .hover-tag::after {          /* leader line down toward the model */
+    .scene-label b { font-weight: 500; color: var(--ink-light); margin-right: 8px; }
+    .scene-label::after {        /* leader line down to the model */
       content: '';
       position: absolute;
-      left: 14px;
+      left: 50%;
       top: 100%;
       width: 1px;
       height: 14px;
       background: rgba(26,25,22,0.35);
     }
+    .scene-label.below { translate: -50% 14px; }                 /* front row: under the model */
+    .scene-label.below::after { top: auto; bottom: 100%; }
+    .scene-label:hover, .scene-label.on { color: var(--bg); background: var(--ink); border-color: var(--ink); }
+    .scene-label:hover b, .scene-label.on b { color: rgba(238,236,234,0.55); }
 
     /* ── Dimension line under the featured model ── */
     .dim-line {
@@ -1597,7 +1624,7 @@
     }
 
     /* ─────────────────────────────────────────
-       DIGITAL PAGE (Build 2.0) — flips in from the right.
+       DIGITAL PAGE — flips in from the right.
        Same world, different matter: the physical page is the shop floor
        (dots), this one is the drafting table (ruled isometric graph paper),
        and the projects are files instead of machines.
@@ -1670,13 +1697,14 @@
       flex-direction: column;
     }
 
-    .digital-sub {
-      font-size: 12.5px;
-      color: var(--ink-light);
-      line-height: 1.6;
-      max-width: 430px;
-      margin-top: 10px;
+    /* each side's caption points to the other */
+    .side-link {
+      color: var(--ink);
+      text-decoration: underline;
+      text-decoration-color: rgba(26,25,22,0.35);
+      text-underline-offset: 2px;
     }
+    .side-link:hover { text-decoration-color: var(--ink); }
 
     /* ── Manifest — a drawing-register style file index ── */
     .manifest {
@@ -1688,7 +1716,7 @@
     .manifest-head,
     .manifest-row {
       display: grid;
-      grid-template-columns: 30px 1.25fr 0.95fr 1.3fr 40px 74px;
+      grid-template-columns: 30px 1.3fr 0.9fr 1.45fr 74px;
       gap: 12px;
       align-items: center;
     }
@@ -1739,7 +1767,7 @@
       overflow: hidden;
       text-overflow: ellipsis;
     }
-    .m-type, .m-stack, .m-year {
+    .m-type, .m-stack {
       font-size: 10px;
       white-space: nowrap;
       overflow: hidden;
@@ -1747,7 +1775,6 @@
     }
     .m-type  { color: var(--ink-mid); }
     .m-stack { color: var(--ink-light); }
-    .m-year  { color: var(--ink-light); }
 
     .m-status {
       display: inline-flex;
@@ -1997,7 +2024,501 @@
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
-      margin-bottom: 6px;
+      margin: 2px 0 18px;
+    }
+    .fd-figs.one { grid-template-columns: 1fr; }
+    .fd-figs[hidden], .fd-fig[hidden] { display: none; }   /* no image yet: no empty box */
+
+    /* where to go from a file: its Hands-On match, then the next file */
+    .fd-links {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+    .fd-link {
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .fd-link::after { content: '  →'; white-space: pre; }
+    .fd-link:hover  { text-decoration: underline; text-underline-offset: 2px; }
+    .fd-link[hidden] { display: none; }
+
+    /* ── App screens in a device frame: a file with `screens` plays them like
+       a short screen recording — each holds a few seconds, then the next
+       fades in the way a tab change would. The bars are the progress and
+       jump to a screen; a click / tap on the frame skips ahead; hover holds.
+       Two frames: .phone (a mobile app — Actiograph) and .browser (a web
+       app — Pursr). Not driven per frame, so plain CSS transitions /
+       animations. ── */
+    .device {
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .device[hidden] { display: none; }
+    .device-frame { position: relative; cursor: pointer; }
+    .device-screen { overflow: hidden; }
+    .device-screen img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .device-screen img.on { opacity: 1; }
+    .device-island, .device-chrome { display: none; }
+    .device-cap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Phone — sized by --dev-h: the column's height on desktop, the screen
+       on narrow ones. Screen 923 × 2000 (the screenshots), bezel 3% of the
+       width → the frame is 1000 × 2097. */
+    .device.phone { --dev-h: min(500px, calc(100vh - 250px)); }
+    .device.phone .device-frame {
+      height: var(--dev-h);
+      aspect-ratio: 1000 / 2097;
+      background: #1A1916;
+      border-radius: 13.5% / 6.44%;
+      box-shadow:
+        0 28px 48px rgba(26,25,22,0.20),
+        0 6px 14px rgba(26,25,22,0.12),
+        inset 0 0 0 1px rgba(255,255,255,0.10);
+    }
+    .device.phone .device-screen {
+      position: absolute;
+      inset: 1.43% 3%;
+      border-radius: 11.2% / 5.15%;
+      background: #F7F7F5;          /* the app's own background */
+    }
+    .device.phone .device-island {
+      display: block;
+      position: absolute;
+      top: 2.7%;
+      left: 50%;
+      width: 28%;
+      height: 3.5%;
+      translate: -50% 0;
+      border-radius: 999px;
+      background: #0B0B0A;
+    }
+    .device.phone .device-cap { width: calc(var(--dev-h) * 1000 / 2097); }
+
+    /* Browser — a plain window: three dots and a blank address bar (no
+       made-up URL), as wide as its place allows; screens 2000 × 1153
+       (desktop captures, the window's own corners squared off) */
+    .device.browser .device-frame {
+      width: 100%;
+      background: #E4E2DD;
+      border: 1px solid rgba(26,25,22,0.14);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow:
+        0 24px 44px rgba(26,25,22,0.16),
+        0 5px 12px rgba(26,25,22,0.10);
+    }
+    .device.browser .device-chrome {
+      display: grid;
+      grid-template-columns: 1fr 38% 1fr;
+      align-items: center;
+      height: 22px;
+      padding: 0 10px;
+      border-bottom: 1px solid rgba(26,25,22,0.10);
+    }
+    .device-chrome b { display: flex; gap: 5px; }
+    .device-chrome i { width: 7px; height: 7px; border-radius: 50%; background: rgba(26,25,22,0.18); }
+    .device-chrome span { height: 10px; border-radius: 5px; background: rgba(255,255,255,0.7); }
+    .device.browser .device-screen {
+      position: relative;
+      aspect-ratio: 2000 / 1153;
+      background: #FAFAFA;
+    }
+    .device.browser .device-cap { width: 100%; }
+    .device.browser .device-bars .on i::after { animation-duration: 4.2s; }   /* more to take in */
+
+    .device-bars { display: flex; gap: 4px; width: 100%; }
+    .device-bars button {
+      flex: 1;
+      padding: 6px 0;               /* a usable hit area round a 2px bar */
+      background: none;
+      border: 0;
+      cursor: pointer;
+    }
+    .device-bars i {
+      display: block;
+      position: relative;
+      height: 2px;
+      border-radius: 1px;
+      overflow: hidden;
+      background: rgba(26,25,22,0.16);
+    }
+    .device-bars i::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--ink);
+      transform: scaleX(0);
+      transform-origin: left;
+    }
+    .device-bars .done i::after { transform: none; }
+    .device-bars .on i::after { animation: device-fill 3.2s linear forwards; }
+    .device.held .device-bars .on i::after,
+    .device.loading .device-bars .on i::after { animation-play-state: paused; }
+    @keyframes device-fill { to { transform: none; } }
+    .device-label {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      white-space: nowrap;
+    }
+    /* reduced motion: no autoplay — the bars still pick a screen */
+    @media (prefers-reduced-motion: reduce) {
+      .device-bars .on i::after { animation: none; transform: none; }
+      .device-screen img { transition: none; }
+    }
+    /* in the doc (narrow screens): under the description, sized to the
+       screen */
+    .file-doc .device { margin: 2px 0 20px; }
+    .file-doc .device.phone { --dev-h: min(400px, 62vh); }
+    .file-doc .device.browser { width: min(100%, calc(62vh * 1.73)); margin-inline: auto; }
+    /* in the stack column (desktop): the phone takes the standing sheet's
+       place and the pile steps back */
+    .digital-right > .device {
+      position: absolute;
+      left: 50%;
+      top: 47%;
+      translate: -50% -50%;
+      pointer-events: auto;        /* the column passes clicks through while a file is open */
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(14px);
+      transition: opacity 0.45s ease, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), visibility 0s linear 0.45s;
+    }
+    .digital-right > .device.in { opacity: 1; visibility: visible; transform: none; transition-delay: 0s; }
+    .digital-right > .device.browser { width: min(600px, calc(100% - 48px), calc((100vh - 290px) * 1.73)); }
+    #sheetStack { transition: opacity 0.4s ease; }
+    .digital-page.file-open.screens #sheetStack { opacity: 0; }
+
+    /* ── Wrap-up card: the end of either side's sequence — over a scrim that
+       keeps the scene in view (not an opaque page: it isn't driven per frame,
+       so plain transitions) ── */
+    .end-scrim {
+      position: absolute;
+      inset: 0;
+      z-index: 17;
+      background: rgba(238,236,234,0.55);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      border-radius: 14px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.35s ease, visibility 0s linear 0.35s;
+    }
+    .end-card {
+      position: absolute;
+      left: 50%; top: 50%;
+      z-index: 18;
+      width: min(420px, calc(100% - 32px));
+      translate: -50% -50%;
+      transform: translateY(10px);
+      background: rgba(238,236,234,0.97);
+      border: 1px solid rgba(26,25,22,0.14);
+      border-radius: 3px;
+      box-shadow: 0 24px 48px rgba(26,25,22,0.12), 0 4px 12px rgba(26,25,22,0.08);
+      padding: 26px 26px 18px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.35s ease, transform 0.35s ease, visibility 0s linear 0.35s;
+    }
+    .end-scrim.open, .end-card.open { opacity: 1; visibility: visible; transition-delay: 0s; }
+    .end-card.open { transform: none; }
+    .ec-tag {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+    .ec-title {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.15;
+      color: var(--ink);
+      margin: 8px 0 8px;
+    }
+    .ec-desc {
+      font-size: 13px;
+      line-height: 1.55;
+      color: var(--ink-mid);
+      margin-bottom: 18px;
+    }
+    .ec-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .ec-btn {                    /* the top bar's button, on the card */
+      display: inline-flex;
+      align-items: center;
+      height: 36px;
+      padding: 1px calc(14px - 0.14em) 0 14px;
+      background: rgba(220,218,213,0.85);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink);
+      text-decoration: none;
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .ec-btn:hover { background: rgba(205,203,198,0.9); }
+    .ec-btn.primary { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+    .ec-btn.primary::after { content: '  →'; white-space: pre; }
+    .ec-btn.primary:hover { background: #2E2D2B; }
+    .ec-back {
+      display: inline-block;
+      margin-top: 16px;
+      font-family: var(--mono);
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+      text-decoration: none;
+    }
+    .ec-back::before { content: '←  '; white-space: pre; }
+    .ec-back:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
+
+    /* ── Home: the front door at the plain address — who, what now, the two
+       sides. It covers the scene (z 30, under the top bar) while the models
+       load behind it; the dot grid shows through, faintly (the scene stops
+       drawing under it — see _sceneCover). Not driven per frame, so plain
+       transitions. ── */
+    .home-page {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: none;
+      background: rgba(238,236,234,0.92);
+      border-radius: 14px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0s linear 0.4s;
+    }
+    .home-page::-webkit-scrollbar { display: none; }
+    .home-page.open { opacity: 1; visibility: visible; transition-delay: 0s; }
+    .home-inner {
+      min-height: 100%;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) clamp(190px, 21vw, 300px);
+      gap: 56px;
+      align-items: center;
+      padding: 96px 64px 44px;
+    }
+    .home-hi, .home-label {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+    .home-name {
+      font-size: clamp(44px, 8.4vh, 76px);
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 0.95;
+      color: var(--ink);
+      margin: 8px 0 12px;
+    }
+    .home-meta {
+      font-family: var(--mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-mid);
+    }
+    .home-lede {
+      font-size: 17px;
+      line-height: 1.55;
+      color: var(--ink-mid);
+      max-width: 560px;
+      margin: 18px 0 22px;
+    }
+    /* each current role links to its work */
+    .home-roles { list-style: none; margin: 6px 0 24px; padding: 0; }
+    .home-roles a {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: 10px;
+      padding: 3px 0;
+      font-size: 13px;
+      line-height: 1.35;
+      color: var(--ink-mid);
+      text-decoration: none;
+    }
+    .home-roles b { color: var(--ink); font-weight: 600; }
+    .home-roles a:hover span, .home-roles a:focus-visible span { color: var(--ink); }
+    .home-roles a:hover span::after, .home-roles a:focus-visible span::after { content: '  →'; white-space: pre; }
+    .home-doors {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      max-width: 640px;
+      margin-bottom: 20px;
+    }
+    .home-door {
+      display: block;
+      color: var(--ink);
+      text-decoration: none;
+      background: #F7F6F4;
+      border: 1px solid rgba(26,25,22,0.14);
+      border-radius: 3px;
+      overflow: hidden;
+      box-shadow: 0 10px 24px rgba(26,25,22,0.08);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .home-door:hover { transform: translateY(-2px); box-shadow: 0 16px 30px rgba(26,25,22,0.12); }
+    .home-door-img {
+      display: block;
+      height: clamp(76px, 13vh, 118px);
+      background: #fff center / cover no-repeat;
+      border-bottom: 1px solid rgba(26,25,22,0.10);
+    }
+    .home-door-txt { display: flex; flex-direction: column; gap: 3px; padding: 12px 14px 13px; }
+    .home-door-txt b {
+      font-family: var(--mono);
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .home-door-txt b::after { content: '  →'; white-space: pre; }
+    .home-door-txt span { font-size: 12.5px; color: var(--ink-mid); }
+    .home-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 18px; }
+    .home-status, .home-foot a {
+      font-family: var(--mono);
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+    .home-status { display: inline-flex; align-items: center; gap: 7px; color: var(--ink-mid); }
+    .home-status i { width: 6px; height: 6px; border-radius: 50%; background: #5c9e6b; }
+    .home-foot a { color: var(--ink); text-underline-offset: 3px; }
+    .home-photo {
+      width: 100%;
+      aspect-ratio: 1;
+      object-fit: cover;
+      border-radius: 3px;
+      border: 1px solid rgba(26,25,22,0.12);
+    }
+    .home-avatar { display: none; }
+    /* laptop windows under their browser bars: tighter, so the doors stay
+       on screen */
+    @media (max-height: 760px) {
+      .home-inner { padding: 80px 64px 28px; }
+      .home-name  { margin: 4px 0 8px; }
+      .home-lede  { font-size: 15.5px; margin: 12px 0 14px; }
+      .home-roles { margin-bottom: 16px; }
+      .home-roles a { padding: 2px 0; font-size: 12.5px; }
+      .home-doors { margin-bottom: 14px; }
+      .home-door-txt { padding: 9px 12px 10px; }
+    }
+    /* narrow windows and phones: one column, the photo beside the name */
+    @media (max-width: 900px) {
+      .home-inner {
+        grid-template-columns: minmax(0, 1fr);
+        align-items: start;
+        padding: 108px 24px 32px;
+      }
+      .home-photo  { display: none; }
+      .home-id     { display: flex; align-items: center; gap: 14px; }
+      .home-avatar {
+        display: block;
+        flex: none;
+        width: 64px; height: 64px;
+        border-radius: 50%;
+        background: url('assets/yuval.jpeg') center / cover;
+        border: 1px solid rgba(26,25,22,0.12);
+      }
+      .home-name   { font-size: 38px; margin: 2px 0 4px; }
+      .home-meta   { margin-top: 12px; }
+      .home-lede   { font-size: 15px; margin: 14px 0 16px; }
+      .home-roles a { grid-template-columns: minmax(0, 1fr); gap: 0; padding: 3px 0; }
+      .home-roles span { font-size: 11.5px; color: var(--ink-light); }
+      .home-doors  { gap: 10px; margin: 2px 0 16px; }
+      .home-door-img { height: 74px; }
+      .home-door-txt { padding: 9px 10px 10px; }
+      .home-door-txt b { font-size: 9.5px; }
+      .home-door-txt span { font-size: 11.5px; }
+    }
+    @media (max-width: 640px) {
+      .home-inner  { padding: 100px 20px 28px; }
+      .home-status { width: 100%; }        /* the note on its own line, the links under it */
+    }
+    /* small phones: tighter, so the doors reach the first screen */
+    @media (max-width: 640px) and (max-height: 700px) {
+      .home-inner  { padding-top: 84px; }
+      .home-avatar { width: 52px; height: 52px; }
+      .home-name   { font-size: 32px; }
+      .home-meta   { margin-top: 8px; }
+      .home-lede   { font-size: 14px; margin: 10px 0 12px; }
+      .home-roles a { padding: 2px 0; }
+    }
+    /* landscape phones: the doors move up beside the intro */
+    @media (max-width: 900px) and (max-height: 500px) {
+      .home-inner { padding: 76px 24px 20px; }
+      .home-main  {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) minmax(220px, 300px);
+        column-gap: 28px;
+        align-items: start;
+      }
+      .home-main > * { grid-column: 1; }
+      .home-doors {
+        grid-column: 2;
+        grid-row: 1 / span 6;
+        grid-template-columns: minmax(0, 1fr);
+        align-self: center;
+        margin: 0;
+      }
+      .home-door-img { height: 64px; }
+      .home-lede { margin: 10px 0 12px; }
+      .home-roles a { grid-template-columns: 190px minmax(0, 1fr); gap: 10px; padding: 1px 0; }
+      .home-roles span { font-size: 12px; }
+    }
+    /* Under the home page: its name / role line / note say it, and the
+       scene's chrome stays out of reach (no faint copies, no Tab stops) */
+    .card.home-open :is(.logo-ym, .nav-role, .nav-note),
+    .card.home-open > canvas:not(#dot-canvas),
+    .card.home-open :is(.identity, .scene-hint, .scene-labels, .scene-label, .section-nav, .edge-tab,
+      .sheet-note, .mode-switch, .m-pager, .m-stage, .project-panel, .sprocket-panel,
+      .dim-line, .detail-callout, .digital-page, .end-card, .end-scrim) {
+      visibility: hidden !important;
     }
 
     .fd-fig {
@@ -2032,15 +2553,16 @@
       .skills-col:last-child:nth-child(3n+2) { grid-column: span 2; }
       .digital-right { display: none; }
       .digital-left  { flex: 1; }
-      .split-intro   { flex-direction: column; }
-      .split-half.left { border-right: none; border-bottom: 1px solid var(--border); }
-      /* no stack column to share with — recenter the doc */
+      /* no stack column to share with — the doc is centred, hung under the
+         taller top bar (see the nav's narrow rules) and clear of the arrows */
       .file-doc {
         left: 50%;
+        top: 112px;
+        max-height: calc(100% - 182px);
         width: calc(100% - 40px);
-        transform: translate(-50%, -44%) rotate(0.8deg) scale(0.96);
+        transform: translate(-50%, 12px) rotate(0.8deg) scale(0.96);
       }
-      .file-doc.open { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+      .file-doc.open { transform: translateX(-50%); }
     }
 
     /* ─────────────────────────────────────────
@@ -2079,14 +2601,17 @@
       .fd-cell   { padding: 6px 6px 5px; }
       .fd-cell b { font-size: 10px; }
 
-      /* Digital register: No. / Name / Status — the opened file has the rest */
-      .manifest-head, .manifest-row { grid-template-columns: 24px 1fr auto; gap: 10px; }
-      .manifest-head span:nth-child(3), .manifest-head span:nth-child(4),
-      .manifest-head span:nth-child(5),
-      .m-type, .m-stack, .m-year { display: none; }
+      /* Digital register: No. / Name, its type under it / Status — the
+         opened file has the rest */
+      .manifest-head, .manifest-row { grid-template-columns: 24px 1fr auto; gap: 3px 10px; }
+      .manifest-head span:nth-child(3), .manifest-head span:nth-child(4), .m-stack { display: none; }
+      .manifest-row .m-no     { grid-area: 1 / 1 / 3 / 2; }
+      .manifest-row .m-name   { grid-area: 1 / 2; }
+      .manifest-row .m-type   { grid-area: 2 / 2; font-size: 9.5px; color: var(--ink-light); }
+      .manifest-row .m-status { grid-area: 1 / 3 / 3 / 4; }
 
       /* 3D page: the panels sit under the nav, clear of the featured model */
-      .project-panel, .sprocket-panel { top: 84px; left: 12px; right: 12px; width: auto; translate: none; }
+      .project-panel, .sprocket-panel { top: 96px; left: 12px; right: 12px; width: auto; translate: none; }
       .project-panel .pp-img-slot, .project-panel .pp-meta { display: none; }
       .sprocket-panel { padding: 18px 16px 16px; }
     }
@@ -2097,12 +2622,32 @@
       .nav-footer a   { color: rgba(255,255,255,0.6); }
     }
 
-    /* Narrow screens: the role line stacks under the name */
-    @media (max-width: 640px) {
-      .nav       { padding: 14px 16px; align-items: flex-start; }
-      .nav-left  { flex-direction: column; align-items: flex-start; gap: 5px; }
-      .logo-ym   { font-size: 27px; }
-      .nav-role  { font-size: 8.5px; letter-spacing: 0.12em; padding-top: 0; }
+    /* Top bar, narrower: once the role line and the note no longer fit beside
+       the name, the name shares the top row with the buttons and the two lines
+       run full width under it. That is ≤ 900px (the desktop card is inset
+       30px a side), except landscape phones: they take the phone type below,
+       which fits beside the name from 690px. */
+    @media (max-width: 689px), (max-width: 900px) and (min-height: 501px),
+           (max-width: 900px) and (pointer: fine) {
+      .nav        { display: grid; grid-template-columns: 1fr auto; column-gap: 10px; row-gap: 6px; }
+      .nav-left   { display: contents; }
+      .logo-ym    { grid-area: 1 / 1; align-self: end; }
+      .nav-right  { grid-area: 1 / 2; }
+      .nav-role, .nav-note { grid-column: 1 / -1; justify-self: start; }   /* no full-width */
+      .nav-note   { grid-row: 3; }                                            /*   click catcher */
+      .scene-hint { top: 108px; }   /* under the taller bar (desktop only) */
+    }
+    /* phone type — phones, landscape phones, windows ≤ 640px */
+    @media (max-width: 640px), (pointer: coarse) and (max-height: 500px) {
+      .nav        { padding: 14px 16px; }
+      .logo-ym    { font-size: 27px; }
+      .nav-role, .nav-note { font-size: 8.5px; letter-spacing: 0.12em; }
+      .nav-right  { gap: 6px; }
+      .nav-link   { padding: 1px calc(10px - 0.12em) 0 10px; font-size: 8.5px; letter-spacing: 0.12em; }
+      .scene-hint { top: 100px; }
+    }
+    @media (max-width: 359px) {   /* no room for a third button: Contact stays in the menu */
+      #navContact { display: none; }
     }
 
     /* ─────────────────────────────────────────
@@ -2138,10 +2683,10 @@
     }
 
     /* desktop chrome: identity caption, sheet frame + note, scene hint,
-       prev / next arrows, edge tabs, hover tag, dimension line */
+       prev / next arrows, edge tabs, scene labels, dimension line */
     html.compact .identity, html.compact .scene-hint, html.compact .frame-marks,
     html.compact .section-nav, html.compact .edge-tab, html.compact .dim-line,
-    html.compact .hover-tag { display: none; }
+    html.compact .scene-labels { display: none; }
 
     /* The stage: the box the featured model is framed into (the dot grid
        measures it to fit the camera) — under the nav, above the pager and
@@ -2213,6 +2758,7 @@
       cursor: pointer;
       -webkit-tap-highlight-color: transparent;
     }
+    html.compact .m-arrow:disabled { opacity: 0.3; cursor: default; }
     html.compact .m-arrow svg {
       width: 12px; height: 12px;
       fill: none;
@@ -2320,7 +2866,7 @@
     html.compact .project-panel.in .pp-desc { opacity: 1; transform: none; }
     html.compact .project-panel.expanded .pp-desc { margin-bottom: 14px; }
     @media (orientation: portrait) {   /* (landscape shows everything) */
-      html.compact .project-panel:not(.expanded) :is(.pp-points, .pp-img-slot, .pp-meta) { display: none; }
+      html.compact .project-panel:not(.expanded) :is(.pp-sub, .pp-points, .pp-img-slot, .pp-model, .pp-meta, .pp-next) { display: none; }
     }
     html.compact .project-panel.expanded .pp-img-slot { display: block; height: 176px; }
     html.compact .project-panel.expanded .pp-meta { display: flex; }
@@ -2459,14 +3005,19 @@
     html.compact .exp-org  { grid-column: 1; grid-row: 1; white-space: normal; }
     html.compact .exp-date { grid-column: 2; grid-row: 1; }
     html.compact .exp-role { grid-column: 1 / -1; grid-row: 2; }
-    @media (max-width: 640px) {
-      html.compact { --nav-h: 72px; }
+    /* clear of the top bar: taller where its two lines stack under the name
+       (portrait tablets; phones) — see the nav's narrow rules */
+    @media (max-width: 900px) and (min-height: 501px) {
+      html.compact { --nav-h: 106px; }
+    }
+    @media (max-width: 689px) {
+      html.compact { --nav-h: 96px; }
     }
   </style>
 </head>
 <body>
 
-<div class="card" id="card">
+<div class="card home-open" id="card">
 
   <!-- ── ANIMATED DOT GRID ── -->
   <canvas id="dot-canvas" aria-hidden="true"></canvas>
@@ -2480,11 +3031,14 @@
   <nav class="nav">
 
     <div class="nav-left">
-      <div class="logo-ym">Yuval Munz</div>
-      <div class="nav-role">Mechanical Engineer · Systems Optimization</div>
+      <a class="logo-ym" href="#" title="Home">Yuval Munz</a>
+      <a class="nav-role" href="#about" title="About · experience">Mechanical Engineer · Systems Optimization</a>
+      <div class="nav-note"><span class="nav-note-dot" aria-hidden="true"></span>Queen's '28 · Open to 2027 internships &amp; co-ops</div>
     </div>
 
     <div class="nav-right">
+      <a class="nav-link" href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a>
+      <a class="nav-link" id="navContact" href="#contact">Contact</a>
       <button class="nav-menu-btn" id="menuBtn" aria-label="Open menu">
         <div class="hamburger">
           <span></span><span></span><span></span>
@@ -2493,7 +3047,7 @@
     </div>
   </nav>
 
-  <div class="scene-hint">Click on a project to view more</div>
+  <div class="scene-hint">Loading the projects…</div>
 
   <!-- ───────── FULL-SCREEN NAV OVERLAY ───────── -->
   <div class="nav-overlay" id="navOverlay">
@@ -2501,11 +3055,12 @@
       <button class="nav-close-btn" id="closeBtn" aria-label="Close menu">&#x2715;</button>
     </div>
     <ul class="nav-links">
-      <li><a href="#">Projects <span>Build 1.0</span></a></li>
-      <li><a href="#">Digital <span>Build 2.0</span></a></li>
-      <li><a href="#">About <span>Me</span></a></li>
-      <li><a href="#">Skills <span>Stack</span></a></li>
-      <li><a href="#">Contact <span>Reach out</span></a></li>
+      <li><a href="#">Home <span>Intro</span></a></li>
+      <li><a href="#hands-on">Hands-On <span>Engineering</span></a></li>
+      <li><a href="#digital">Digital <span>Software</span></a></li>
+      <li><a href="#about">About <span>Experience</span></a></li>
+      <li><a href="#skills">Skills <span>Stack</span></a></li>
+      <li><a href="#contact">Contact <span>Reach out</span></a></li>
     </ul>
     <div class="nav-footer">
       <a href="https://www.linkedin.com/in/yuvalmunz/" target="_blank" rel="noopener">LinkedIn</a>
@@ -2525,7 +3080,7 @@
 
     <div class="contact-status">
       <div class="contact-status-dot"></div>
-      Available for work
+      Open to 2027 internships &amp; co-ops
     </div>
 
     <h1 class="contact-heading">Say hello.</h1>
@@ -2746,17 +3301,21 @@
         <button type="button" class="pp-more" id="ppMore" aria-expanded="false">Details</button>
       </div>
       <div class="pp-title" id="ppTitle">Project title</div>
+      <div class="pp-sub" id="ppSub"></div>
       <p class="pp-desc" id="ppDesc"></p>
+      <div class="pp-img-slot" id="ppImg">
+        <span class="pp-fig" id="ppFig">Fig. 01</span>
+        <div class="pp-wip-stamp"><span>Work in Progress</span></div>
+      </div>
+      <div class="pp-model" id="ppModel"></div>
       <ul class="pp-points" id="ppPoints">
         <li>Filler point one</li>
         <li>Filler point two</li>
         <li>Filler point three</li>
       </ul>
-      <div class="pp-img-slot" id="ppImg">
-        <span class="pp-fig" id="ppFig">Fig. 01</span>
-        <div class="pp-wip-stamp"><span>Work in Progress</span></div>
-      </div>
-      <div class="pp-meta"><span id="ppMetaRev">Rev A · 2026</span><span id="ppMetaTag">YM Works</span></div>
+      <div class="pp-meta"><span id="ppWhen"></span><span id="ppStatus"></span></div>
+      <a class="pp-next pp-rel" id="ppRelated" href="#digital" hidden>Related</a>
+      <a class="pp-next" id="ppNext" href="#rivian">Next</a>
     </div>
   </div>
 
@@ -2780,8 +3339,8 @@
   <!-- Dimension line under the featured model -->
   <div class="dim-line" id="dimLine"><span class="dim-label" id="dimLabel">L 3020 MM</span></div>
 
-  <!-- Hover callout tag (rest view) -->
-  <div class="hover-tag" id="hoverTag">01 · Open-Wheel Prototype</div>
+  <!-- Project names at the models (rest view; the 3D module fills it) -->
+  <div class="scene-labels" id="sceneLabels" role="group" aria-label="Projects"></div>
 
   <!-- Detail callout around the clickable sprocket (car zoom view) -->
   <div class="detail-callout" id="detailCallout">
@@ -2792,39 +3351,34 @@
   <!-- Drawing-frame corner marks -->
   <div class="frame-marks">
     <i class="tick tl"></i><i class="tick tr"></i><i class="tick bl"></i><i class="tick br"></i>
-    <div class="sheet-note">YM · Build 1.0 · Index</div>
+    <div class="sheet-note">Hands-On · Overview</div>
   </div>
 
-  <!-- ───────── DIGITAL PAGE (Build 2.0 — flips in from the right) ───────── -->
+  <!-- ───────── DIGITAL PAGE (flips in from the right) ───────── -->
   <div class="digital-page" id="digitalPage">
     <div class="digital-inner">
 
       <div class="digital-left">
-        <div class="page-label">Build 2.0</div>
+        <div class="page-label">Software &amp; ventures</div>
         <h1 class="page-heading">Digital.</h1>
-        <p class="digital-sub">
-          Work with no mass — products, pipelines, and documents that ship as files.
-        </p>
 
         <!-- File register: swap names / stacks / statuses with real projects -->
         <div class="manifest" id="manifest">
           <div class="manifest-head">
-            <span>No.</span><span>Name</span><span>Type</span><span>Stack</span><span>Year</span><span>Status</span>
+            <span>No.</span><span>Name</span><span>Type</span><span>Stack</span><span>Status</span>
           </div>
           <div class="manifest-row" data-i="0" role="button" tabindex="0">
             <span class="m-no">01</span>
             <span class="m-name">Pursr</span>
-            <span class="m-type">SR&amp;ED evidence platform</span>
-            <span class="m-stack">Next.js · Supabase · Anthropic API</span>
-            <span class="m-year">2026</span>
+            <span class="m-type">SR&amp;ED evidence</span>
+            <span class="m-stack">Next.js · Supabase · Anthropic</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
           <div class="manifest-row" data-i="1" role="button" tabindex="0">
             <span class="m-no">02</span>
             <span class="m-name">Actiograph</span>
-            <span class="m-type">Pre-med application platform</span>
+            <span class="m-type">Pre-med app</span>
             <span class="m-stack">React Native · Expo · Supabase</span>
-            <span class="m-year">2026</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
           <div class="manifest-row" data-i="2" role="button" tabindex="0">
@@ -2832,7 +3386,6 @@
             <span class="m-name">Campus Cravings OS</span>
             <span class="m-type">Ops &amp; ordering</span>
             <span class="m-stack">Twilio · Make.com · Stripe</span>
-            <span class="m-year">2025</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
           <div class="manifest-row" data-i="3" role="button" tabindex="0">
@@ -2840,7 +3393,6 @@
             <span class="m-name">Genie Support Agent</span>
             <span class="m-type">Agentic workflow</span>
             <span class="m-stack">Workato · Slack · Jira</span>
-            <span class="m-year">2026</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
           <div class="manifest-row" data-i="4" role="button" tabindex="0">
@@ -2848,7 +3400,6 @@
             <span class="m-name">Portfolio Engine</span>
             <span class="m-type">Single-file WebGL</span>
             <span class="m-stack">Three.js · Canvas 2D</span>
-            <span class="m-year">2026</span>
             <span class="m-status"><i></i>Shipped</span>
           </div>
           <div class="manifest-row" data-i="5" role="button" tabindex="0">
@@ -2856,7 +3407,6 @@
             <span class="m-name">Drivetrain Lap Simulation</span>
             <span class="m-type">Engineering model</span>
             <span class="m-stack">MATLAB · OpenLAP · Excel</span>
-            <span class="m-year">2026</span>
             <span class="m-status live"><i></i>Active</span>
           </div>
         </div>
@@ -2876,22 +3426,84 @@
       <div class="fd-tb">
         <div class="fd-logo" id="fdLogo">PR</div>
         <div class="fd-cell"><span>File</span><b id="fdNo">01</b></div>
-        <div class="fd-cell"><span>Rev</span><b id="fdRev">A</b></div>
         <div class="fd-cell"><span>Year</span><b id="fdYear">2026</b></div>
         <div class="fd-cell"><span>Status</span><b id="fdStatus">Active</b></div>
       </div>
       <div class="fd-title" id="fdTitle">Project</div>
       <div class="fd-sub" id="fdSub">Stack</div>
       <p class="fd-desc" id="fdDesc">Description</p>
-      <ul class="fd-points" id="fdPoints"></ul>
-      <div class="fd-figs">
+      <!-- The file's visual leads its points: app screens in a phone or
+           browser frame (files with `screens` — here on narrow screens; the
+           script moves it into the stack column when that column is shown),
+           or figures -->
+      <figure class="device" id="fdDevice" hidden>
+        <div class="device-frame">
+          <div class="device-chrome" aria-hidden="true"><b><i></i><i></i><i></i></b><span></span></div>
+          <div class="device-screen" id="fdScreens"></div>
+          <i class="device-island" aria-hidden="true"></i>
+        </div>
+        <figcaption class="device-cap">
+          <div class="device-bars" id="fdBars"></div>
+          <span class="device-label" id="fdScreenCap"></span>
+        </figcaption>
+      </figure>
+      <div class="fd-figs" id="fdFigs">
         <div class="fd-fig" id="fdFig1"><span class="pp-fig" id="fdFig1Cap">Fig. 01</span></div>
         <div class="fd-fig" id="fdFig2"><span class="pp-fig" id="fdFig2Cap">Fig. 02</span></div>
+      </div>
+      <ul class="fd-points" id="fdPoints"></ul>
+      <div class="fd-links">
+        <a class="fd-link" id="fdRelated" href="#fsae" hidden>Related</a>
+        <a class="fd-link" id="fdNext" href="#digital/actiograph">Next</a>
       </div>
       </div>
 
     </div>
   </div>
+
+  <!-- ───────── HOME — the front door: who, what now, the two sides ─────────
+       The plain address. It covers the scene (z 30, under the top bar) while
+       the models load behind it; each role links to its work, and the doors
+       lead into Hands-On (#hands-on) and Digital (#digital). -->
+  <section class="home-page open" id="homePage" aria-labelledby="homeName">
+    <div class="home-inner">
+      <div class="home-main">
+        <div class="home-id">
+          <span class="home-avatar" aria-hidden="true"></span>
+          <div>
+            <div class="home-hi">Hi, I'm</div>
+            <h1 class="home-name" id="homeName">Yuval Munz.</h1>
+          </div>
+        </div>
+        <div class="home-meta">Mechanical Engineering · Queen's University · Class of 2028</div>
+        <p class="home-lede">I work out how systems run, find where small design decisions waste effort, and build the more efficient version.</p>
+        <div class="home-label">Now</div>
+        <ul class="home-roles">
+          <li><a href="#fsae"><b>Queen's Formula SAE</b><span>Gear reduction &amp; sprockets lead</span></a></li>
+          <li><a href="#digital/genie-agent"><b>Workato</b><span>Product intern</span></a></li>
+          <li><a href="#digital/pursr"><b>Pursr</b><span>Co-founder &amp; CTO</span></a></li>
+          <li><a href="#digital/actiograph"><b>Actiograph</b><span>Founding engineer &amp; CTO</span></a></li>
+          <li><a href="#printer"><b>Queen's Additive Manufacturing</b><span>Mechanical operations lead</span></a></li>
+        </ul>
+        <div class="home-doors">
+          <a class="home-door" href="#hands-on">
+            <span class="home-door-img" style="background-image: url('renders/lineup.webp'); background-size: contain; background-color: #EEECEA"></span>
+            <span class="home-door-txt"><b>Hands-On</b><span id="homeHandsCount">Engineering projects</span></span>
+          </a>
+          <a class="home-door" href="#digital">
+            <span class="home-door-img" style="background-image: url('renders/pursr-home.webp'); background-position: left top"></span>
+            <span class="home-door-txt"><b>Digital</b><span id="homeDigitalCount">Software projects</span></span>
+          </a>
+        </div>
+        <div class="home-foot">
+          <span class="home-status"><i></i>Open to 2027 internships &amp; co-ops</span>
+          <a href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a>
+          <a href="#about">About</a>
+        </div>
+      </div>
+      <img class="home-photo" src="assets/yuval.jpeg" alt="Yuval Munz" />
+    </div>
+  </section>
 
   <!-- ───────── IDENTITY (bottom-left) ───────── -->
   <div class="identity">
@@ -2906,28 +3518,11 @@
         </svg>
       </div>
       <div class="divider"></div>
-      <span class="identity-title">Projects</span>
+      <span class="identity-title">Hands-On</span>
     </div>
     <div class="identity-meta">
-      <div class="identity-layer">Build 1.0</div>
-      <p class="identity-desc">
-        Physical builds — designed, machined,<br>
-        and assembled from first principles.
-      </p>
-    </div>
-  </div>
-
-  <!-- ───────── SPLIT INTRO (front door: pick a world) ───────── -->
-  <div class="split-intro" id="splitIntro">
-    <div class="split-half left" id="splitLeft" role="button" tabindex="0">
-      <div class="split-label">Build 1.0</div>
-      <h2 class="split-title">Hands-On.</h2>
-      <p class="split-desc">Machines — designed, machined, assembled.</p>
-    </div>
-    <div class="split-half right" id="splitRight" role="button" tabindex="0">
-      <div class="split-label">Build 2.0</div>
-      <h2 class="split-title">Digital.</h2>
-      <p class="split-desc">Software, documents, and systems.</p>
+      <div class="identity-layer">5 engineering projects</div>
+      <p class="identity-desc">Software is on the <a class="side-link" href="#digital">Digital</a> side.</p>
     </div>
   </div>
 
@@ -2943,12 +3538,29 @@
 
   <!-- ───────── SECTION PREV / NEXT ───────── -->
   <div class="section-nav">
-    <button class="section-btn" aria-label="Previous section">
+    <button class="section-btn" aria-label="Previous project">
       <svg viewBox="0 0 10 10"><polyline points="6 2 4 5 6 8"/></svg>
     </button>
-    <button class="section-btn" aria-label="Next section">
+    <button class="section-btn" aria-label="Next project">
       <svg viewBox="0 0 10 10"><polyline points="4 2 6 5 4 8"/></svg>
     </button>
+  </div>
+
+  <!-- ───────── WRAP-UP (after the last project on either side) ─────────
+       The end of each side's sequence: the other side, the resume, contact.
+       Filled per side by the main script (see "Wrap-up"). -->
+  <div class="end-scrim" id="endScrim"></div>
+  <div class="end-card" id="endCard" role="dialog" aria-labelledby="endTitle">
+    <i class="tick tl"></i><i class="tick tr"></i><i class="tick bl"></i><i class="tick br"></i>
+    <div class="ec-tag" id="endTag">Hands-On · all 5 projects</div>
+    <div class="ec-title" id="endTitle">That's the hands-on work.</div>
+    <p class="ec-desc" id="endDesc">Next is the software side. Or get in touch.</p>
+    <div class="ec-actions">
+      <a class="ec-btn primary" id="endOther" href="#digital">Digital work</a>
+      <a class="ec-btn" href="assets/resume.pdf" target="_blank" rel="noopener">Resume</a>
+      <a class="ec-btn" href="#contact">Contact</a>
+    </div>
+    <a class="ec-back" id="endBack" href="#steering">Back to 05</a>
   </div>
 
 </div><!-- /.card -->
@@ -2956,24 +3568,34 @@
 <script>
   // ── Project copy — ONE copy for both layouts ─────────────────────────────
   // The 3D scene reads it for the featured-zoom panel (the bottom sheet on
-  // compact), identity caption, hover tag, and dimension line. Content
-  // follows the master resume.
-  //   points  content bullets
-  //   hint    interaction line appended to the panel ("Click" reads "Tap"
-  //           on compact)
-  //   desc    identity caption — also the compact sheet's summary line
+  // compact), identity caption, scene labels, and dimension line. Content
+  // follows the master resume; every project has the same shape:
+  //   slug    its address (#fsae) — see the router in the main script
+  //   sub     team · role (or the kind of project), under the title
+  //   when    dates; status  where it stands — the panel's footer
+  //   rows    [label, text]: Problem → Approach → Result (a concept states
+  //           its Concept instead; a gap the resume doesn't cover is left out)
+  //   hint    interaction line, a "Try" row ("Click" reads "Tap" on compact)
+  //   related the matching Digital file: { title, slug (its address) }
+  //   model   set where the scene's 3D model is a stand-in, not the project's
+  //           own CAD — said under the figure, which leads with the real image
+  //   desc    the compact sheet's summary line (the desktop caption steps
+  //           aside while a project is open — the panel carries it)
   //   imgCap  figure caption on the compact sheet
   //   detail  a deeper study: the sprocket panel
   window.PROJECT_INFO = {
     car: {
-      index: '01', tag: 'Project 01', title: 'Formula SAE Drivetrain',
-      points: [
-        '58:12 (4.83:1) #530 chain final drive on an EMRAX 188 HV motor (100 Nm, 1000–8000 RPM)',
-        'Chain tension sized from peak motor torque and validated in SolidWorks FEA on 7075-T6',
-        'Fixed a chain-wear mode: 110 links on a 55T sprocket divide evenly, so every tooth met the same two rollers — moved to 56T'
+      index: '01', tag: 'Project 01', title: 'Formula SAE Drivetrain', slug: 'fsae',
+      sub: 'Queen\'s Formula SAE · Gear Reduction & Sprockets Lead',
+      when: 'Sept 2024 – present', status: 'Active',
+      rows: [
+        ['Problem', 'A chain final drive for an EMRAX 188 HV motor: 100 Nm, 1000–8000 RPM'],
+        ['Approach', '58:12 (4.83:1) #530 chain drive, tension sized from peak torque and validated in SolidWorks FEA on 7075-T6; directing a first-year engineer through a full design cycle'],
+        ['Result', 'Diagnosed chain wear: 110 links on a 55T sprocket divide evenly, so each tooth met the same two rollers all season. 56T broke the common factor']
       ],
-      hint: 'Click the sprocket to see the sprocket mass-optimization study',
-      layer: 'Build 1.0 — Formula SAE Drivetrain',
+      hint: 'Click the sprocket to see how it got 30% lighter',
+      related: { title: 'Drivetrain Lap Simulation', slug: 'lap-sim' },
+      model: 'The 3D car is a stand-in, not the team\'s CAD',
       desc: 'Chain and sprocket final drive for Queen\'s<br>Formula SAE, validated in SolidWorks FEA.',
       dim: { l: 28, w: 44, y: 69, label: 'L 3020 MM' },
       img: 'renders/drivetrain-powertrain.jpg', imgCap: 'Powertrain — front and rear views',
@@ -2987,54 +3609,59 @@
         imgs: ['renders/sprocket-topology-1.jpg', 'renders/sprocket-topology-2.jpg', 'renders/sprocket-topology-3.jpg']
       }
     },
-    rivian: {
-      index: '02', tag: 'Project 02', title: 'Rivian R1S — Cabin Zoning',
-      points: [
-        'Camp Mode conditions the whole cabin while occupants use only the rear ~60%',
-        'Steady-state heat-loss model in Python (Q = U·A·ΔT): an estimated 40% cut in HVAC draw by conditioning the rear zone alone',
-        'Insulated partition specified on thermal conductivity and mass, with concept renders of the zoned cabin'
+    steering: {
+      index: '02', tag: 'Project 02', title: 'Off-Road Steering Wheel', slug: 'steering',
+      sub: 'Design & engineering course · CAD, FEA, ergonomics',
+      when: 'Jan – Apr 2025', status: 'Prototyped',
+      rows: [
+        ['Problem', 'Keep the driver\'s grip on the wheel over rough terrain'],
+        ['Approach', 'Grips molded to interviewed drivers\' hand profiles; the steel wheel validated in FEA under two load cases — axial at the bolt pattern, and opposed-hand steering'],
+        ['Result', 'A printed prototype for fit and ergonomic review, ahead of steel manufacture']
       ],
-      layer: 'Build 1.0 — Rivian R1S Cabin Zoning',
+      model: 'The 3D wheel is a stand-in, not the CAD',
+      desc: 'Off-road wheel shaped from drivers\' hand<br>profiles, validated under two FEA load cases.',
+      dim: { l: 36, w: 28, y: 70, label: 'Ø 350 MM' },
+      img: 'renders/baja-steering-cad.jpg', imgCap: 'CAD model'
+    },
+    rivian: {
+      index: '03', tag: 'Project 03', title: 'Rivian R1S — Cabin Zoning', slug: 'rivian',
+      sub: 'Personal project · Python, thermal modelling, CAD',
+      when: 'Oct 2025 – Jan 2026', status: 'Concept',
+      rows: [
+        ['Problem', 'Camp Mode conditions the whole cabin while occupants use only the rear ~60%'],
+        ['Approach', 'Steady-state heat-loss model in Python (Q = U·A·ΔT) across the cabin surfaces; an insulated partition specified on thermal conductivity and mass'],
+        ['Result', 'An estimated 40% cut in HVAC draw by conditioning only the rear zone']
+      ],
+      model: 'The 3D R1S is a stand-in model',
       desc: 'Condition the sleeping zone, not the whole<br>cabin — an estimated 40% less HVAC draw.',
       dim: { l: 36, w: 28, y: 73, label: 'W 2015 MM' },
       img: 'renders/rivian-thermal-partition.jpg', imgCap: 'Thermal partition — concept render'
     },
     scooter: {
-      index: '03', tag: 'Project 03', title: 'E-Scooter Concept Platform',
-      points: [
-        'Modular platform: the rear seat and cargo rack detach as one module',
-        'Load-path and DFMEA-driven structural geometry',
-        'Frame structure, joint interfaces, and materials chosen for durability'
+      index: '04', tag: 'Project 04', title: 'E-Scooter Concept Platform', slug: 'scooter',
+      sub: 'Concept platform · load paths, DFMEA',
+      status: 'Concept',
+      rows: [
+        ['Concept', 'A modular electric scooter: the rear seat and cargo rack detach as one module'],
+        ['Approach', 'Structural geometry from the load paths and a DFMEA; frame, joint interfaces and materials chosen for durability']
       ],
       hint: 'Click the seat to lift off the cargo module',
-      layer: 'Build 1.0 — E-Scooter Concept Platform',
       desc: 'Modular electric scooter concept, designed<br>around load paths and structural safety.',
       dim: { l: 34, w: 32, y: 66, label: 'L 1420 MM' },
       img: 'renders/scooter-concept.jpg', imgCap: 'Concept render'
     },
     printer: {
-      index: '04', tag: 'Project 04', title: 'Infinite Z-Axis Printer',
-      points: [
-        'Belt printer for continuous, unbounded print height',
-        'In development with the Queen\'s Additive Manufacturing Team'
+      index: '05', tag: 'Project 05', title: 'Infinite Z-Axis Printer', slug: 'printer',
+      sub: 'Queen\'s Additive Manufacturing Team · Mechanical Operations Lead',
+      when: 'June 2026 – present', status: 'In development',
+      rows: [
+        ['Concept', 'A belt printer for continuous, unbounded print height']
       ],
-      layer: 'Build 1.0 — Infinite Z-Axis Printer',
-      desc: 'Belt printer for unbounded print height —<br>in development, write-up coming soon.',
+      model: 'The 3D printer is a stand-in',
+      desc: 'Belt printer for continuous,<br>unbounded print height.',
       dim: { l: 30, w: 30, y: 68, label: 'W 480 MM' },
       img: null,
       wip: true
-    },
-    steering: {
-      index: '05', tag: 'Project 05', title: 'Baja SAE Steering Wheel',
-      points: [
-        'Steel off-road wheel designed from driver requirements, grips molded to interviewed drivers\' hand profiles',
-        'FEA under two load cases: axial load at the bolt pattern and asymmetric, opposed-hand steering input',
-        'Printed prototype for fit and ergonomic review ahead of steel manufacture'
-      ],
-      layer: 'Build 1.0 — Baja SAE Steering Wheel',
-      desc: 'Off-road wheel shaped from drivers\' hand<br>profiles, validated under two FEA load cases.',
-      dim: { l: 36, w: 28, y: 70, label: 'Ø 350 MM' },
-      img: 'renders/baja-steering-cad.jpg', imgCap: 'CAD model'
     }
   };
 
@@ -3071,27 +3698,8 @@
   menuBtn.addEventListener('click', () => navOverlay.classList.add('open'));
   closeBtn.addEventListener('click', () => navOverlay.classList.remove('open'));
 
-  // Wire nav links to their pages; Projects / Digital flip between the two
-  // root pages instead of opening an overlay.
-  const FLIP_TARGETS = { 'Projects': 0, 'Digital': 1 };
-  navOverlay.querySelectorAll('.nav-links a').forEach(a => {
-    const label = a.firstChild.textContent.trim();
-    if (pages[label]) {
-      a.addEventListener('click', e => {
-        e.preventDefault();
-        navOverlay.classList.remove('open');
-        closeAllPages();
-        pages[label].classList.add('open');
-      });
-    } else if (label in FLIP_TARGETS) {
-      a.addEventListener('click', e => {
-        e.preventDefault();
-        navOverlay.classList.remove('open');
-        closeAllPages();
-        flipTo(FLIP_TARGETS[label]);
-      });
-    }
-  });
+  // The menu's links, the top bar's Contact and every other "#…" link are
+  // addresses: the router (end of this script) opens what they name.
 
   // Wire each page's close button
   document.getElementById('contactBack').addEventListener('click', closeAllPages);
@@ -3102,7 +3710,7 @@
     Object.values(pages).some(p => p.classList.contains('open'));
 
   // Close on Escape: overlays first, then step out of the 3D view (detail
-  // view, then the featured zoom), then flip back to the physical page.
+  // view, then the featured zoom), then out of the side to the home page.
   // Left / right arrows mirror the section-nav buttons.
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
@@ -3110,19 +3718,23 @@
       const hadOverlay = overlayOpen();
       navOverlay.classList.remove('open');
       closeAllPages();
-      if (hadOverlay) return;
-      if (window._fileDocOpen) { window._closeFileDoc(); return; }
+      if (hadOverlay || window._homeOpen) return;   // home is the top: nothing above it
+      if (window._endOpen) { window._closeEnd(); return; }
+      if (window._fileDocOpen || (window._fileStepping && window._fileStepping())) {
+        window._closeFileDoc();
+        return;
+      }
       if (!window._digitalOpen && window._stepBack && window._stepBack()) return;
-      flipTo(0);
+      openHome();
     } else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && !e.repeat &&
-               !window._raceOpen && !window._fileDocOpen && !overlayOpen() &&
+               !window._raceOpen && !window._homeOpen && !overlayOpen() &&
                !e.altKey && !e.ctrlKey && !e.metaKey) {
       (e.key === 'ArrowLeft' ? prevBtn : nextBtn).click();
     }
   });
 
-  // Keyboard access for the div-based controls (intro halves, edge tabs,
-  // register rows): Enter / Space activate them like a click
+  // Keyboard access for the div-based controls (edge tabs, register rows):
+  // Enter / Space activate them like a click
   document.addEventListener('keydown', e => {
     if ((e.key === 'Enter' || e.key === ' ') && !window._raceOpen &&
         e.target.matches && e.target.matches('[role="button"]')) {
@@ -3131,42 +3743,39 @@
     }
   });
 
-  // What is hiding the 3D scene: 'page' (the menu, an opaque page, or the
-  // race), 'intro' (the front door), or '' — the module script skips hover
-  // raycasts under either, and stops drawing once a page has covered it.
-  window._sceneCover = () => window._raceOpen || overlayOpen() ? 'page' : introUp ? 'intro' : '';
+  // What is hiding the 3D scene: 'page' (the home page, the menu, an opaque
+  // page, or the race), 'end' (the wrap-up card — the scene stays in view
+  // behind it) or '' — the module skips hover raycasts under either, and
+  // stops drawing once a page has covered it.
+  window._homeOpen = true;   // the site opens on the home page (see "Home")
+  window._sceneCover = () => window._homeOpen || window._raceOpen || overlayOpen() ? 'page'
+                            : window._endOpen ? 'end' : '';
 
-  // ── Page flip: 0 = hands-on (3D scene), 1 = digital work.
-  //    The split intro is the front door; the edge tabs are the handles. ──
+  // ── Page flip: 0 = hands-on (3D scene), 1 = digital work. The site opens
+  //    on the hands-on page; the edge tabs (the phone switch) flip it. ──
   const digitalPage = document.getElementById('digitalPage');
   const cardEl      = document.getElementById('card');
-  const splitIntro  = document.getElementById('splitIntro');
   const tabLeft     = document.getElementById('tabLeft');
   const tabRight    = document.getElementById('tabRight');
   const modeSwitch  = document.getElementById('modeSwitch');   // compact only
   const modeBtns    = [...modeSwitch.querySelectorAll('button')];
   let currentPage   = 0;
-  let introUp       = true;
-
-  // choosing a side swipes the door toward the other one
-  function dismissIntro(chosen) {
-    if (!introUp) return;
-    introUp = false;
-    splitIntro.classList.add(chosen === 1 ? 'exit-left' : 'exit-right');
-  }
 
   // exactly one tab is out at a time: the handle to the OTHER world. The
-  // compact layout's Hands-On | Digital switch mirrors the same state.
+  // compact layout's Hands-On | Digital switch mirrors the same state, and
+  // the section-nav arrows say what they step through on this page.
   function updateTabs() {
-    tabRight.classList.toggle('hidden-tab', introUp || currentPage === 1);
-    tabLeft.classList.toggle('hidden-tab',  introUp || currentPage === 0);
-    modeSwitch.classList.toggle('up', !introUp);
+    tabRight.classList.toggle('hidden-tab', currentPage === 1);
+    tabLeft.classList.toggle('hidden-tab',  currentPage === 0);
+    modeSwitch.classList.add('up');
     modeBtns.forEach((b, i) => b.setAttribute('aria-pressed', String(i === currentPage)));
+    const item = currentPage === 1 ? 'file' : 'project';
+    prevBtn.setAttribute('aria-label', `Previous ${item}`);
+    nextBtn.setAttribute('aria-label', `Next ${item}`);
   }
 
   function flipTo(i) {
     const target = Math.max(0, Math.min(1, i));
-    dismissIntro(target);
     if (target !== currentPage) {
       currentPage = target;
       const open = currentPage === 1;
@@ -3175,33 +3784,28 @@
       window._digitalOpen = open;
       if (open && window._zoomOutAll) window._zoomOutAll();   // return 3D world to rest
       if (!open && window._closeFileDoc) window._closeFileDoc();
+      if (window._closeEnd) window._closeEnd();   // each side has its own wrap-up
     }
     updateTabs();
   }
 
-  // intro halves + edge tabs (stopPropagation keeps the card's 3D click
+  // edge tabs + phone switch (stopPropagation keeps the card's 3D click
   // handler from raycasting these clicks)
-  document.getElementById('splitLeft').addEventListener('click',  e => { e.stopPropagation(); flipTo(0); });
-  document.getElementById('splitRight').addEventListener('click', e => { e.stopPropagation(); flipTo(1); });
   tabLeft.addEventListener('click',  e => { e.stopPropagation(); flipTo(0); });
   tabRight.addEventListener('click', e => { e.stopPropagation(); flipTo(1); });
   modeBtns.forEach((b, i) => b.addEventListener('click', e => { e.stopPropagation(); flipTo(i); }));
 
-  // ── Section nav arrows: cycle featured projects while zoomed on the
-  //    physical page; otherwise flip between the two root pages ──
+  // ── Section nav arrows (and ← →): step through what this page holds —
+  //    the projects 01 to 05 on the hands-on page, the files on the digital
+  //    one. They never flip pages; the edge tabs do that. ──
   const [prevBtn, nextBtn] = document.querySelectorAll('.section-btn');
-
-  prevBtn.addEventListener('click', e => {
-    e.stopPropagation();   // don't let the card's click handler zoom out
-    if (!window._digitalOpen && window._cycleFeatured && window._cycleFeatured(-1)) return;
-    flipTo(currentPage - 1);
-  });
-
-  nextBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    if (!window._digitalOpen && window._cycleFeatured && window._cycleFeatured(1)) return;
-    flipTo(currentPage + 1);
-  });
+  const step = dir => {
+    if (window._digitalOpen) window._stepFile && window._stepFile(dir);
+    else window._cycleFeatured && window._cycleFeatured(dir);
+  };
+  prevBtn.addEventListener('click', e => { e.stopPropagation(); step(-1); });   // never a click on the scene
+  nextBtn.addEventListener('click', e => { e.stopPropagation(); step(1); });
+  updateTabs();
 
   // ── Compact carousel controls: pager, sheet, swipe ───────────────────────
   // The 3D module owns the carousel (window._swipe / _swipeTo / _swipeDrag,
@@ -3222,8 +3826,11 @@
       if (b.dataset.dir) window._swipe && window._swipe(+b.dataset.dir);
       else window._swipeTo && window._swipeTo(b.dataset.k);
     });
+    const pagerBack = pager.querySelector('[data-dir="-1"]');
+    pagerBack.disabled = true;   // the line starts at 01
     cardEl.addEventListener('featured', e => {
       dots.querySelectorAll('button').forEach((b, i) => b.setAttribute('aria-current', String(i === e.detail)));
+      pagerBack.disabled = e.detail === 0;
     });
 
     // The spec sheet: collapsed to its summary under the model; tap it (or
@@ -3251,6 +3858,9 @@
           !e.target.closest('.project-panel, .m-pager, .nav, .nav-overlay, .mode-switch')) setOpen(false);
     });
     landscape.addEventListener('change', () => setOpen(false));
+    // …and so does moving to another project (a swipe, the pager, the
+    // sheet's own Next, Back): the next model arrives with its summary
+    cardEl.addEventListener('featured', () => { if (!landscape.matches) setOpen(false); });
 
     // Swipe: a sideways drag anywhere on the Hands-On page moves the carousel
     // — the model follows the finger, a flick or a third of the way commits.
@@ -3259,7 +3869,7 @@
     let sw = null, swallowClick = false;
     cardEl.addEventListener('pointerdown', e => {
       if (sw || (e.pointerType === 'mouse' && e.button !== 0)) return;
-      if (introUp || window._digitalOpen || window._raceOpen || overlayOpen()) return;
+      if (window._homeOpen || window._digitalOpen || window._raceOpen || window._endOpen || overlayOpen()) return;
       if (e.target.closest('.nav, .mode-switch')) return;
       sw = { id: e.pointerId, x0: e.clientX, y0: e.clientY, lastX: e.clientX, lastT: e.timeStamp, v: 0, horiz: null };
     });
@@ -3308,51 +3918,63 @@
     // opened document's title block (replace with an <image> href later).
     // figs: captions for the two figure slots in the opened document;
     // figImg: optional [url, url] to fill those slots with real screenshots.
+    // screens: optional [[url, caption], …] app screenshots played in a
+    // device frame — frame: 'phone' (923 × 2000, status bar painted out) or
+    // 'browser' (2000 × 1153 window captures) — see "App screens".
+    // slug: the file's address (#digital/pursr — the router, end of this
+    // script); related: the matching Hands-On project.
     const DIGITAL_INFO = [
-      { title: 'Pursr', meta: 'Next.js · Supabase · Anthropic API',
-        logo: 'PR', rev: 'B', year: '2026', status: 'Active',
-        desc: 'SR&ED evidence infrastructure for Canadian manufacturing SMEs. Claims are usually reconstructed from memory months after the engineering happens; Pursr captures contemporaneous, audit-ready evidence at the point of work instead. Technical Co-Founder & CTO.',
+      { title: 'Pursr', slug: 'pursr', meta: 'Next.js · Supabase · Anthropic API',
+        logo: 'PR', year: '2026', status: 'Active',
+        desc: 'SR&ED, Canada\'s R&D tax credit, is usually documented from memory months after the engineering. Pursr captures audit-ready evidence at the point of work, for manufacturing SMEs. Technical Co-Founder & CTO.',
+        frame: 'browser',
+        screens: [['renders/pursr-home.webp',      'Floor manager · Dashboard'],
+                  ['renders/pursr-equipment.webp', 'Consultant · Machine data'],
+                  ['renders/pursr-materials.webp', 'Consultant · Materials'],
+                  ['renders/pursr-review.webp',    'Consultant · Review']],
         figs: ['Product UI', 'System architecture'], figImg: [null, null],
-        points: ['Audit-ready SR&ED evidence captured as the work happens',
-                 'CNC machine data scoped on read-only MTConnect over FOCAS — plant IT won\'t grant write access',
-                 'Consultant-first tenancy (firm → client → project), validated with a Toronto SR&ED firm',
-                 'Slack round-trip: a documentation gap becomes a prompted question, and the reply lands as structured evidence'] },
-      { title: 'Actiograph', meta: 'React Native · Expo · Supabase',
-        logo: 'AG', rev: 'A', year: '2026', status: 'Active',
-        desc: 'Application-tracking platform for Canadian pre-med students. Applicants assemble their record months before applying, from experiences that span the prior five years; Actiograph captures each experience, reflection, and verifier contact as it happens. Founding Engineer & CTO.',
+        points: ['Slack round-trip: a documentation gap becomes a prompted question, and the engineer\'s reply lands as structured evidence',
+                 'CNC machine data on read-only MTConnect, not FOCAS — plant IT won\'t allow write access',
+                 'Consultant-first (firm → client → project), after validating demand with a Toronto SR&ED firm'] },
+      { title: 'Actiograph', slug: 'actiograph', meta: 'React Native · Expo · Supabase',
+        logo: 'AG', year: '2026', status: 'Active',
+        desc: 'Pre-med students assemble their application from five years of experiences, months before they apply. Actiograph captures each one as it happens. Founding Engineer & CTO.',
+        frame: 'phone',
+        screens: [['renders/actiograph-home.webp', 'Dashboard'],
+                  ['renders/actiograph-log.webp', 'Activity log'],
+                  ['renders/actiograph-abs.webp', 'Application builder'],
+                  ['renders/actiograph-checklist.webp', 'School checklist'],
+                  ['renders/actiograph-gpa.webp', 'GPA converter']],
         figs: ['Experience log', 'Launch landing page'], figImg: [null, null],
-        points: ['React Native app shipped to TestFlight — one structured record instead of scattered notes, spreadsheets, and documents',
-                 'Captures each experience, reflection, and verifier contact at the time it happens',
-                 'Structured testing with an advisory board of pre-med and medical students',
-                 'Prepared and submitted the DDQIC Ignite qualifying pitch at Queen\'s'] },
-      { title: 'Campus Cravings OS', meta: 'Twilio · Make.com · Stripe',
-        logo: 'CC', rev: 'C', year: '2025', status: 'Active',
-        desc: 'SMS-based late-night food delivery, built and run from scratch — live inventory, Stripe payments, and delivery routing wired into one system.',
+        points: ['Shipped the React Native app to TestFlight',
+                 'Tested with an advisory board of pre-med and medical students',
+                 'Submitted the DDQIC Ignite qualifying pitch at Queen\'s'] },
+      { title: 'Campus Cravings OS', slug: 'campus-cravings', meta: 'Twilio · Make.com · Stripe',
+        logo: 'CC', year: '2025', status: 'Active',
+        desc: 'Late-night food delivery ordered by text — built and run from scratch.',
         figs: ['Menu', 'Order automation'], figImg: ['renders/campus-cravings-menu.jpg', 'renders/campus-cravings-workflow.jpg'],
-        points: ['SMS ordering flow with live inventory',
+        points: ['SMS ordering with live inventory',
                  'Stripe payments and delivery routing',
-                 'Twilio and Make.com automations running the ops'] },
-      { title: 'Genie Support Agent', meta: 'Workato · Slack · Jira',
-        logo: 'GA', rev: 'A', year: '2026', status: 'Active',
-        desc: 'Product Intern at Workato: a Genie agent in Slack that triaged support load during the AIRO beta, and is still running after GA.',
+                 'Twilio and Make.com automations run the ops'] },
+      { title: 'Genie Support Agent', slug: 'genie-agent', meta: 'Workato · Slack · Jira',
+        logo: 'GA', year: '2026', status: 'Active',
+        desc: 'Product Intern at Workato: a Genie agent in Slack that triaged support during the AIRO beta — still running after launch.',
         figs: ['Agent skill routing', 'Knowledge-base loop'], figImg: [null, null],
-        points: ['Routes channel messages across four skills: questions, bug capture, Jira tickets, and knowledge-base answers',
-                 'Self-updating knowledge base: unanswered questions escalate to the team and their replies fold back in',
+        points: ['Routes messages across four skills: questions, bug capture, Jira tickets, knowledge-base answers',
+                 'Self-updating knowledge base: unanswered questions go to the team, and their replies fold back in',
                  'Deflected ~30 daily requesters off a 4-person product team',
-                 'Also stood up an in-house animation pipeline — 20 demo videos on Workato\'s YouTube'] },
-      { title: 'Portfolio Engine', meta: 'Three.js · Canvas 2D',
-        logo: 'PE', rev: 'D', year: '2026', status: 'Shipped',
-        desc: 'This site — one HTML file, a hand-rolled perspective dot grid, a WebGL scene glued to it, and the camera math that keeps them in lockstep.',
+                 'Also built an in-house animation pipeline: 20 demo videos on Workato\'s YouTube'] },
+      { title: 'Portfolio Engine', slug: 'portfolio-engine', meta: 'Three.js · Canvas 2D',
+        logo: 'PE', year: '2026', status: 'Shipped',
+        desc: 'This site: one HTML file — a hand-rolled perspective dot grid and a WebGL scene, kept in lockstep by the camera math.',
         figs: ['Dot grid projection', 'Zoom camera path'], figImg: [null, null],
-        points: ['Single-file site — dot grid + WebGL scene',
-                 'Custom projection math, camera matching',
-                 'This page is part of the exhibit'] },
-      { title: 'Drivetrain Lap Simulation', meta: 'MATLAB · OpenLAP · Excel',
-        logo: 'LS', rev: 'E', year: '2026', status: 'Active',
-        desc: 'Choosing the final drive by lap time: a MATLAB lap simulation (OpenLAP) sweeping ratios across the EMRAX 188 HV torque curve to quantify the acceleration vs top-speed trade-off.',
+        points: ['This page is part of the exhibit'] },
+      { title: 'Drivetrain Lap Simulation', slug: 'lap-sim', meta: 'MATLAB · OpenLAP · Excel',
+        related: { title: 'Formula SAE Drivetrain', slug: 'fsae' },
+        logo: 'LS', year: '2026', status: 'Active',
+        desc: 'Choosing the final drive by lap time: a MATLAB lap simulation (OpenLAP) sweeping ratios across the EMRAX 188 HV torque curve.',
         figs: ['Lap time vs final drive', 'Load case sheet'], figImg: ['renders/drivetrain-lapsim.jpg', 'renders/sprocket-topology-2.jpg'],
-        points: ['Final drive ratios swept across the EMRAX 188 HV torque curve',
-                 'Lap time as the objective — acceleration vs top speed, quantified',
+        points: ['Quantifies the acceleration vs top-speed trade-off',
                  'Chain and sprocket load cases (2,700 N) behind the 7075-T6 sprocket study'] },
     ];
 
@@ -3592,23 +4214,30 @@
         txt(0.7,  z, { 'font-family': MONO, 'font-size': 4.6 * FK, fill: '#8A8784' }, '0' + (k + 1));
         txt(1.12, z, { 'font-family': SANS, 'font-size': 5.6 * FK, fill: '#4A4844' }, trunc(pt, 38));
       });
-      // two figure slots
+      // figure slots — only where the file has an image (no empty boxes, as
+      // in the doc), showing it; fetched when the sheet first stands up
+      sheet.figs = [];
       [0, 1].forEach(k => {
+        const url = info.figImg && info.figImg[k];
+        if (!url) return;
         const x0 = 0.7 + k * 2.18, p = FA(x0, 4.95);
-        sheet.face.appendChild(el('rect', {
-          x: p.x.toFixed(1), y: p.y.toFixed(1),
-          width: (2.02 * FRONT_S).toFixed(1), height: (1.55 * FRONT_S).toFixed(1),
-          fill: 'rgba(26,25,22,0.045)', stroke: 'rgba(26,25,22,0.10)', 'stroke-width': 0.8
-        }));
-        txt(x0 + 0.12, 6.28, { 'font-family': MONO, 'font-size': 4.2 * FK,
+        const box = { x: p.x.toFixed(1), y: p.y.toFixed(1),
+                      width: (2.02 * FRONT_S).toFixed(1), height: (1.55 * FRONT_S).toFixed(1) };
+        sheet.face.appendChild(el('rect', Object.assign({
+          fill: '#fff', stroke: 'rgba(26,25,22,0.10)', 'stroke-width': 0.8 }, box)));
+        const im = el('image', Object.assign({}, box, {   // the label gets a strip under it
+          height: (1.23 * FRONT_S).toFixed(1), preserveAspectRatio: 'xMidYMid meet' }));
+        sheet.face.appendChild(im);
+        sheet.figs.push([im, url]);
+        txt(x0 + 0.12, 6.40, { 'font-family': MONO, 'font-size': 4.2 * FK,
           'letter-spacing': 0.5 * FK, fill: '#8A8784' }, 'FIG. 0' + (k + 1));
       });
       // footer
       const no = String(n - SHEETS.indexOf(sheet)).padStart(2, '0');
       txt(0.7, 6.95, { 'font-family': MONO, 'font-size': 4.6 * FK, 'letter-spacing': 0.5 * FK,
-        fill: '#8A8784' }, `FILE ${no} · REV ${info.rev} · ${info.status.toUpperCase()}`);
+        fill: '#8A8784' }, `FILE ${no} · ${info.year} · ${info.status.toUpperCase()}`);
       txt(4.9, 6.95, { 'font-family': MONO, 'font-size': 4.6 * FK, 'letter-spacing': 0.5 * FK,
-        fill: '#8A8784', 'text-anchor': 'end' }, 'YM WORKS');
+        fill: '#8A8784', 'text-anchor': 'end' }, 'YUVAL MUNZ');
     });
 
     // tween a sheet between the pile and the front view
@@ -3634,7 +4263,10 @@
     }
 
     // row i (File 01 on top of the register) ⇄ sheet n-1-i (top of the pile)
-    let activeIdx = 0;
+    let activeIdx  = 0;
+    let lastOpened = -1;   // the arrows carry on from the last file opened
+    let stepTimer  = 0;    // a step waiting on the closing sheet (openFileAt)
+    let stepTo     = -1;   //   …and the file it opens
     function setActive(i) {
       activeIdx = i;
       rows.forEach((r, k) => r.classList.toggle('active', k === i));
@@ -3653,54 +4285,199 @@
     const sheetNoteEl = document.querySelector('.sheet-note');
     const fd = id => document.getElementById(id);
 
+    // ── App screens (a file with `screens`): a phone or browser frame that
+    //    plays them like a short screen recording. Each screen holds while
+    //    its bar fills — a CSS animation whose animationend advances, so a
+    //    hover holds it with animation-play-state; the bars jump to a screen
+    //    and a tap on the frame skips ahead. Where the stack column is shown
+    //    the device takes the standing sheet's place; on narrow screens it
+    //    sits in the doc, under the description.
+    const device   = fd('fdDevice');
+    const devRight = svg.parentElement;
+    let devShots = [], devAt = 0, devFile = -1;
+    function showScreen(k) {
+      devAt = k;
+      devShots.forEach((s, j) => {
+        s.img.classList.toggle('on', j === k);
+        s.bar.classList.toggle('done', j < k);
+        s.bar.classList.remove('on');
+        s.bar.removeAttribute('aria-current');
+      });
+      const cur = devShots[k];
+      void cur.bar.offsetWidth;            // restart its fill
+      cur.bar.classList.add('on');
+      cur.bar.setAttribute('aria-current', 'true');
+      fd('fdScreenCap').textContent = cur.cap;
+    }
+    function placeDevice(column) {
+      if (column) {
+        if (device.parentElement !== devRight) devRight.appendChild(device);
+        requestAnimationFrame(() => device.classList.add('in'));
+      } else if (device.parentElement !== fileDoc) {
+        fileDoc.insertBefore(device, fd('fdFigs'));
+      }
+    }
+    function mountDevice(i, info, column) {
+      if (devFile !== i) {                 // this file's screens, built once
+        devFile = i;
+        fd('fdScreens').textContent = '';
+        fd('fdBars').textContent = '';
+        devShots = info.screens.map(([src, cap], k) => {
+          const img = new Image();
+          img.decoding = 'async';
+          img.alt = cap;
+          img.src = src;
+          fd('fdScreens').appendChild(img);
+          const bar = document.createElement('button');
+          bar.type = 'button';
+          bar.setAttribute('aria-label', cap);
+          bar.appendChild(document.createElement('i'));
+          bar.addEventListener('click', () => showScreen(k));
+          fd('fdBars').appendChild(bar);
+          return { img, bar, cap };
+        });
+        device.setAttribute('aria-label', `${info.title} app screens`);
+        device.classList.toggle('browser', info.frame === 'browser');
+        device.classList.toggle('phone', info.frame !== 'browser');
+      }
+      device.hidden = false;
+      device.classList.remove('held');
+      // the clock waits for the first screen to arrive (a slow connection
+      // would otherwise spend its turn on an empty frame)
+      const first = devShots[0].img;
+      device.classList.toggle('loading', !first.complete);
+      const arrived = () => device.classList.remove('loading');
+      first.addEventListener('load', arrived, { once: true });
+      first.addEventListener('error', arrived, { once: true });
+      showScreen(0);
+      placeDevice(column);
+    }
+    function stopDevice() {
+      device.classList.remove('in');
+      devShots.forEach(s => s.bar.classList.remove('on'));   // stops the clock
+    }
+    fd('fdBars').addEventListener('animationend', () => {
+      if (window._fileDocOpen && !device.hidden) showScreen((devAt + 1) % devShots.length);
+    });
+    device.querySelector('.device-frame').addEventListener('click', () => {
+      if (devShots.length) showScreen((devAt + 1) % devShots.length);
+    });
+    device.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') device.classList.add('held'); });
+    device.addEventListener('pointerleave', () => device.classList.remove('held'));
+
     function openFile(i) {
       if (window._fileDocOpen) return;
       setActive(i);
+      lastOpened = i;
       const info = DIGITAL_INFO[i];
       const no   = String(i + 1).padStart(2, '0');
       const sheet = SHEETS[n - 1 - i];
-      // the sheet stands up only where the stack column is shown
-      if (fitStack()) {
+      const column = fitStack();          // the stack column is shown
+      // the sheet stands up where the column is shown — unless the file has
+      // app screens: then the phone takes its place
+      if (column && !info.screens) {
         svg.appendChild(sheet.g);         // paint the standing sheet on top
         sheet.g.classList.add('front');
+        sheet.figs.forEach(([im, url]) => im.getAttribute('href') || im.setAttribute('href', url));
         tweenFront(sheet, 1, 620);
       }
+      if (info.screens) mountDevice(i, info, column);
+      else device.hidden = true;
+      digitalPage.classList.toggle('screens', !!info.screens);
       digitalPage.classList.add('file-open');
       fd('fdLogo').textContent   = info.logo;
       fd('fdNo').textContent     = no;
-      fd('fdRev').textContent    = info.rev;
       fd('fdYear').textContent   = info.year;
       fd('fdStatus').textContent = info.status;
       fd('fdTitle').textContent  = info.title;
       fd('fdSub').textContent    = info.meta;
       fd('fdDesc').textContent   = info.desc;
       fd('fdPoints').innerHTML   = info.points.map(p => `<li>${p}</li>`).join('');
+      // a figure slot shows once it has an image — no empty placeholder boxes
+      let figs = 0;
       ['fdFig1', 'fdFig2'].forEach((id, k) => {
         const img = info.figImg && info.figImg[k];
         fd(id).style.backgroundImage = img ? `url(${img})` : '';
         fd(id).classList.toggle('has-img', !!img);
+        fd(id).hidden = !img;
         fd(id + 'Cap').textContent   = `Fig. 0${k + 1} — ${info.figs[k]}`;
+        if (img) figs++;
       });
+      fd('fdFigs').hidden = !figs;
+      fd('fdFigs').classList.toggle('one', figs === 1);
+      // where to go from here: the next file (after the last, the wrap-up)
+      // and, where there is one, the matching Hands-On project
+      const nx = DIGITAL_INFO[i + 1];
+      fd('fdNext').href        = nx ? `#digital/${nx.slug}` : '#digital/end';
+      fd('fdNext').textContent = nx ? `Next · File ${String(i + 2).padStart(2, '0')} ${nx.title}` : 'Next · Wrap-up';
+      fd('fdRelated').hidden   = !info.related;
+      if (info.related) {
+        fd('fdRelated').href        = '#' + info.related.slug;
+        fd('fdRelated').textContent = `Related · ${info.related.title} (Hands-On)`;
+      }
       fileDoc.scrollTop = 0;
       fileDoc.classList.add('open');
       fileScrim.classList.add('open');
       window._fileDocOpen = true;
-      sheetNoteEl.textContent = `YM · Build 2.0 · File ${no}`;
+      sheetNoteEl.textContent = window._fileNote();
     }
 
     function closeFile() {
+      clearTimeout(stepTimer);   // a step in flight stops here too
+      stepTimer = 0;
+      stepTo = -1;
       if (!window._fileDocOpen) return;
       fileDoc.classList.remove('open');
       fileScrim.classList.remove('open');
-      digitalPage.classList.remove('file-open');
+      digitalPage.classList.remove('file-open', 'screens');
+      stopDevice();
       if (frontSheet) {
         frontSheet.g.classList.remove('front');
         tweenFront(frontSheet, 0, 480);
       }
       window._fileDocOpen = false;
-      sheetNoteEl.textContent = 'YM · Build 2.0 · Index';
+      sheetNoteEl.textContent = window._fileNote();
     }
     window._closeFileDoc = closeFile;
+
+    // Open file i from anywhere: straight away from the register; from
+    // another open file, once its sheet has settled back into the pile
+    // (tweenFront runs one sheet at a time).
+    function openFileAt(i) {
+      if (window._fileDocOpen && lastOpened === i && !stepTimer) return;
+      if (!window._fileDocOpen && !stepTimer) { openFile(i); return; }
+      closeFile();
+      stepTo = i;
+      stepTimer = setTimeout(() => { stepTimer = 0; stepTo = -1; openFile(i); }, 520);
+    }
+    window._openFileAt   = openFileAt;
+    window._fileSlugs    = DIGITAL_INFO.map(d => d.slug);
+    // the file open or on its way (-1: the register) — for the address bar
+    window._fileTarget   = () => stepTimer ? stepTo : window._fileDocOpen ? lastOpened : -1;
+    window._fileStepping = () => stepTimer !== 0;   // Escape cancels a step in flight
+    window._fileLast     = () => lastOpened;
+    // the frame's location note on this side (the 3D module's identity
+    // crossfade asks too — a cold load opens the file before the flip lands)
+    window._fileNote     = () => window._fileDocOpen
+      ? `Digital · File ${String(lastOpened + 1).padStart(2, '0')} of ${String(n).padStart(2, '0')}`
+      : 'Digital · Overview';
+
+    // The section-nav arrows (and ← →) step through the files in register
+    // order, with ends: from the register they start at File 01, or carry on
+    // from the last one opened; back from File 01 returns to the register,
+    // and on past the last file comes the wrap-up card (main script).
+    window._stepFile = dir => {
+      if (window._endOpen) {                    // the wrap-up: back goes to the last file
+        if (dir < 0) { window._closeEnd(); openFileAt(n - 1); }
+        return;
+      }
+      const open = window._fileDocOpen || stepTimer !== 0;
+      const from = stepTimer ? stepTo : lastOpened;
+      const to   = from < 0 ? (dir > 0 ? 0 : -1) : from + dir;
+      if (to >= n) { closeFile(); if (window._openEnd) window._openEnd(); return; }
+      if (to < 0) { if (open) closeFile(); return; }
+      openFileAt(to);
+    };
 
     rows.forEach((r, i) => {
       r.addEventListener('click', () => openFile(i));
@@ -3711,9 +4488,12 @@
     document.getElementById('fileClose').addEventListener('click', closeFile);
 
     // keep the stack fitted — the first time a narrow layout widens — and a
-    // standing sheet anchored to its column through resizes
+    // standing sheet anchored to its column through resizes; an open file's
+    // phone follows the column in and out
     new ResizeObserver(() => {
-      if (fitStack() && frontSheet && frontSheet.t === 1) renderSheet(frontSheet, 1);
+      const column = fitStack();
+      if (column && frontSheet && frontSheet.t === 1) renderSheet(frontSheet, 1);
+      if (window._fileDocOpen && !device.hidden) placeDevice(column);
     }).observe(svg.parentElement);
   })();
 
@@ -4358,6 +5138,230 @@
   })();
   // ── End Race easter egg ──────────────────────────────────────────────────
 
+  // ── Home ─────────────────────────────────────────────────────────────────
+  // The front door at the plain address: who, what now, and the two sides.
+  // Open on arrival unless the address names a view (the router, below);
+  // the 3D scene loads behind it and stops drawing while covered. Opening
+  // it puts everything back to rest: the Hands-On page, no file, no wrap-up.
+  const homePage = document.getElementById('homePage');
+  document.getElementById('homeHandsCount').textContent =
+    `${Object.keys(PROJECT_INFO).length} engineering projects`;
+  document.getElementById('homeDigitalCount').textContent =
+    `${window._fileSlugs.length} software projects`;
+  function openHome() {
+    flipTo(0);
+    closeEnd();
+    if (window._goRest) window._goRest();   // the scene settles out of sight
+    homePage.classList.add('open');
+    cardEl.classList.add('home-open');
+    window._homeOpen = true;
+  }
+  function closeHome(instant) {
+    if (!window._homeOpen) return;
+    if (instant) {                          // an address straight into a view: no fade on arrival
+      homePage.style.transition = 'none';
+      requestAnimationFrame(() => requestAnimationFrame(() => { homePage.style.transition = ''; }));
+    }
+    homePage.classList.remove('open');
+    cardEl.classList.remove('home-open');
+    window._homeOpen = false;
+  }
+
+  // ── Wrap-up ──────────────────────────────────────────────────────────────
+  // The card after the last project on either side — the arrows, the phone
+  // pager and a panel's "Next · Wrap-up" all end here — instead of a silent
+  // wrap back to 01: the other side, the resume, contact.
+  const endCard  = document.getElementById('endCard');
+  const endScrim = document.getElementById('endScrim');
+  const endLast  = PROJECT_INFO[Object.keys(PROJECT_INFO).at(-1)];
+  const nFiles   = window._fileSlugs.length;
+  const END_COPY = [
+    { tag:   `Hands-On · all ${Object.keys(PROJECT_INFO).length} projects`,
+      title: 'That\'s the hands-on work.',
+      desc:  'Next is the software side — ventures, tools and models. Or get in touch.',
+      other: ['Digital work', '#digital'],
+      back:  [`Back to ${endLast.index} ${endLast.title}`, '#' + endLast.slug] },
+    { tag:   `Digital · all ${nFiles} files`,
+      title: 'That\'s the digital work.',
+      desc:  'The engineering builds are on the Hands-On side. Or get in touch.',
+      other: ['Hands-On work', '#hands-on'],
+      back:  [`Back to file ${String(nFiles).padStart(2, '0')}`, '#digital/' + window._fileSlugs.at(-1)] }
+  ];
+  window._endOpen = false;
+  function openEnd() {
+    const c = END_COPY[currentPage];
+    document.getElementById('endTag').textContent   = c.tag;
+    document.getElementById('endTitle').textContent = c.title;
+    document.getElementById('endDesc').textContent  = c.desc;
+    const other = document.getElementById('endOther'), back = document.getElementById('endBack');
+    other.textContent = c.other[0]; other.href = c.other[1];
+    back.textContent  = c.back[0];  back.href  = c.back[1];
+    endCard.classList.add('open');
+    endScrim.classList.add('open');
+    window._endOpen = true;
+  }
+  function closeEnd() {
+    if (!window._endOpen) return;
+    endCard.classList.remove('open');
+    endScrim.classList.remove('open');
+    window._endOpen = false;
+  }
+  window._openEnd  = openEnd;
+  window._closeEnd = closeEnd;
+  endScrim.addEventListener('click', closeEnd);
+
+  // ── Addresses ────────────────────────────────────────────────────────────
+  // Every view has one — the plain address (home), #hands-on, #fsae,
+  // #fsae/sprocket, #end, #digital, #digital/pursr, #about, #race … — so
+  // browser Back steps out of a view instead of leaving the site, and a link
+  // opens one view directly. Two directions:
+  //  · a "#…" link, Back / Forward, or a typed address → applyHash() makes
+  //    the page match (links are intercepted: navigate())
+  //  · everything else that changes the view (a click on a model, the
+  //    arrows, a swipe, Escape, a ✕) → reconcile(), a poll of where the view
+  //    is headed (stateHash), pushes that address — or steps Back when the
+  //    view returned to the previous entry, so closing something undoes its
+  //    entry instead of stacking a new one.
+  // The phone carousel has no overview — Hands-On opens on its first
+  // project — so '#hands-on' and '#fsae' are the same view there.
+  (() => {
+    const KEY_OF = Object.fromEntries(Object.entries(PROJECT_INFO).map(([k, v]) => [v.slug, k]));
+    const PAGE_OF = { about: 'About', skills: 'Skills', contact: 'Contact' };
+    const norm = h => { h = h && h !== '#' ? h : ''; return COMPACT && h === '#hands-on' ? '#fsae' : h; };
+    const hist = { i: 0, stack: [] };
+    let expectPop = 0;         // Back steps we took ourselves: their popstate is no news
+    let sceneUp = false, pendingScene = null;
+
+    const st = history.state;
+    if (st && typeof st.i === 'number') hist.i = st.i;   // a reload mid-session keeps its place
+    hist.stack[hist.i] = norm(location.hash);
+    history.replaceState({ i: hist.i }, '');
+
+    // where the view is headed; null while that depends on a 3D module that
+    // hasn't arrived yet
+    function stateHash() {
+      if (window._raceOpen) return '#race';
+      const pg = Object.keys(pages).find(k => pages[k].classList.contains('open'));
+      if (pg) return '#' + pg.toLowerCase();
+      if (window._homeOpen) return '';
+      if (currentPage === 1) {
+        if (window._endOpen) return '#digital/end';
+        const f = window._fileTarget();
+        return f >= 0 ? '#digital/' + window._fileSlugs[f] : '#digital';
+      }
+      if (window._endOpen) return '#end';
+      if (!sceneUp) return null;
+      const t = window._sceneTarget();
+      if (t.moving) return null;               // mid-swipe: wait for it to settle
+      return norm(t.project ? '#' + PROJECT_INFO[t.project].slug + (t.detail ? '/sprocket' : '') : '#hands-on');
+    }
+
+    function applyHash(h) {
+      h = norm(h);
+      const [a, b] = h.slice(1).split('/');
+      navOverlay.classList.remove('open');
+      if (a !== 'race' && window._raceOpen) window._closeRace();
+      closeAllPages();
+      if (PAGE_OF[a]) { pages[PAGE_OF[a]].classList.add('open'); return; }   // over whatever is under it
+      if (a === 'race') { if (!window._raceOpen) window._openRace(); return; }
+      if (!a) { openHome(); return; }                                       // the plain address
+      closeHome(booting);
+      if (a === 'digital') {
+        flipTo(1);
+        const i = window._fileSlugs.indexOf(b);
+        if (b === 'end') { window._closeFileDoc(); openEnd(); }
+        else { closeEnd(); if (i >= 0) window._openFileAt(i); else window._closeFileDoc(); }
+        return;
+      }
+      flipTo(0);
+      if (!sceneUp) { pendingScene = h; if (a === 'end') openEnd(); return; }
+      if (a === 'end') {
+        if (COMPACT) window._goProject(Object.keys(PROJECT_INFO).at(-1)); else window._goRest();
+        openEnd();
+        return;
+      }
+      closeEnd();
+      if (KEY_OF[a]) window._goProject(KEY_OF[a], b === 'sprocket'); else window._goRest();
+    }
+
+    function push(h) {
+      hist.stack.length = hist.i + 1;
+      hist.stack.push(h);
+      hist.i++;
+      history.pushState({ i: hist.i }, '', h || location.pathname + location.search);
+    }
+    // an entry the browser made (a typed-in address): take it on as ours
+    function adopt() {
+      hist.stack.length = hist.i + 1;
+      hist.stack.push(norm(location.hash));
+      hist.i++;
+      history.replaceState({ i: hist.i }, '');
+    }
+    // back one entry when that is where we are going; else a new entry
+    function record(h) {
+      if (h === norm(hist.stack[hist.i])) return;
+      if (hist.i > 0 && hist.stack[hist.i - 1] !== undefined && h === norm(hist.stack[hist.i - 1])) {
+        expectPop++; hist.i--; history.back();
+      }
+      else push(h);
+    }
+    function navigate(h) {
+      h = norm(h);
+      record(h);
+      applyHash(h);
+    }
+    function reconcile() {
+      if (expectPop) return;
+      const h = stateHash();
+      if (h !== null) record(h);
+      // the arrows dim where there is nothing further that way
+      if (sceneUp && !COMPACT) {
+        const t = window._sceneTarget(), end = window._endOpen;
+        const atStart = currentPage === 1
+          ? !end && window._fileTarget() < 0 && window._fileLast() < 1
+          : !end && !t.project && (!t.toured || t.index < 1);
+        prevBtn.classList.toggle('off', atStart);
+        nextBtn.classList.toggle('off', end);
+      }
+    }
+    setInterval(reconcile, 150);
+
+    // "#…" links anywhere on the page (the menu, the top bar's Contact, a
+    // panel's Next / Related, the wrap-up): ours to open, not the browser's
+    // fragment jump — and never a click on the 3D scene under them
+    document.addEventListener('click', e => {
+      const a = e.target.closest && e.target.closest('a[href^="#"]');
+      if (!a || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+      e.preventDefault();
+      e.stopPropagation();
+      navigate(a.getAttribute('href'));
+    }, true);
+
+    window.addEventListener('popstate', e => {
+      const i = e.state && typeof e.state.i === 'number' ? e.state.i : null;
+      if (expectPop) { expectPop--; if (i !== null) hist.i = i; return; }
+      if (i === null) adopt();                 // a typed-in address
+      else {
+        hist.i = i;
+        hist.stack[i] = norm(location.hash);
+      }
+      applyHash(location.hash);
+    });
+    window.addEventListener('hashchange', () => {   // (in case a browser skips popstate)
+      if (norm(location.hash) !== norm(hist.stack[hist.i])) { adopt(); applyHash(location.hash); }
+    });
+
+    // the 3D module arrives after this script (it waits for three.js): an
+    // address that needs it is applied then
+    window._sceneReady = () => {
+      sceneUp = true;
+      if (pendingScene !== null) { const h = pendingScene; pendingScene = null; applyHash(h); }
+    };
+    let booting = true;
+    if (location.hash) applyHash(location.hash);
+    booting = false;
+  })();
+
 </script>
 
 <!-- ── Three.js WebGL scene ── -->
@@ -4513,9 +5517,12 @@ const STEERING_POS   = { x: 2.7, z: -1.7 };  // right of the car, in front of th
 // the others fade out.
 let featured = 'car';
 
-// Per-project copy (panel, identity caption, hover tag, dimension line)
+// Per-project copy (panel, identity caption, scene labels, dimension line)
 // lives in the main script (window.PROJECT_INFO).
 const PROJECT_INFO = window.PROJECT_INFO;
+// ONE project order for every control — arrows, keys, labels, the phone
+// carousel and its pager: project number, 01 → 05 (PROJECT_INFO's key order)
+const PROJECT_ORDER = Object.keys(PROJECT_INFO);
 
 const projectPanel = document.getElementById('projectPanel');
 const ppTag        = document.getElementById('ppTag');
@@ -4523,35 +5530,43 @@ const ppIndex      = document.getElementById('ppIndex');
 const ppTitle      = document.getElementById('ppTitle');
 const ppPoints     = document.getElementById('ppPoints');
 const ppImg        = document.getElementById('ppImg');
-const ppMetaRev    = document.getElementById('ppMetaRev');
-const ppMetaTag    = document.getElementById('ppMetaTag');
+const ppSub        = document.getElementById('ppSub');
+const ppWhen       = document.getElementById('ppWhen');
+const ppStatus     = document.getElementById('ppStatus');
+const ppNext       = document.getElementById('ppNext');
+const ppRelated    = document.getElementById('ppRelated');
+const ppModel      = document.getElementById('ppModel');
 const ppDesc       = document.getElementById('ppDesc');   // compact sheet only
 const ppBody       = document.getElementById('ppBody');   //   (and its copy wrapper)
 const ppFig        = document.getElementById('ppFig');
 const dimLine      = document.getElementById('dimLine');
 const dimLabel     = document.getElementById('dimLabel');
-const hoverTag     = document.getElementById('hoverTag');
 const sceneHint    = document.querySelector('.scene-hint');
 const identityMeta  = document.querySelector('.identity-meta');
 const identityLayer = document.querySelector('.identity-layer');
+const identityTitle = document.querySelector('.identity-title');   // the side's name — follows the page
 const identityDesc  = document.querySelector('.identity-desc');
 const IDENTITY_DEFAULT = {
   layer: identityLayer.textContent,
   desc:  identityDesc.innerHTML
 };
-const HINT_DEFAULT = sceneHint.textContent;
+const HINT_LOADING = sceneHint.textContent;   // the markup's, until the five models are in
+const HINT_START   = 'Start at 01, or click any project';   // at rest, until one has been open
+const HINT_DEFAULT = 'Click on a project to view more';
 const HINT_ZOOMED  = 'Click anywhere to return';
 const HINT_DIGITAL = 'Click a file to open it';
 const sheetNote    = document.querySelector('.sheet-note');
-// Identity caption for the digital page (Build 2.0) — the page flip swaps
-// the bottom-left copy through the same crossfade as the featured zoom.
+// Identity caption for the digital page — the page flip swaps the
+// bottom-left copy through the same crossfade as the featured zoom.
 const IDENTITY_DIGITAL = {
-  layer: 'Build 2.0',
-  desc:  'Software, documents, and systems —<br>work that ships as files.'
+  layer: `${(window._fileSlugs || []).length || 6} software projects`,
+  desc:  'The machines are on the <a class="side-link" href="#hands-on">Hands-On</a> side.'
 };
 let digitalT = 0;                // eased flip state: 0 = physical, 1 = digital
+let fileT    = 0;                // eased: a Digital file is open (hint + caption step aside)
 let identityShows = 'default';   // 'default' | 'digital' | featured project key
-let hoverTagO = 0, hoverTagX = 0, hoverTagY = 0;   // hover callout state
+let hintShows     = HINT_LOADING;
+let projectsIn    = false;       // all five GLBs arrived (or 12 s passed) — the hint stops saying "Loading"
 const detailCallout = document.getElementById('detailCallout');
 let detailO = 0;                 // detail-callout smoothed opacity
 
@@ -4562,14 +5577,26 @@ function fillProjectPanel(name) {
   ppTag.textContent   = info.tag;
   ppIndex.textContent = info.index;
   ppTitle.textContent = info.title;
-  ppPoints.innerHTML  = info.points.concat(hint || [])
-    .map(p => `<li>${p}</li>`).join('');
+  ppSub.textContent   = info.sub || '';
+  ppModel.textContent = info.model || '';   // a stand-in 3D model says so
+  // one shape: Problem → Approach → Result, then what to try (every row a
+  // label + its line)
+  ppPoints.innerHTML  = info.rows.concat(hint ? [['Try', hint]] : [])
+    .map(([k, t]) => `<li><b>${k}</b>${t}</li>`).join('');
+  // where it connects on the Digital side, over the next step
+  const rel = info.related;
+  ppRelated.hidden = !rel;
+  if (rel) { ppRelated.href = `#digital/${rel.slug}`; ppRelated.textContent = `Related · ${rel.title}`; }
   ppImg.style.backgroundImage = info.img ? `url(${info.img})` : '';
   ppImg.classList.toggle('has-img', !!info.img);
   dimLabel.textContent = info.dim.label;
   projectPanel.classList.toggle('is-wip', !!info.wip);
-  ppMetaRev.textContent = info.wip ? 'Status · WIP' : 'Rev A · 2026';
-  ppMetaTag.textContent = info.wip ? 'Coming Soon' : 'YM Works';
+  ppWhen.textContent   = info.when || '';
+  ppStatus.textContent = info.status || '';
+  // the named next step: the next project, or after the last the wrap-up
+  const next = PROJECT_ORDER[PROJECT_ORDER.indexOf(name) + 1];
+  ppNext.href        = next ? '#' + PROJECT_INFO[next].slug : '#end';
+  ppNext.textContent = next ? `Next · ${PROJECT_INFO[next].index} ${PROJECT_INFO[next].title}` : 'Next · Wrap-up';
   if (COMPACT) {
     // the sheet's summary line is the identity caption (its <br> is for the
     // desktop's two-line layout), and the figure gets its caption
@@ -4579,7 +5606,12 @@ function fillProjectPanel(name) {
   }
 }
 fillProjectPanel(featured);
-if (COMPACT) detailCallout.querySelector('.dc-label').textContent = 'Detail A — Tap to view';
+// the callout's label per part ("Click" reads "Tap" on compact)
+const dcLabel  = detailCallout.querySelector('.dc-label');
+const DC_LABEL = { car: 'Detail A — Click to view', scooter: 'Detail B — Click to lift off' };
+if (COMPACT) for (const k in DC_LABEL) DC_LABEL[k] = DC_LABEL[k].replace('Click', 'Tap');
+let dcShows = null;
+dcLabel.textContent = DC_LABEL.car;
 
 const FEATURE_POSE = {
   // yaw orients the featured view: rivian rear-on (looking into the open
@@ -5510,12 +6542,45 @@ let zoomT   = 0;     // 0 = isometric, 1 = zoomed side view
 let zoomDir = 0;     // +1 = zooming in, -1 = zooming out
 let prevTime = performance.now();
 let pageCoverT = 0;  // seconds an opaque page / the menu has covered the scene
+let warmed     = false;   // drawn once behind the home page (see the end of loop())
 const sprocketPanel = document.getElementById('sprocketPanel');
 
 // While a project is featured, the section-nav arrows cycle to the next /
 // previous project: zoom out, swap the feature at rest, zoom back in.
 let pendingFeature = null;
-const FEATURE_ORDER = ['scooter', 'printer', 'car', 'steering', 'rivian'];
+let toured = false;   // has any project been opened yet (desktop arrows start at 01)
+function featureProject(name) {   // desktop, from rest: zoom into one project
+  featured = name;
+  fillProjectPanel(name);
+  zoomDir = 1;
+  toured = true;
+}
+
+// Scene labels (desktop): each project's number and name at its model at
+// rest, so the models are named before anyone hovers — and a name is a
+// second way in. Placed per frame off the model's hit proxy (see the loop):
+// over the back row, under the front row — a front model's label above it
+// would sit across the model behind. The card click handler skips them, so
+// a click on one never raycasts.
+const LABEL_HITBOX = { car: carHitbox, rivian: rivianHitbox, scooter: scooterHitbox,
+                       printer: printerHitbox, steering: steeringHitbox };
+const LABEL_BELOW  = { car: true, scooter: true, steering: true };   // the front row
+const labelEls = {};
+const labelPt  = new THREE.Vector3();
+let labelsCoverO = 1;   // smoothed: labels fade out under a page or the menu
+if (!COMPACT) {
+  const box = document.getElementById('sceneLabels');
+  for (const k of PROJECT_ORDER) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = LABEL_BELOW[k] ? 'scene-label below' : 'scene-label';
+    b.innerHTML = `<b>${PROJECT_INFO[k].index}</b>${PROJECT_INFO[k].title}`;
+    b.setAttribute('aria-label', `${PROJECT_INFO[k].index} · ${PROJECT_INFO[k].title}`);
+    b.addEventListener('click', () => { if (zoomT === 0 && !pendingFeature) featureProject(k); });
+    box.appendChild(b);
+    labelEls[k] = b;
+  }
+}
 
 // ── Compact carousel ─────────────────────────────────────────────────────
 // Phones see one project at a time. The first time the Hands-On page shows,
@@ -5528,8 +6593,7 @@ const FEATURE_ORDER = ['scooter', 'printer', 'car', 'steering', 'rivian'];
 // through the scene. carPos is the continuous position in stations (0 = the
 // car); the line wraps, so it has no ends. Swipes, the pager and the arrow
 // keys come in through window._swipe / _swipeTo / _swipeDrag (main script).
-const MOBILE_ORDER = Object.keys(PROJECT_INFO);   // project-number order, 01 → 05
-const NST = MOBILE_ORDER.length;
+const NST = PROJECT_ORDER.length;
 let carousel    = false;               // compact, and the opening zoom has landed
 let carPos      = 0, carVel = 0;       // stations, stations/s
 let carTarget   = 0;                   // the station it is settling on (an integer)
@@ -5537,44 +6601,49 @@ let carDragging = false, carDragFrom = 0;
 let truckBase   = 0;                   // carPos where the truck (dot scroll) is zero
 let revealT     = 0;                   // s the Hands-On page has shown before the opening zoom
 let nudgeT      = 0, carNudged = false;   // the one-time "there's more" nudge
-const wrapSt = i => ((i % NST) + NST) % NST;
-// signed distance, in stations, from the view to a model's nearest copy
-function stationDelta(name) {
-  let d = (MOBILE_ORDER.indexOf(name) - carPos) % NST;
-  if (d > NST / 2) d -= NST; else if (d < -NST / 2) d += NST;
-  return d;
-}
-function leaveDetail() { sprocketOpen = false; seatOpen = false; }
+// The line has ends: 01 first, 05 last — past 05 comes the wrap-up card
+// (main script), not 01 again
+const clampSt = i => Math.max(0, Math.min(NST - 1, i));
+// signed distance, in stations, from the view to a model's station
+function stationDelta(name) { return PROJECT_ORDER.indexOf(name) - carPos; }
+let pendingSprocket = false;   // an address asked for the sprocket study (see the loop)
+function leaveDetail() { sprocketOpen = false; seatOpen = false; pendingSprocket = false; }
+const openEnd  = () => window._openEnd && window._openEnd();
+const endShown = () => !!window._endOpen;
 
-// dir ±1: one station along the line (arrows, keys). Presses stack on the
-// target, so a double tap moves two.
+// dir ±1: one station along the line (arrows, keys, pager). Presses stack
+// on the target, so a double tap moves two. Past 05 opens the wrap-up; back
+// from the wrap-up closes it.
 window._swipe = dir => {
+  if (endShown()) { if (dir < 0) window._closeEnd(); return true; }
   if (!carousel) return false;
-  carTarget = Math.round(carTarget) + dir;
+  const to = Math.round(carTarget) + dir;
+  if (to > NST - 1) { openEnd(); return true; }
+  carTarget = clampSt(to);
   leaveDetail();
   return true;
 };
-// Jump to a project (pager dots) the short way round the loop
+// Jump to a project (pager dots, addresses)
 window._swipeTo = name => {
-  const i = MOBILE_ORDER.indexOf(name);
+  const i = PROJECT_ORDER.indexOf(name);
   if (!carousel || i < 0) return false;
-  let d = wrapSt(i - Math.round(carTarget));
-  if (d > NST / 2) d -= NST;
-  carTarget = Math.round(carTarget) + d;
+  carTarget = i;
   leaveDetail();
   return true;
 };
 // Live drag: dx = px the finger has moved since it went down (+ = right,
-// i.e. back along the line); the model under it tracks the finger 1:1.
-// 'end' passes the release velocity (px/ms): a flick goes on to the next
-// station, a slow drag settles on whichever it is nearer (a third of the
-// way is enough to leave the start).
+// i.e. back along the line); the model under it tracks the finger 1:1 —
+// with give past either end, where it springs back. 'end' passes the
+// release velocity (px/ms): a flick goes on to the next station, a slow
+// drag settles on whichever it is nearer (a third of the way is enough to
+// leave the start).
 window._swipeDrag = (phase, dx, v) => {
   if (!carousel) return false;
   const dc = window._dotCam;
   const pxPer = (dc.spacing * dc.ppu) || card.clientWidth;   // px per station
   if (!carDragging) { carDragging = true; carDragFrom = carPos; leaveDetail(); }
-  carPos = carDragFrom - dx / pxPer;
+  const raw = carDragFrom - dx / pxPer;
+  carPos = raw < 0 ? raw * 0.3 : raw > NST - 1 ? NST - 1 + (raw - NST + 1) * 0.3 : raw;
   if (phase === 'end') {
     carDragging = false;
     carVel = Math.max(-6, Math.min(6, -(v || 0) * 1000 / pxPer));
@@ -5582,28 +6651,77 @@ window._swipeDrag = (phase, dx, v) => {
     let to = Math.round(carPos);
     if (to === from) to = from + (carPos - from > 0.33 ? 1 : carPos - from < -0.33 ? -1 : 0);
     if (Math.abs(v) > 0.35) to = v < 0 ? Math.floor(carPos) + 1 : Math.ceil(carPos) - 1;
-    carTarget = to;
+    carTarget = clampSt(to);
   }
   return true;
 };
 
-window._cycleFeatured = dir => {
-  if (COMPACT) return window._swipe(dir);   // arrow keys on a phone / tablet
-  // At rest (or heading back to it) the arrows flip pages instead. A press
-  // during a bounce, or while a zoom is still coming in, moves the target on —
-  // it used to fall through to the page flip, so a quick double-click on
-  // "next" landed on the digital page.
-  if (!pendingFeature && zoomDir !== 1 && zoomT < 0.5) return false;
-  pendingFeature = FEATURE_ORDER[
-    (FEATURE_ORDER.indexOf(pendingFeature || featured) + dir + FEATURE_ORDER.length) % FEATURE_ORDER.length];
-  sprocketOpen = false;
-  seatOpen = false;
-  zoomDir = -1;
-  return true;
+// Go to a project (addresses, arrows, the panel's Next): desktop zooms in
+// from rest, re-zooms if it is heading out of that project, and bounces
+// through rest from another; compact moves the carousel (or, before the
+// opening zoom lands, picks the station it lands on). `detail` = open the
+// sprocket study once the car's zoom has landed.
+function goProject(key, detail) {
+  if (!PROJECT_INFO[key]) return;
+  if (COMPACT) {
+    if (carousel) window._swipeTo(key);
+    else if (featured !== key) {
+      featured = key;
+      fillProjectPanel(key);
+      carPos = carTarget = truckBase = PROJECT_ORDER.indexOf(key);
+    }
+  } else if (zoomT === 0 && zoomDir !== 1 && !pendingFeature) {
+    featureProject(key);
+  } else if (featured === key && !pendingFeature) {
+    zoomDir = 1;
+    toured = true;
+  } else {
+    pendingFeature = key;
+    leaveDetail();
+    zoomDir = -1;
+  }
+  if (detail && key === 'car') pendingSprocket = true;
+  else if (featured === key && !pendingFeature) { sprocketOpen = false; seatOpen = false; pendingSprocket = false; }
+}
+window._goProject = goProject;
+// Back to the overview: desktop zooms out; compact returns to 01
+window._goRest = () => {
+  if (COMPACT) { goProject(PROJECT_ORDER[0]); return; }
+  leaveDetail();
+  pendingFeature = null;
+  if (zoomT > 0 || zoomDir === 1) zoomDir = -1;
+};
+// Where the scene is headed, for the address bar (main script's router):
+// the project being opened or shown (null = the overview) and whether its
+// detail study is up. Targets, not the animation's current frame, so a
+// bounce between two projects never passes through "the overview".
+window._sceneTarget = () => {
+  if (COMPACT) return { project: PROJECT_ORDER[clampSt(Math.round(carTarget))],
+                        detail: sprocketOpen || pendingSprocket, moving: carDragging };
+  const key = pendingFeature || (zoomDir === 1 ? featured : null);
+  return { project: key, detail: !!key && (sprocketOpen || pendingSprocket), toured,
+           index: PROJECT_ORDER.indexOf(pendingFeature || featured) };
 };
 
-// Flipping to the digital page returns the 3D world to rest so page 1 is
-// back at the isometric overview when the user flips home.
+// Arrows and ← →: the projects in number order, with ends. At rest they
+// start the tour at 01 or, once a project has been open, carry on from it.
+// Back from 01 returns to rest; on past 05 comes the wrap-up card (and back
+// from it, 05). While one is open they bounce to the next; a press during a
+// bounce, or while a zoom is still coming in, moves the target on.
+window._cycleFeatured = dir => {
+  if (COMPACT) return window._swipe(dir);   // arrow keys on a phone / tablet
+  if (endShown()) {
+    if (dir < 0) { window._closeEnd(); goProject(PROJECT_ORDER.at(-1)); }
+    return true;
+  }
+  const inProject = !!pendingFeature || zoomDir === 1;
+  const cur = PROJECT_ORDER.indexOf(pendingFeature || featured);
+  const to  = inProject || toured ? cur + dir : dir > 0 ? 0 : -1;
+  if (to >= NST) { window._goRest(); openEnd(); return true; }
+  if (to < 0) { if (inProject) window._goRest(); return true; }
+  goProject(PROJECT_ORDER[to]);
+  return true;
+};
 window._zoomOutAll = () => {
   if (COMPACT) { leaveDetail(); return; }   // the carousel stays where it is
   if (zoomT > 0) zoomDir = -1;
@@ -5635,7 +6753,7 @@ card.addEventListener('click', e => {
   // Clicks on the menu and the opaque pages bubble up to the card too; they
   // must never raycast the hidden scene behind them (a click on the About
   // page used to zoom whichever model sat under the pointer)
-  if (e.target.closest('.nav-menu-btn, .nav-overlay, .page-overlay, .contact-page, .race-page, .split-intro, .section-nav, .edge-tab, .mode-switch, .m-pager, .project-panel')) return;
+  if (e.target.closest('.nav, .nav-overlay, .home-page, .page-overlay, .contact-page, .race-page, .end-card, .end-scrim, .scene-labels, .section-nav, .edge-tab, .mode-switch, .m-pager, .project-panel')) return;
   if (!modelMeshes.length) return;
   const r = card.getBoundingClientRect();
   mousePt.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
@@ -5695,10 +6813,8 @@ card.addEventListener('click', e => {
     const steeringHit = !carHit && !rivianHit && !scooterHit && !printerHit && steeringMeshes.length &&
                        raycaster.intersectObjects(steeringHitbox, false).length > 0;
     if (carHit || rivianHit || scooterHit || printerHit || steeringHit) {
-      featured = carHit ? 'car' : rivianHit ? 'rivian' : scooterHit ? 'scooter'
-               : printerHit ? 'printer' : 'steering';
-      fillProjectPanel(featured);
-      zoomDir = 1;
+      featureProject(carHit ? 'car' : rivianHit ? 'rivian' : scooterHit ? 'scooter'
+                     : printerHit ? 'printer' : 'steering');
     }
   } else if (!sprocketOpen) {
     zoomDir = -1;
@@ -5713,9 +6829,9 @@ card.addEventListener('click', e => {
 window._feature = name => {
   if (COMPACT && carousel) { window._swipeTo(name); return; }
   if (zoomT === 0 && PROJECT_INFO[name]) {
-    featured = name; fillProjectPanel(name); zoomDir = 1;
+    featureProject(name);
     // compact: the opening zoom lands the carousel on this station
-    if (COMPACT) carPos = carTarget = truckBase = MOBILE_ORDER.indexOf(name);
+    if (COMPACT) carPos = carTarget = truckBase = PROJECT_ORDER.indexOf(name);
   }
 };
 window._seatDetach = v => { seatOpen = !!v; };
@@ -5738,7 +6854,7 @@ function cardFlag(name, on) {
   if (cardFlags[name] !== on) { cardFlags[name] = on; card.classList.toggle(name, on); }
 }
 function announce() {   // the main script's pager follows this
-  card.dispatchEvent(new CustomEvent('featured', { detail: MOBILE_ORDER.indexOf(featured) }));
+  card.dispatchEvent(new CustomEvent('featured', { detail: PROJECT_ORDER.indexOf(featured) }));
 }
 function compactStep(dt, cover) {
   const onPage = cover === '' && !window._digitalOpen;
@@ -5766,9 +6882,9 @@ function compactStep(dt, cover) {
   // next project that springs back — "this moves sideways"
   if (!carNudged) {
     if (carDragging || carTarget !== truckBase) carNudged = true;   // found it on their own
-    else if (onPage && (nudgeT += dt) > 1.4) { carNudged = true; carVel = 2.4; }
+    else if (onPage && (nudgeT += dt) > 1.4) { carNudged = true; carVel = carTarget < NST - 1 ? 2.4 : -2.4; }
   }
-  const name = MOBILE_ORDER[wrapSt(Math.round(carPos))];
+  const name = PROJECT_ORDER[clampSt(Math.round(carPos))];
   if (name !== featured) {
     featured = name;
     fillProjectPanel(name);
@@ -5789,17 +6905,21 @@ function loop() {
 
   // Arrow-cycling bounce: once fully back at rest, feature the next project
   if (pendingFeature && zoomT === 0) {
-    featured = pendingFeature;
+    const name = pendingFeature;
     pendingFeature = null;
-    fillProjectPanel(featured);
-    zoomDir = 1;
+    featureProject(name);
+  }
+  // An address asked for the sprocket study: open it once the car has landed
+  if (pendingSprocket && featured === 'car' && zoomT === 1 && !pendingFeature) {
+    pendingSprocket = false;
+    if (!sprocketOpen) { sprocketOpen = true; detailO = 0; if (COMPACT) gearOpen = gearOpenPose(); }
   }
 
   // Share zoom progress with the dot grid so it can reproject its own camera.
   const c = window._dotCam || { hSkew: -0.09, tilt: 1, vShift: 0 };
 
-  // Intro, menu, and opaque pages hide the scene: no hover raycasts under
-  // them, and no drawing once a page has fully slid in (pageCoverT, below)
+  // The menu and opaque pages hide the scene: no hover raycasts under them,
+  // and no drawing once a page has fully slid in (pageCoverT, below)
   const cover        = window._sceneCover ? window._sceneCover() : '';
   const sceneCovered = cover !== '';
   pageCoverT = cover === 'page' ? pageCoverT + dt : 0;
@@ -5823,7 +6943,7 @@ function loop() {
   let zoomEl = elOf(featured);
   if (carousel) {
     const f = Math.floor(carPos), u = carPos - f, k = u * u * (3 - 2 * u);
-    const e0 = elOf(MOBILE_ORDER[wrapSt(f)]), e1 = elOf(MOBILE_ORDER[wrapSt(f + 1)]);
+    const e0 = elOf(PROJECT_ORDER[clampSt(f)]), e1 = elOf(PROJECT_ORDER[clampSt(f + 1)]);
     zoomEl = e0 + (e1 - e0) * k;
   }
   const baseAz = BASE_AZ - c.hSkew * 0.30 * (1 - ease);
@@ -5912,30 +7032,45 @@ function loop() {
   dimLine.style.top     = dg.y + '%';
 
   // Identity caption and scene hint crossfade to the featured copy mid-zoom:
-  // opacity dips to 0 at ease 0.5, where the text is swapped, and recovers.
-  // The digital page flip drives the same crossfade through digitalT.
+  // opacity dips to 0 at ease 0.5, where the text is swapped, and recovers —
+  // except the caption's count + line, which stay out while a project or a
+  // file is open (the panel / doc says it all). The digital page flip drives
+  // the same crossfade through digitalT.
   digitalT += ((window._digitalOpen ? 1 : 0) - digitalT) * (1 - Math.exp(-6 * dt));
   if (digitalT < 0.001) digitalT = 0; else if (digitalT > 0.999) digitalT = 1;
+  fileT += ((window._fileDocOpen ? 1 : 0) - fileT) * (1 - Math.exp(-8 * dt));
   const identityTarget = digitalT > 0.5 ? 'digital' : ease > 0.5 ? featured : 'default';
   if (identityTarget !== identityShows) {
     identityShows = identityTarget;
     const src = identityTarget === 'digital' ? IDENTITY_DIGITAL
               : identityTarget === 'default' ? IDENTITY_DEFAULT
               : PROJECT_INFO[identityTarget];
-    identityLayer.textContent = src.layer;
+    const of  = `${src.index} of ${String(PROJECT_ORDER.length).padStart(2, '0')}`;
+    identityLayer.textContent = src.layer || `Project ${of}`;
     identityDesc.innerHTML    = src.desc;
-    sceneHint.textContent     = identityTarget === 'digital' ? HINT_DIGITAL
-                              : identityTarget === 'default' ? HINT_DEFAULT : HINT_ZOOMED;
-    sheetNote.textContent     = identityTarget === 'digital'
-      ? 'YM · Build 2.0 · Index'
-      : identityTarget === 'default'
-      ? 'YM · Build 1.0 · Index'
-      : `YM · Build 1.0 · Sheet ${PROJECT_INFO[identityTarget].index}/05`;
+    identityTitle.textContent = identityTarget === 'digital' ? 'Digital' : 'Hands-On';
+    sheetNote.textContent     = identityTarget === 'digital' ? window._fileNote()
+                              : identityTarget === 'default' ? 'Hands-On · Overview'
+                              : `Hands-On · ${of}`;
   }
+  // At rest the hint says the projects are loading until all five are in (a
+  // model that never arrives gives up after 12 s) — the one text swap made
+  // without the crossfade — then points at 01 until a project has been open
+  if (!projectsIn) projectsIn = PROJECT_ORDER.every(k => LOADED[k]()) || now > 12000;
+  const hintText = identityTarget === 'digital' ? HINT_DIGITAL
+                 : identityTarget !== 'default' ? HINT_ZOOMED
+                 : !projectsIn ? HINT_LOADING : toured ? HINT_DEFAULT : HINT_START;
+  if (hintText !== hintShows) sceneHint.textContent = hintShows = hintText;
   const metaFade = Math.min(1, Math.abs(ease - 0.5) * 2)
                  * Math.min(1, Math.abs(digitalT - 0.5) * 2);
-  identityMeta.style.opacity = metaFade;
-  sceneHint.style.opacity    = metaFade;
+  // with a project or a file open the caption steps aside — the panel / doc
+  // carries it
+  const metaO = identityTarget === 'default' ? metaFade
+              : identityTarget === 'digital' ? metaFade * (1 - fileT) : 0;
+  identityMeta.style.opacity       = metaO;
+  identityMeta.style.pointerEvents = metaO > 0.5 ? '' : 'none';   // no hidden side link
+  identityTitle.style.opacity = Math.min(1, Math.abs(digitalT - 0.5) * 2);   // swaps with the page
+  sceneHint.style.opacity    = metaFade * (1 - fileT);
   sheetNote.style.opacity    = metaFade;
 
   if (window._dotCam) {
@@ -6299,18 +7434,25 @@ function loop() {
     outlineYellow.selectedObjects = [];
   }
 
-  // Detail callout: dashed "Detail A" circle around the sprocket once the car
-  // zoom settles — the drawing convention for "this area has a blow-up view".
-  // Yields to the hover outline and to the open detail panel.
-  if (sprocketGroup && featured === 'car') {
+  // Detail callouts: a dashed circle marks the part with more to show, once
+  // the zoom settles — the drawing convention for "this area has a blow-up
+  // view": Detail A, the car's sprocket (its study), and Detail B, the
+  // scooter's seat module (it lifts off). Each yields to its hover outline
+  // and to its open detail.
+  const dcFor = featured === 'car' && sprocketGroup ? 'car'
+              : featured === 'scooter' && seatHitbox.length ? 'scooter' : null;
+  if (dcFor) {
     camera.updateMatrixWorld();
-    const sv = sprocketGroup.position.clone().project(camera);
+    const sv = (dcFor === 'car' ? sprocketGroup.position.clone()
+                                : seatHitbox[0].getWorldPosition(new THREE.Vector3())).project(camera);
     const rect = card.getBoundingClientRect();
     detailCallout.style.transform =
       `translate(${(sv.x + 1) / 2 * rect.width}px, ${(1 - sv.y) / 2 * rect.height}px)`;
+    if (dcFor !== dcShows) { dcShows = dcFor; dcLabel.textContent = DC_LABEL[dcFor]; }
   }
-  const detailTarget = (featured === 'car' ? ppIn * swapO : 0) *
-                       (1 - openEase) * (sprocketHovered ? 0 : 1);
+  const detailTarget = dcFor === 'car'     ? ppIn * swapO * (1 - openEase) * (sprocketHovered ? 0 : 1)
+                     : dcFor === 'scooter' ? ppIn * swapO * (1 - seatOpenEase) * (seatHovered ? 0 : 1)
+                     : 0;
   detailO += (detailTarget - detailO) * (1 - Math.exp(-10 * dt));
   detailCallout.style.opacity = detailO;
 
@@ -6330,8 +7472,8 @@ function loop() {
   }
 
   // Hover detection (only at rest, and never under the digital page or the
-  // intro / menu / opaque pages — raycaster is expensive on complex mesh,
-  // and the pointer cursor would show through those layers)
+  // menu / opaque pages — raycaster is expensive on complex mesh, and the
+  // pointer cursor would show through those layers)
   if (!transitioning && !window._digitalOpen && !sceneCovered && c.mx > -999) {
     const rect = card.getBoundingClientRect();
     mousePt.set((c.mx / rect.width) * 2 - 1, -(c.my / rect.height) * 2 + 1);
@@ -6442,21 +7584,47 @@ function loop() {
   const cursor = pointer ? 'pointer' : '';
   if (card.style.cursor !== cursor) card.style.cursor = cursor;
 
-  // Hover callout tag: a mono spec label that trails the cursor over a model
-  const hoverName = rivianHovered ? 'rivian' : scooterHovered ? 'scooter'
-                  : printerHovered ? 'printer' : steeringHovered ? 'steering'
-                  : isHovered ? 'car' : null;
-  if (hoverName) {
-    const hi = PROJECT_INFO[hoverName];
-    hoverTag.textContent = `${hi.index} · ${hi.title}`;
+  // Scene labels: gone by ease 0.25 (a zoom's first moment — the car is
+  // faded by then), and out with the Digital flip or under a page / menu.
+  // Each rides its model's hit proxy, centred on it: over the top face's
+  // centre (back row), or under the lowest of the bottom face's edge
+  // midpoints on screen (front row — about where the model meets the ground
+  // nearest the camera; the box's corners overshoot the silhouette).
+  // Hovering a model lights its label.
+  if (!COMPACT) {
+    const hovered = ease > 0.05 ? null
+                  : isHovered ? 'car' : rivianHovered ? 'rivian' : scooterHovered ? 'scooter'
+                  : printerHovered ? 'printer' : steeringHovered ? 'steering' : null;
+    labelsCoverO += ((sceneCovered ? 0 : 1) - labelsCoverO) * (1 - Math.exp(-10 * dt));
+    const o = labelsCoverO * Math.max(0, 1 - ease * 4) * (1 - digitalT);
+    if (o > 0.01) camera.updateMatrixWorld();
+    for (const k of PROJECT_ORDER) {
+      const el = labelEls[k], proxy = LABEL_HITBOX[k][0];
+      if (!proxy || o <= 0.01) {
+        if (el.style.visibility !== 'hidden') { el.style.visibility = 'hidden'; el.style.opacity = '0'; }
+        continue;
+      }
+      proxy.updateWorldMatrix(true, false);
+      const g = proxy.geometry.parameters;
+      let y = Infinity;   // NDC (y up)
+      if (LABEL_BELOW[k]) {
+        for (let i = 0; i < 4; i++) {   // the lowest of the bottom face's edge midpoints
+          labelPt.set(i < 2 ? (i ? 0.5 : -0.5) * g.width : 0, -g.height / 2,
+                      i < 2 ? 0 : (i & 1 ? 0.5 : -0.5) * g.depth);
+          y = Math.min(y, proxy.localToWorld(labelPt).project(camera).y);
+        }
+      } else {
+        y = proxy.localToWorld(labelPt.set(0, g.height / 2, 0)).project(camera).y;   // top face centre
+      }
+      proxy.localToWorld(labelPt.set(0, 0, 0)).project(camera);
+      el.style.visibility = 'visible';
+      el.style.opacity    = o.toFixed(3);
+      el.style.transform  = `translate(${((labelPt.x + 1) / 2 * viewW).toFixed(1)}px, ` +
+                            `${((1 - y) / 2 * viewH).toFixed(1)}px)`;
+      const on = hovered === k;
+      if (el.classList.contains('on') !== on) el.classList.toggle('on', on);
+    }
   }
-  const tagK = 1 - Math.exp(-14 * dt);
-  if (hoverTagO < 0.02 && c.mx > -999) { hoverTagX = c.mx; hoverTagY = c.my; }  // no fly-in
-  hoverTagX += (c.mx - hoverTagX) * tagK;
-  hoverTagY += (c.my - hoverTagY) * tagK;
-  hoverTagO += ((hoverName && ease < 0.05 ? 1 : 0) - hoverTagO) * tagK;
-  hoverTag.style.opacity = hoverTagO;
-  hoverTag.style.transform = `translate(${hoverTagX + 16}px, ${hoverTagY - 44}px)`;
 
   // Non-featured models fade out during zoom; the featured one stays opaque.
   // In the carousel a model shows while it is within a station of the view
@@ -6528,14 +7696,18 @@ function loop() {
   // Nothing to draw once an opaque layer fully hides the scene: the digital
   // page after its flip lands, or the menu / a page / the race after its
   // slide-in (0.6 s outlasts the longest, 0.48 s). Everything above keeps
-  // running, so the first frame back is current. Never skipped under the
-  // intro — rendering there compiles shaders and uploads the models before
-  // the reveal, instead of hitching the swipe.
+  // running, so the first frame back is current.
   const hidden = (window._digitalOpen && digitalT === 1) || pageCoverT > 0.6;
   if (window._dotCam) window._dotCam.hidden = hidden;   // the dot grid skips too
-  if (!hidden) composer.render();
+  // …except once behind the home page, when the five models are in: that
+  // first draw compiles the shaders and uploads the geometry, so walking
+  // through the Hands-On door doesn't stall on it (the canvas is hidden)
+  const warm = hidden && !warmed && window._homeOpen && projectsIn;
+  if (warm) warmed = true;
+  if (!hidden || warm) composer.render();
 }
 loop();
+if (window._sceneReady) window._sceneReady();   // the router can now reach the scene (main script)
 
 // Regression probe: per wheel, compare the dot grid's screen position of the
 // lattice point calibrated under that wheel against the wheel's actual
